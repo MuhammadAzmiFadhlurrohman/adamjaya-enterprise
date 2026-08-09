@@ -158,54 +158,56 @@ if ($barang_id > 0) {
         mysqli_data_seek($result, 0);
     ?>
         <?php while ($j = mysqli_fetch_assoc($result)): ?>
-            <div class="audit-card-mobile mb-3 varian-card-item" id="mobile-row-jenis-<?= $j['id']; ?>">
+            <div class="audit-card-mobile mb-3.5 varian-card-item" id="mobile-row-jenis-<?= $j['id']; ?>">
                 <!-- Top Header Row -->
-                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                    <div class="d-flex align-items-center gap-1.5">
-                        <span class="id-chip" style="font-size:0.68rem; padding:2px 7px;">#<?= $j['id']; ?></span>
-                        <span class="badge rounded-2 px-2 py-1" style="background: #FDF5F6; color: #7A1E33; border: 1px solid #F5D5DA; font-weight: 700; font-size: 0.72rem;">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2.5 border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="id-chip" style="font-size:0.7rem; padding:3px 8px;">#<?= $j['id']; ?></span>
+                        <span class="badge rounded-2 px-2.5 py-1" style="background: #FDF5F6; color: #7A1E33; border: 1px solid #F5D5DA; font-weight: 700; font-size: 0.75rem;">
                             <i class="fa-solid fa-box-archive me-1 text-gold"></i> <?= e($j['nama_barang']); ?>
                         </span>
                     </div>
-                    <?php if ($is_admin): ?>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-outline-info py-0.5 px-2" style="font-size:0.75rem;" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <a href="#" class="btn btn-sm btn-outline-danger py-0.5 px-2" style="font-size:0.75rem;" 
-                               onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
-                        </div>
-                    <?php endif; ?>
                 </div>
 
                 <!-- Varian Name Title -->
-                <div class="mb-2.5">
-                    <h6 class="fw-bold text-dark mb-0" style="font-size:0.95rem; line-height:1.25;"><?= e($j['nama_jenis']); ?></h6>
+                <div class="mb-3">
+                    <h5 class="fw-bold text-dark mb-0" style="font-size:1.02rem; line-height:1.3;"><?= e($j['nama_jenis']); ?></h5>
                 </div>
 
                 <!-- Specs & Price Grid Box -->
-                <div class="p-2.5 rounded-3 bg-light border d-flex justify-content-between align-items-center">
+                <div class="varian-card-box mb-3 d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted" style="font-size:0.65rem; font-weight:700;">HARGA SATUAN</div>
-                        <div class="fw-bold text-success" style="font-size:0.9rem;"><?= formatRupiah($j['harga']); ?></div>
+                        <div class="text-muted" style="font-size:0.65rem; font-weight:700; letter-spacing:0.04em;">HARGA SATUAN</div>
+                        <div class="fw-bold text-success" style="font-size:0.95rem; margin-top:1px;"><?= formatRupiah($j['harga']); ?></div>
                     </div>
                     <div class="text-end">
-                        <div class="text-muted" style="font-size:0.65rem; font-weight:700;">STOK TERSEDIA</div>
-                        <div>
+                        <div class="text-muted" style="font-size:0.65rem; font-weight:700; letter-spacing:0.04em;">STOK TERSEDIA</div>
+                        <div style="margin-top:2px;">
                             <?php if ($j['stok'] <= 10): ?>
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5 fw-bold" style="font-size:0.72rem;">
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size:0.75rem;">
                                     <i class="fa-solid fa-triangle-exclamation me-1"></i><?= format_stok($j['stok']); ?> <?= e($j['satuan']); ?>
                                 </span>
                             <?php else: ?>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 fw-bold" style="font-size:0.72rem;">
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size:0.75rem;">
                                     <i class="fa-solid fa-check me-1"></i><?= format_stok($j['stok']); ?> <?= e($j['satuan']); ?>
                                 </span>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
+
+                <!-- Action Footer Buttons -->
+                <?php if ($is_admin): ?>
+                    <div class="d-flex justify-content-end gap-2 pt-1">
+                        <button class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 fw-semibold" style="font-size:0.78rem;" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
+                            <i class="fa-solid fa-pen me-1"></i> Edit
+                        </button>
+                        <a href="#" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold" style="font-size:0.78rem;" 
+                           onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
+                            <i class="fa-solid fa-trash me-1"></i> Hapus
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php endwhile; ?>
     <?php else: ?>
