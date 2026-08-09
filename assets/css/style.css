@@ -1315,7 +1315,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     .table:not(.modal-detail-table) td {
         padding: 0.55rem 0.35rem;
         text-align: right;
-        padding-left: 48%;
+        padding-left: 44%;
         position: relative;
         border: none;
         border-bottom: 1px solid #F1EFEC;
@@ -1327,7 +1327,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         content: attr(data-label);
         position: absolute;
         left: 0.35rem;
-        width: calc(48% - 0.7rem);
+        width: calc(44% - 0.5rem);
         padding-right: 0.4rem;
         font-weight: 700;
         font-size: 0.72rem;
@@ -1335,6 +1335,35 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         letter-spacing: 0.04em;
         text-align: left;
         color: var(--wine);
+    }
+
+    /* AKSI Row Mobile Layout Override - No Overflow */
+    .table:not(.modal-detail-table) td[data-label="AKSI"],
+    .table:not(.modal-detail-table) td[data-label="Aksi"],
+    .table:not(.modal-detail-table) td[data-label="Aksi & Varian"] {
+        padding-left: 0.35rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+    .table:not(.modal-detail-table) td[data-label="AKSI"]::before,
+    .table:not(.modal-detail-table) td[data-label="Aksi"]::before,
+    .table:not(.modal-detail-table) td[data-label="Aksi & Varian"]::before {
+        position: static !important;
+        width: auto !important;
+        padding-right: 0.35rem !important;
+        margin-right: auto !important;
+    }
+    .action-btns {
+        justify-content: flex-end !important;
+        flex-wrap: nowrap !important;
+        gap: 0.25rem !important;
+        max-width: 70%;
+    }
+    .action-btn, .action-btns .btn {
+        padding: 0.22rem 0.45rem !important;
+        font-size: 0.68rem !important;
+        white-space: nowrap !important;
     }
 
     /* Modal Detail Table Clean Mobile Override */
