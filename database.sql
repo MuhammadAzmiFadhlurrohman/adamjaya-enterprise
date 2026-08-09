@@ -1,6 +1,6 @@
 -- ========================================================
 -- FULL DATABASE DUMP: ADAM JAYA ENTERPRISE (DATA LAMA & BARU)
--- Generated: 2026-08-09 17:42:53
+-- Generated: 2026-08-09 17:46:18
 -- ========================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -8,9 +8,21 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
+-- Drop existing tables to avoid Foreign Key conflicts (#1451)
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `pengajuan_detail`;
+DROP TABLE IF EXISTS `pengajuan`;
+DROP TABLE IF EXISTS `pengeluaran_detail`;
+DROP TABLE IF EXISTS `pengeluaran_header`;
+DROP TABLE IF EXISTS `riwayat_stok`;
+DROP TABLE IF EXISTS `favorit_pembeli`;
+DROP TABLE IF EXISTS `jenis_barang`;
+DROP TABLE IF EXISTS `stok_barang`;
+DROP TABLE IF EXISTS `users`;
+
+-- --------------------------------------------------------
 -- Table structure for `users`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
@@ -38,7 +50,6 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`, `no_telepon`, `email`
 -- --------------------------------------------------------
 -- Table structure for `stok_barang`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `stok_barang`;
 CREATE TABLE `stok_barang` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nama_barang` varchar(150) NOT NULL,
@@ -164,7 +175,6 @@ INSERT INTO `stok_barang` (`id`, `nama_barang`, `jumlah`, `gambar`, `created_at`
 -- --------------------------------------------------------
 -- Table structure for `jenis_barang`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `jenis_barang`;
 CREATE TABLE `jenis_barang` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `barang_id` int(11) NOT NULL,
@@ -604,7 +614,6 @@ INSERT INTO `jenis_barang` (`id`, `barang_id`, `nama_jenis`, `stok`, `satuan`, `
 -- --------------------------------------------------------
 -- Table structure for `pengajuan`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `pengajuan`;
 CREATE TABLE `pengajuan` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `custom_id` varchar(50) NOT NULL,
@@ -880,7 +889,6 @@ INSERT INTO `pengajuan` (`id`, `custom_id`, `user_id`, `jenis_pengajuan`, `statu
 -- --------------------------------------------------------
 -- Table structure for `pengajuan_detail`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `pengajuan_detail`;
 CREATE TABLE `pengajuan_detail` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pengajuan_id` int(11) NOT NULL,
@@ -1474,7 +1482,6 @@ INSERT INTO `pengajuan_detail` (`id`, `pengajuan_id`, `is_custom`, `jenis_id`, `
 -- --------------------------------------------------------
 -- Table structure for `pengeluaran_header`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `pengeluaran_header`;
 CREATE TABLE `pengeluaran_header` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `custom_id` varchar(50) NOT NULL,
@@ -1497,7 +1504,6 @@ INSERT INTO `pengeluaran_header` (`id`, `custom_id`, `tanggal`, `total_pengeluar
 -- --------------------------------------------------------
 -- Table structure for `pengeluaran_detail`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `pengeluaran_detail`;
 CREATE TABLE `pengeluaran_detail` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pengeluaran_id` int(11) NOT NULL,
@@ -1520,7 +1526,6 @@ INSERT INTO `pengeluaran_detail` (`id`, `pengeluaran_id`, `nama_item`, `kategori
 -- --------------------------------------------------------
 -- Table structure for `favorit_pembeli`
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `favorit_pembeli`;
 CREATE TABLE `favorit_pembeli` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
