@@ -1,0 +1,228 @@
+<?php
+require_once __DIR__ . '/config/auth.php';
+require_admin();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: insert_admin.php');
+    exit;
+}
+
+$csrf_token = $_POST['csrf_token'] ?? '';
+if (!verify_csrf_token($csrf_token)) {
+    set_flash('error', 'Gagal', 'Token CSRF tidak valid.');
+    header('Location: tambah_pengajuan.php');
+    exit;
+}
+
+$user_id = current_user()['id'];
+$nama_pembeli = sanitize($_POST['nama_pembeli'] ?? '');
+$telepon_pembeli = sanitize($_POST['telepon_pembeli'] ?? '');
+
+// Custom ID, Custom Tanggal, Custom Jam, Status Bayar & Kirim
+$user_custom_id = sanitize($_POST['custom_id'] ?? '');
+if (!empty($user_custom_id)) {
+    $custom_id = $user_custom_id;
+} else {
+    $custom_id = generate_pengajuan_custom_id($conn);
+}
+
+$custom_tanggal = sanitize($_POST['custom_tanggal'] ?? date('Y-m-d'));
+$custom_jam = sanitize($_POST['custom_jam'] ?? date('H:i'));
+$created_at = "$custom_tanggal $custom_jam:00";
+
+$status_pembayaran = sanitize($_POST['status_pembayaran'] ?? 'belum_dibayar');
+if (!in_array($status_pembayaran, ['belum_dibayar', 'dibayar'])) {
+    $status_pembayaran = 'belum_dibayar';
+}
+
+$status_pengiriman = sanitize($_POST['status_pengiriman'] ?? 'belum_dikirim');
+if (!in_array($status_pengiriman, ['belum_dikirim', 'sudah_dikirim'])) {
+    $status_pengiriman = 'belum_dikirim';
+}
+
+if (empty($nama_pembeli)) {
+    set_flash('error', 'Gagal', 'Nama pembeli wajib diisi.');
+    header('Location: tambah_pengajuan.php');
+    exit;
+}
+
+// Deteksi seluruh indeks item dari POST (_N)
+$item_indexes = [];
+foreach ($_POST as $key => $val) {
+    if (strpos($key, 'jumlah_') === 0) {
+        $idx = str_replace('jumlah_', '', $key);
+        $item_indexes[] = $idx;
+    }
+}
+
+if (empty($item_indexes)) {
+    set_flash('error', 'Gagal', 'Tidak ada item barang dalam pengajuan.');
+    header('Location: tambah_pengajuan.php');
+    exit;
+}
+
+// Mulai ATOMIC TRANSACTION MYSQL
+mysqli_autocommit($conn, FALSE);
+
+try {
+    $grand_total = 0.0;
+    $items_to_insert = [];
+
+    foreach ($item_indexes as $idx) {
+        $is_custom = isset($_POST["is_custom_$idx"]) && $_POST["is_custom_$idx"] == '1' ? 1 : 0;
+        $jumlah = parseJumlah($_POST["jumlah_$idx"] ?? 1);
+        $satuan = sanitize($_POST["satuan_$idx"] ?? 'pcs');
+        $harga = unformatRupiah($_POST["harga_$idx"] ?? 0);
+        $subtotal = $jumlah * $harga;
+        $grand_total += $subtotal;
+
+        if ($is_custom) {
+            $nama_barang = sanitize($_POST["custom_nama_$idx"] ?? 'Custom Item');
+            $nama_jenis = sanitize($_POST["custom_jenis_$idx"] ?? '-');
+
+            $items_to_insert[] = [
+                'is_custom' => 1,
+                'jenis_id' => null,
+                'nama_barang' => $nama_barang,
+                'nama_jenis' => $nama_jenis,
+                'jumlah' => $jumlah,
+                'satuan' => $satuan,
+                'harga_satuan' => $harga
+            ];
+        } else {
+            $barang_id = (int)($_POST["barang_id_$idx"] ?? 0);
+            $jenis_id = (int)($_POST["jenis_id_$idx"] ?? 0);
+
+            if ($barang_id <= 0 || $jenis_id <= 0) {
+                throw new Exception("Barang induk atau varian belum dipilih pada salah satu item.");
+            }
+
+            // Lock Tabel Record jenis_barang (SELECT FOR UPDATE)
+            $stmt_lock = mysqli_prepare($conn, "SELECT j.stok, j.nama_jenis, j.satuan, b.nama_barang 
+                                                FROM jenis_barang j 
+                                                JOIN stok_barang b ON j.barang_id = b.id 
+                                                WHERE j.id = ? FOR UPDATE");
+            mysqli_stmt_bind_param($stmt_lock, "i", $jenis_id);
+            mysqli_stmt_execute($stmt_lock);
+            $res_lock = mysqli_stmt_get_result($stmt_lock);
+            $row_lock = mysqli_fetch_assoc($res_lock);
+
+            if (!$row_lock) {
+                throw new Exception("Varian barang #$jenis_id tidak ditemukan di database.");
+            }
+
+            $stok_sebelum = (float)$row_lock['stok'];
+            if ($stok_sebelum < $jumlah) {
+                throw new Exception("Stok tidak mencukupi untuk item {$row_lock['nama_barang']} - {$row_lock['nama_jenis']}. Stok tersedia: $stok_sebelum {$row_lock['satuan']}, diminta: $jumlah.");
+            }
+
+            // Potong stok atomis
+            $stok_sesudah = $stok_sebelum - $jumlah;
+            $stmt_deduct = mysqli_prepare($conn, "UPDATE jenis_barang SET stok = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt_deduct, "di", $stok_sesudah, $jenis_id);
+            if (!mysqli_stmt_execute($stmt_deduct)) {
+                throw new Exception("Gagal memotong stok varian barang.");
+            }
+
+            // Log riwayat_stok
+            $ket_log = "Pengadaan Pembelian Nota #$custom_id";
+            $perubahan = -$jumlah;
+            $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan) VALUES (?, ?, ?, ?, ?, 'transaksi', ?)");
+            mysqli_stmt_bind_param($stmt_log, "iiddss", $jenis_id, $user_id, $perubahan, $stok_sebelum, $stok_sesudah, $ket_log);
+            mysqli_stmt_execute($stmt_log);
+
+            $items_to_insert[] = [
+                'is_custom' => 0,
+                'jenis_id' => $jenis_id,
+                'nama_barang' => $row_lock['nama_barang'],
+                'nama_jenis' => $row_lock['nama_jenis'],
+                'jumlah' => $jumlah,
+                'satuan' => $satuan,
+                'harga_satuan' => $harga
+            ];
+        }
+    }
+
+    // Process Upload File Bukti Pembayaran (Opsional)
+    $metode_pembayaran = sanitize($_POST['metode_pembayaran'] ?? '');
+    $bukti_transfer = null;
+    $bukti_tunai = null;
+    $bukti_pembelian = null;
+
+    if (isset($_FILES['bukti_file']) && $_FILES['bukti_file']['error'] === UPLOAD_ERR_OK) {
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+        $file_ext = strtolower(pathinfo($_FILES['bukti_file']['name'], PATHINFO_EXTENSION));
+        if (in_array($file_ext, $allowed_ext)) {
+            $upload_dir = __DIR__ . '/uploads/bukti/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            $filename = 'bukti_' . time() . '_' . uniqid() . '.' . $file_ext;
+            if (move_uploaded_file($_FILES['bukti_file']['tmp_name'], $upload_dir . $filename)) {
+                $file_path = 'uploads/bukti/' . $filename;
+                $bukti_pembelian = $file_path;
+                if ($metode_pembayaran === 'transfer') {
+                    $bukti_transfer = $file_path;
+                } else if ($metode_pembayaran === 'tunai') {
+                    $bukti_tunai = $file_path;
+                }
+            }
+        }
+    }
+
+    // Insert Header Pengajuan dengan Custom ID, Status & Bukti Upload Opsional
+    $stmt_head = mysqli_prepare($conn, "INSERT INTO pengajuan (custom_id, user_id, jenis_pengajuan, status_pembayaran, status_pengiriman, bukti_transfer, bukti_tunai, bukti_pembelian, estimasi_dana, nama_pembeli, telepon_pembeli, created_at) VALUES (?, ?, 'stok', ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $estimasi_str = (string)$grand_total;
+    mysqli_stmt_bind_param($stmt_head, "sisssssssss", 
+        $custom_id, 
+        $user_id, 
+        $status_pembayaran, 
+        $status_pengiriman, 
+        $bukti_transfer, 
+        $bukti_tunai, 
+        $bukti_pembelian, 
+        $estimasi_str, 
+        $nama_pembeli, 
+        $telepon_pembeli, 
+        $created_at
+    );
+
+    if (!mysqli_stmt_execute($stmt_head)) {
+        throw new Exception("Gagal menyimpan header pengajuan (ID Nota mungkin sudah dipakai): " . mysqli_error($conn));
+    }
+    $pengajuan_id = mysqli_insert_id($conn);
+
+    // Insert Items Detail
+    $stmt_det = mysqli_prepare($conn, "INSERT INTO pengajuan_detail (pengajuan_id, is_custom, jenis_id, nama_barang, nama_jenis, jumlah, satuan, harga_satuan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    foreach ($items_to_insert as $item) {
+        mysqli_stmt_bind_param($stmt_det, "iiissdsd", 
+            $pengajuan_id, 
+            $item['is_custom'], 
+            $item['jenis_id'], 
+            $item['nama_barang'], 
+            $item['nama_jenis'], 
+            $item['jumlah'], 
+            $item['satuan'], 
+            $item['harga_satuan']
+        );
+        if (!mysqli_stmt_execute($stmt_det)) {
+            throw new Exception("Gagal menyimpan detail pengajuan.");
+        }
+    }
+
+    // Commit Transaction
+    mysqli_commit($conn);
+    mysqli_autocommit($conn, TRUE);
+
+    set_flash('success', 'Pengajuan Berhasil!', "Pengajuan #$custom_id berhasil dibuat dan stok telah terpotong.");
+    header('Location: insert_admin.php');
+    exit;
+
+} catch (Exception $e) {
+    mysqli_rollback($conn);
+    mysqli_autocommit($conn, TRUE);
+
+    set_flash('error', 'Transaksi Gagal', $e->getMessage());
+    header('Location: tambah_pengajuan.php');
+    exit;
+}

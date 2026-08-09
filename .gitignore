@@ -1,0 +1,19 @@
+# OS Generated Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Files
+.idea/
+.vscode/
+*.swp
+
+# Temporary Scratch & Debug Scripts
+scratch/
+check_*.php
+test_*.php
+
+# Large Temporary Dumps (Keep database.sql schema)
+database_lama.sql
+aug_dump*.sql
+user_sql_dump.sql
