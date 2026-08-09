@@ -179,19 +179,19 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                 $qty_lama = (float)$item['jumlah'];
             ?>
                 <div class="item-card-row mb-3" data-index="<?= $idx; ?>" id="row_<?= $idx; ?>">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <div class="d-flex align-items-center gap-2">
                             <div class="badge-item-wine">
                                 <i class="fa-solid fa-basket-shopping me-1"></i> Barang Dibeli #<?= $idx + 1; ?>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="form-check form-switch">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="form-check form-switch m-0">
                                 <input class="form-check-input" type="checkbox" name="is_custom_<?= $idx; ?>" value="1" id="is_custom_<?= $idx; ?>" <?= $item['is_custom'] ? 'checked' : ''; ?> onchange="toggleCustomItem(<?= $idx; ?>)">
-                                <label class="form-check-label text-warning small fw-semibold" for="is_custom_<?= $idx; ?>">Custom Item (Non-Stok)</label>
+                                <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_<?= $idx; ?>">Custom Item (Non-Stok)</label>
                             </div>
                             <?php if ($idx > 0): ?>
-                                <button type="button" class="btn-remove-circle" onclick="removeRow(<?= $idx; ?>)">&times;</button>
+                                <button type="button" class="btn-remove-circle ms-1" onclick="removeRow(<?= $idx; ?>)">&times;</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -616,18 +616,18 @@ function addItemRow() {
 
     const rowHtml = `
     <div class="item-card-row mb-3" data-index="${idx}" id="row_${idx}">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <div class="d-flex align-items-center gap-2">
                 <div class="badge-item-wine">
                     <i class="fa-solid fa-basket-shopping me-1"></i> Barang Dibeli #${idx + 1}
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="form-check form-switch">
+            <div class="d-flex align-items-center gap-2">
+                <div class="form-check form-switch m-0">
                     <input class="form-check-input" type="checkbox" name="is_custom_${idx}" value="1" id="is_custom_${idx}" onchange="toggleCustomItem(${idx})">
-                    <label class="form-check-label text-warning small fw-semibold" for="is_custom_${idx}">Custom Item (Non-Stok)</label>
+                    <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_${idx}">Custom Item (Non-Stok)</label>
                 </div>
-                <button type="button" class="btn-remove-circle" onclick="removeRow(${idx})">&times;</button>
+                <button type="button" class="btn-remove-circle ms-1" onclick="removeRow(${idx})">&times;</button>
             </div>
         </div>
 

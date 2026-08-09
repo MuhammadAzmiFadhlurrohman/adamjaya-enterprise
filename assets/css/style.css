@@ -1239,6 +1239,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     border-radius: 20px;
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
 }
 
 .btn-remove-circle {

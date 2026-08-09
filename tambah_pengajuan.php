@@ -59,7 +59,6 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
                 <div class="custom-input-box pink">
                     <label class="fw-bold text-wine small mb-1 d-block"><i class="fa-solid fa-pen text-wine me-1"></i> ID Pengajuan</label>
                     <input type="number" step="1" name="custom_id" id="custom_id" class="form-control text-wine fw-bold" value="<?= e($default_custom_id); ?>" placeholder="Contoh: 2026080001" required>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Kosongkan untuk ID otomatis</small>
                 </div>
             </div>
 
@@ -68,7 +67,6 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
                 <div class="custom-input-box pink">
                     <label class="fw-bold text-wine small mb-1 d-block"><i class="fa-regular fa-calendar-days text-wine me-1"></i> Tanggal Pengajuan</label>
                     <input type="date" name="custom_tanggal" id="custom_tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Kosongkan untuk tanggal hari ini</small>
                 </div>
             </div>
 
@@ -77,7 +75,6 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
                 <div class="custom-input-box pink">
                     <label class="fw-bold text-wine small mb-1 d-block"><i class="fa-regular fa-clock text-wine me-1"></i> Jam Pengajuan (WIB)</label>
                     <input type="time" name="custom_jam" id="custom_jam" class="form-control" value="<?= date('H:i'); ?>" required>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Kosongkan untuk jam sekarang</small>
                 </div>
             </div>
 
@@ -89,7 +86,6 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
                         <option value="belum_dikirim" selected>🔴 Belum Dikirim</option>
                         <option value="sudah_dikirim">🟢 Sudah Dikirim</option>
                     </select>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Pilih status pengiriman barang</small>
                 </div>
             </div>
         </div>
@@ -148,18 +144,18 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
         <div id="itemContainer">
             <!-- Item Row 0 -->
             <div class="item-card-row mb-3" data-index="0" id="row_0">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                     <div class="d-flex align-items-center gap-2">
                         <div class="badge-item-wine">
                             <i class="fa-solid fa-basket-shopping me-1"></i> Barang Dibeli #1
                         </div>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="form-check form-switch">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="form-check form-switch m-0">
                             <input class="form-check-input" type="checkbox" name="is_custom_0" value="1" id="is_custom_0" onchange="toggleCustomItem(0)">
-                            <label class="form-check-label text-warning small fw-semibold" for="is_custom_0">Custom Item (Non-Stok)</label>
+                            <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_0">Custom Item (Non-Stok)</label>
                         </div>
-                        <button type="button" class="btn-remove-circle d-none" id="btn_remove_0" onclick="removeRow(0)">&times;</button>
+                        <button type="button" class="btn-remove-circle d-none ms-1" id="btn_remove_0" onclick="removeRow(0)">&times;</button>
                     </div>
                 </div>
 
@@ -572,18 +568,18 @@ function addItemRow() {
 
     const rowHtml = `
     <div class="item-card-row mb-3" data-index="${idx}" id="row_${idx}">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
             <div class="d-flex align-items-center gap-2">
                 <div class="badge-item-wine">
                     <i class="fa-solid fa-basket-shopping me-1"></i> Barang Dibeli #${idx + 1}
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="form-check form-switch">
+            <div class="d-flex align-items-center gap-2">
+                <div class="form-check form-switch m-0">
                     <input class="form-check-input" type="checkbox" name="is_custom_${idx}" value="1" id="is_custom_${idx}" onchange="toggleCustomItem(${idx})">
-                    <label class="form-check-label text-warning small fw-semibold" for="is_custom_${idx}">Custom Item (Non-Stok)</label>
+                    <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_${idx}">Custom Item (Non-Stok)</label>
                 </div>
-                <button type="button" class="btn-remove-circle" onclick="removeRow(${idx})">&times;</button>
+                <button type="button" class="btn-remove-circle ms-1" id="btn_remove_${idx}" onclick="removeRow(${idx})">&times;</button>
             </div>
         </div>
 
