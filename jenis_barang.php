@@ -30,21 +30,27 @@ if ($barang_id > 0) {
     <option value="pcs">
 </datalist>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h3 class="fw-bold mb-1 text-dark">Varian & Stok Detail</h3>
-        <p class="text-muted mb-0">Manajemen varian spesifikasi, harga standar, stok persediaan, dan satuan</p>
+<!-- HEADER CURVED EXECUTIVE BANNER -->
+<header class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <span class="page-eyebrow"><i class="fa-solid fa-layer-group"></i> Katalog Varian &middot; Adam Jaya</span>
+            <h1 class="page-title">Varian & Stok Detail</h1>
+            <p class="page-subtitle mb-0">Manajemen varian spesifikasi, harga standar, stok persediaan, dan satuan.</p>
+        </div>
+        <?php if ($is_admin): ?>
+            <div class="header-action">
+                <button class="btn btn-pengajuan-header" data-bs-toggle="modal" data-bs-target="#addJenisModal">
+                    <i class="fa-solid fa-plus-circle me-1"></i> Tambah Varian Baru
+                </button>
+            </div>
+        <?php endif; ?>
     </div>
-    <?php if ($is_admin): ?>
-        <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addJenisModal">
-            <i class="fa-solid fa-plus me-1"></i> Tambah Varian Baru
-        </button>
-    <?php endif; ?>
-</div>
+</header>
 
-<div class="glass-card p-4 mb-4">
+<div class="glass-card p-3 p-md-4 mb-4">
     <form method="GET" action="jenis_barang.php" class="row g-3 align-items-end">
-        <div class="col-md-5">
+        <div class="col-12 col-md-5">
             <label class="form-label text-muted small fw-semibold">FILTER BARANG INDUK</label>
             <select name="barang_id" class="form-select" onchange="this.form.submit()">
                 <option value="0">-- Semuanya (Semua Barang Induk) --</option>
@@ -58,16 +64,16 @@ if ($barang_id > 0) {
                 <?php endwhile; ?>
             </select>
         </div>
-        <div class="col-md-5">
+        <div class="col-12 col-md-5">
             <label class="form-label text-muted small fw-semibold">CARI VARIAN / SPESIFIKASI</label>
             <div class="position-relative">
                 <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                 <input type="text" id="searchVarianInput" class="form-control ps-5" placeholder="Ketik varian untuk mencari..." onkeyup="filterVarianLive(this.value)" autocomplete="off">
             </div>
         </div>
-        <div class="col-md-2 d-flex gap-2">
+        <div class="col-12 col-md-2 d-flex gap-2">
             <?php if ($barang_id > 0): ?>
-                <a href="jenis_barang.php" class="btn btn-secondary-custom w-100 text-nowrap">
+                <a href="jenis_barang.php" class="btn btn-secondary-custom w-100 text-nowrap py-2">
                     <i class="fa-solid fa-rotate-left me-1"></i> Reset
                 </a>
             <?php endif; ?>
@@ -75,9 +81,13 @@ if ($barang_id > 0) {
     </form>
 </div>
 
-<div class="glass-card p-4">
+<!-- Desktop Table Container (>= 768px) -->
+<div class="table-container d-none d-md-block">
+    <div class="table-container-header">
+        <h2><i class="fa-solid fa-layer-group me-2 text-wine"></i> Daftar Varian Barang & Spesifikasi</h2>
+    </div>
     <div class="table-responsive">
-        <table class="table table-custom align-middle">
+        <table class="table align-middle">
             <thead>
                 <tr>
                     <th width="60">ID</th>
@@ -90,7 +100,9 @@ if ($barang_id > 0) {
                 </tr>
             </thead>
             <tbody>
-                <?php if (mysqli_num_rows($result) > 0): ?>
+                <?php if (mysqli_num_rows($result) > 0): 
+                    mysqli_data_seek($result, 0);
+                ?>
                     <?php while ($j = mysqli_fetch_assoc($result)): ?>
                         <tr id="row-jenis-<?= $j['id']; ?>">
                             <td><strong>#<?= $j['id']; ?></strong></td>
@@ -134,6 +146,74 @@ if ($barang_id > 0) {
             </tbody>
         </table>
     </div>
+</div>
+
+<!-- Mobile Executive Card View (< 768px) -->
+<div class="d-md-none" id="mobileVarianList">
+    <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+        <h6 class="fw-bold text-wine mb-0" style="font-size:0.95rem;"><i class="fa-solid fa-layer-group me-1.5"></i> Daftar Varian Barang</h6>
+    </div>
+
+    <?php if (mysqli_num_rows($result) > 0): 
+        mysqli_data_seek($result, 0);
+    ?>
+        <?php while ($j = mysqli_fetch_assoc($result)): ?>
+            <div class="audit-card-mobile mb-3 varian-card-item" id="mobile-row-jenis-<?= $j['id']; ?>">
+                <!-- Top Header Row -->
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <div class="d-flex align-items-center gap-1.5">
+                        <span class="id-chip" style="font-size:0.68rem; padding:2px 7px;">#<?= $j['id']; ?></span>
+                        <span class="badge rounded-2 px-2 py-1" style="background: #FDF5F6; color: #7A1E33; border: 1px solid #F5D5DA; font-weight: 700; font-size: 0.72rem;">
+                            <i class="fa-solid fa-box-archive me-1 text-gold"></i> <?= e($j['nama_barang']); ?>
+                        </span>
+                    </div>
+                    <?php if ($is_admin): ?>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-info py-0.5 px-2" style="font-size:0.75rem;" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <a href="#" class="btn btn-sm btn-outline-danger py-0.5 px-2" style="font-size:0.75rem;" 
+                               onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Varian Name Title -->
+                <div class="mb-2.5">
+                    <h6 class="fw-bold text-dark mb-0" style="font-size:0.95rem; line-height:1.25;"><?= e($j['nama_jenis']); ?></h6>
+                </div>
+
+                <!-- Specs & Price Grid Box -->
+                <div class="p-2.5 rounded-3 bg-light border d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted" style="font-size:0.65rem; font-weight:700;">HARGA SATUAN</div>
+                        <div class="fw-bold text-success" style="font-size:0.9rem;"><?= formatRupiah($j['harga']); ?></div>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-muted" style="font-size:0.65rem; font-weight:700;">STOK TERSEDIA</div>
+                        <div>
+                            <?php if ($j['stok'] <= 10): ?>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5 fw-bold" style="font-size:0.72rem;">
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i><?= format_stok($j['stok']); ?> <?= e($j['satuan']); ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 fw-bold" style="font-size:0.72rem;">
+                                    <i class="fa-solid fa-check me-1"></i><?= format_stok($j['stok']); ?> <?= e($j['satuan']); ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <div class="glass-card text-center py-4">
+            <i class="fa-solid fa-layer-group fs-1 text-muted mb-2"></i>
+            <h6 class="fw-bold text-dark mb-0">Belum ada varian barang terdaftar.</h6>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php if ($is_admin): ?>
@@ -248,15 +328,19 @@ if ($barang_id > 0) {
 <script>
 function filterVarianLive(query) {
     const q = query.toLowerCase().trim();
-    const rows = document.querySelectorAll('tbody tr[id^="row-jenis-"]');
     
+    // Filter Desktop Table Rows
+    const rows = document.querySelectorAll('tbody tr[id^="row-jenis-"]');
     rows.forEach(row => {
         const text = row.textContent.toLowerCase();
-        if (text.includes(q)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
+        row.style.display = text.includes(q) ? '' : 'none';
+    });
+    
+    // Filter Mobile Varian Cards
+    const cards = document.querySelectorAll('.varian-card-item');
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? '' : 'none';
     });
 }
 
