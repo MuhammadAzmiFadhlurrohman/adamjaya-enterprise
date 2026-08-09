@@ -64,6 +64,10 @@
             box-shadow: 0 6px 22px rgba(201, 168, 76, 0.5);
             transform: translateY(-3px) scale(1.08);
         }
+        body.modal-open #scrollToTopBtn,
+        .modal.show ~ #scrollToTopBtn {
+            display: none !important;
+        }
     </style>
 
     <script>
@@ -71,11 +75,15 @@
         const scrollBtn = document.getElementById('scrollToTopBtn');
 
         function handleScroll() {
+            if (document.body.classList.contains('modal-open')) {
+                if (scrollBtn) scrollBtn.style.display = 'none';
+                return;
+            }
             const scrollY = window.scrollY || document.documentElement.scrollTop;
             if (scrollY > 280) {
-                scrollBtn.style.display = 'flex';
+                if (scrollBtn) scrollBtn.style.display = 'flex';
             } else {
-                scrollBtn.style.display = 'none';
+                if (scrollBtn) scrollBtn.style.display = 'none';
             }
         }
 
@@ -84,6 +92,12 @@
         }
 
         window.addEventListener('scroll', handleScroll);
+        document.addEventListener('show.bs.modal', function () {
+            if (scrollBtn) scrollBtn.style.display = 'none';
+        });
+        document.addEventListener('hidden.bs.modal', function () {
+            handleScroll();
+        });
     </script>
 </body>
 </html>
