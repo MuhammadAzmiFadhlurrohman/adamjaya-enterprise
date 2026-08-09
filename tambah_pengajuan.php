@@ -26,14 +26,19 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
 </datalist>
 
 <!-- HEADER TITLE BAR FORMULIR PEMBELIAN -->
-<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden" style="border-top: 3px solid var(--wine) !important;">
-    <div class="card-body p-3.5 d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-file-lines text-wine fs-4"></i>
-            <h5 class="fw-bold text-dark mb-0">Formulir Pembelian Barang</h5>
+<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden bg-white" style="border-left: 4px solid var(--wine) !important;">
+    <div class="card-body p-3 p-md-3.5 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="stat-icon icon-wine" style="width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;">
+                <i class="fa-solid fa-file-signature text-wine fs-5"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold text-wine mb-0" style="font-size: 1.1rem; line-height: 1.2;">Formulir Pembelian Barang</h5>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">Lengkapi rincian transaksi & pengadaan barang</small>
+            </div>
         </div>
-        <span class="badge bg-danger rounded-pill px-3 py-1.5 fw-semibold" style="font-size:0.75rem;">
-            <i class="fa-solid fa-circle-exclamation me-1"></i> Isi dengan lengkap
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1.5 fw-bold" style="font-size:0.72rem;">
+            <i class="fa-solid fa-circle-exclamation me-1"></i> Wajib diisi lengkap
         </span>
     </div>
 </div>
@@ -45,13 +50,13 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
     <input type="hidden" name="status_pembayaran" id="form_status_pembayaran" value="belum_dibayar">
     <input type="hidden" name="metode_pembayaran" id="selected_metode_pembayaran" value="">
 
-    <!-- SECTION 1 (TOP): CUSTOM ID, TANGGAL, JAM & STATUS PENGIRIMAN (TETAP DI ATAS REKUES USER) -->
+    <!-- SECTION 1 (TOP): CUSTOM PEMBELIAN -->
     <div class="form-section-card mb-4">
         <div class="d-flex align-items-center gap-2 mb-1">
             <i class="fa-solid fa-hashtag text-wine fs-5"></i>
-            <h5 class="fw-bold text-wine mb-0">Custom ID, Tanggal, Jam & Status Pengiriman</h5>
+            <h5 class="fw-bold text-wine mb-0">Custom Pembelian</h5>
         </div>
-        <small class="text-muted d-block mb-3">Admin dapat mengatur ID, tanggal, jam (WIB), dan status pengiriman secara manual</small>
+        <small class="text-muted d-block mb-3">Atur ID, tanggal, jam, dan status pengiriman secara manual</small>
 
         <div class="row g-3">
             <!-- ID Pengajuan Card -->
@@ -153,7 +158,7 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
                     <div class="d-flex align-items-center gap-2">
                         <div class="form-check form-switch m-0">
                             <input class="form-check-input" type="checkbox" name="is_custom_0" value="1" id="is_custom_0" onchange="toggleCustomItem(0)">
-                            <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_0">Custom Item (Non-Stok)</label>
+                            <label class="form-check-label fw-bold text-wine small text-nowrap" for="is_custom_0">Custom Item</label>
                         </div>
                         <button type="button" class="btn-remove-circle d-none ms-1" id="btn_remove_0" onclick="removeRow(0)">&times;</button>
                     </div>
@@ -251,14 +256,12 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
                 <div class="payment-card-btn text-center p-3.5 rounded-3 border" id="pay_card_transfer" onclick="selectFormPaymentMethod('transfer')">
                     <i class="fa-solid fa-building-columns text-primary fs-2 mb-2"></i>
                     <span class="fw-bold text-dark d-block fs-6">Transfer</span>
-                    <small class="text-muted d-block" id="pay_status_transfer_text" style="font-size:0.75rem;">Klik untuk set Lunas Transfer</small>
                 </div>
             </div>
             <div class="col-6">
                 <div class="payment-card-btn text-center p-3.5 rounded-3 border" id="pay_card_tunai" onclick="selectFormPaymentMethod('tunai')">
                     <i class="fa-solid fa-money-bill-wave text-success fs-2 mb-2"></i>
                     <span class="fw-bold text-dark d-block fs-6">Tunai</span>
-                    <small class="text-muted d-block" id="pay_status_tunai_text" style="font-size:0.75rem;">Klik untuk set Lunas Tunai</small>
                 </div>
             </div>
         </div>
@@ -270,7 +273,7 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
                     <i class="fa-solid fa-file-arrow-up text-wine me-1"></i> Unggah Bukti Pembayaran (Opsional)
                 </span>
                 <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:0.72rem;" onclick="deselectFormPaymentMethod()">
-                    <i class="fa-solid fa-xmark me-1"></i> Batalkan Pilih (Set Belum Dibayar)
+                    <i class="fa-solid fa-xmark me-1"></i> Batalkan Pilih
                 </button>
             </div>
             <input type="file" name="bukti_file" id="bukti_file_input" class="form-control form-control-sm" accept="image/*,.pdf">
@@ -577,7 +580,7 @@ function addItemRow() {
             <div class="d-flex align-items-center gap-2">
                 <div class="form-check form-switch m-0">
                     <input class="form-check-input" type="checkbox" name="is_custom_${idx}" value="1" id="is_custom_${idx}" onchange="toggleCustomItem(${idx})">
-                    <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_${idx}">Custom Item (Non-Stok)</label>
+                    <label class="form-check-label fw-bold text-wine small text-nowrap" for="is_custom_${idx}">Custom Item</label>
                 </div>
                 <button type="button" class="btn-remove-circle ms-1" id="btn_remove_${idx}" onclick="removeRow(${idx})">&times;</button>
             </div>

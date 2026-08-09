@@ -52,16 +52,18 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
 </datalist>
 
 <!-- HEADER TITLE BAR EDIT FORMULIR PEMBELIAN -->
-<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden" style="border-top: 3px solid var(--wine) !important;">
-    <div class="card-body p-3.5 d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="d-flex align-items-center gap-2">
-            <i class="fa-solid fa-pen-to-square text-wine fs-4"></i>
+<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden bg-white" style="border-left: 4px solid var(--wine) !important;">
+    <div class="card-body p-3 p-md-3.5 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="stat-icon icon-wine" style="width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;">
+                <i class="fa-solid fa-pen-to-square text-wine fs-5"></i>
+            </div>
             <div>
-                <h5 class="fw-bold text-dark mb-0">Edit Formulir Pembelian Barang #<?= e($p['custom_id']); ?></h5>
-                <small class="text-muted">Perbarui rincian item, data pembeli, atau status transaksi nota ini</small>
+                <h5 class="fw-bold text-wine mb-0" style="font-size: 1.1rem; line-height: 1.2;">Edit Pembelian Barang #<?= e($p['custom_id']); ?></h5>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">Perbarui rincian item, data pembeli, atau status transaksi nota ini</small>
             </div>
         </div>
-        <a href="insert_admin.php<?= !empty($return_row) ? '#' . e($return_row) : ''; ?>" class="btn btn-secondary-custom">
+        <a href="insert_admin.php<?= !empty($return_row) ? '#' . e($return_row) : ''; ?>" class="btn btn-secondary-custom btn-sm rounded-pill px-3 fw-bold">
             <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar
         </a>
     </div>
@@ -74,13 +76,13 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
     <input type="hidden" name="status_pembayaran" id="form_status_pembayaran" value="<?= e($p['status_pembayaran']); ?>">
     <input type="hidden" name="metode_pembayaran" id="selected_metode_pembayaran" value="<?= !empty($p['bukti_transfer']) ? 'transfer' : (!empty($p['bukti_tunai']) ? 'tunai' : ''); ?>">
 
-    <!-- SECTION 1 (TOP): CUSTOM ID, TANGGAL, JAM & STATUS PENGIRIMAN -->
+    <!-- SECTION 1 (TOP): CUSTOM PEMBELIAN -->
     <div class="form-section-card mb-4">
         <div class="d-flex align-items-center gap-2 mb-1">
             <i class="fa-solid fa-hashtag text-wine fs-5"></i>
-            <h5 class="fw-bold text-wine mb-0">Custom ID, Tanggal, Jam & Status Pengiriman</h5>
+            <h5 class="fw-bold text-wine mb-0">Custom Pembelian</h5>
         </div>
-        <small class="text-muted d-block mb-3">Admin dapat mengatur ID, tanggal, jam (WIB), dan status pengiriman secara manual</small>
+        <small class="text-muted d-block mb-3">Atur ID, tanggal, jam, dan status pengiriman secara manual</small>
 
         <div class="row g-3">
             <!-- ID Pengajuan Card -->
@@ -88,7 +90,6 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                 <div class="custom-input-box pink">
                     <label class="fw-bold text-wine small mb-1 d-block"><i class="fa-solid fa-pen text-wine me-1"></i> ID Pengajuan</label>
                     <input type="number" step="1" name="custom_id" id="custom_id" class="form-control text-wine fw-bold" value="<?= e($p['custom_id']); ?>" placeholder="Contoh: 2026080001" required>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Nomor ID Nota unik murni</small>
                 </div>
             </div>
 
@@ -97,7 +98,6 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                 <div class="custom-input-box pink">
                     <label class="fw-bold text-wine small mb-1 d-block"><i class="fa-regular fa-calendar-days text-wine me-1"></i> Tanggal Pengajuan</label>
                     <input type="date" name="custom_tanggal" id="custom_tanggal" class="form-control" value="<?= $tanggal_val; ?>" required>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Tanggal transaksi nota</small>
                 </div>
             </div>
 
@@ -106,7 +106,6 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                 <div class="custom-input-box pink">
                     <label class="fw-bold text-wine small mb-1 d-block"><i class="fa-regular fa-clock text-wine me-1"></i> Jam Pengajuan (WIB)</label>
                     <input type="time" name="custom_jam" id="custom_jam" class="form-control" value="<?= $jam_val; ?>" required>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Waktu transaksi (WIB)</small>
                 </div>
             </div>
 
@@ -118,7 +117,6 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         <option value="belum_dikirim" <?= $p['status_pengiriman'] === 'belum_dikirim' ? 'selected' : ''; ?>>🔴 Belum Dikirim</option>
                         <option value="sudah_dikirim" <?= $p['status_pengiriman'] === 'sudah_dikirim' ? 'selected' : ''; ?>>🟢 Sudah Dikirim</option>
                     </select>
-                    <small class="text-muted d-block mt-1" style="font-size:0.7rem;">* Pilih status pengiriman barang</small>
                 </div>
             </div>
         </div>
@@ -188,7 +186,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         <div class="d-flex align-items-center gap-2">
                             <div class="form-check form-switch m-0">
                                 <input class="form-check-input" type="checkbox" name="is_custom_<?= $idx; ?>" value="1" id="is_custom_<?= $idx; ?>" <?= $item['is_custom'] ? 'checked' : ''; ?> onchange="toggleCustomItem(<?= $idx; ?>)">
-                                <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_<?= $idx; ?>">Custom Item (Non-Stok)</label>
+                                <label class="form-check-label fw-bold text-wine small text-nowrap" for="is_custom_<?= $idx; ?>">Custom Item</label>
                             </div>
                             <?php if ($idx > 0): ?>
                                 <button type="button" class="btn-remove-circle ms-1" onclick="removeRow(<?= $idx; ?>)">&times;</button>
@@ -625,7 +623,7 @@ function addItemRow() {
             <div class="d-flex align-items-center gap-2">
                 <div class="form-check form-switch m-0">
                     <input class="form-check-input" type="checkbox" name="is_custom_${idx}" value="1" id="is_custom_${idx}" onchange="toggleCustomItem(${idx})">
-                    <label class="form-check-label text-warning small fw-semibold text-nowrap" for="is_custom_${idx}">Custom Item (Non-Stok)</label>
+                    <label class="form-check-label fw-bold text-wine small text-nowrap" for="is_custom_${idx}">Custom Item</label>
                 </div>
                 <button type="button" class="btn-remove-circle ms-1" onclick="removeRow(${idx})">&times;</button>
             </div>
