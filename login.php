@@ -70,52 +70,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="login-card">
         <div class="text-center mb-4">
-            <div class="brand-icon mx-auto mb-3" style="width: 54px; height: 54px; font-size: 1.5rem;">
-                <i class="fa-solid fa-boxes-stacked"></i>
-            </div>
-            <h4 class="fw-bold text-dark mb-1">Adam Jaya Enterprise</h4>
-            <p class="text-muted small">Sistem Operasional Procurement & Inventaris</p>
+            <img src="assets/adamjaya.png" alt="Adam Jaya Enterprise Logo" class="login-brand-logo mb-3">
+            <h3 class="fw-extrabold text-wine mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.02em; font-size: 1.45rem;">ADAM JAYA</h3>
+            <div class="login-subtitle">ENTERPRISE SYSTEM</div>
         </div>
 
         <?php if (!empty($error)): ?>
-            <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 rounded-3" role="alert">
-                <i class="fa-solid fa-circle-exclamation fs-5"></i>
-                <div class="small"><?= e($error); ?></div>
+            <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 rounded-3 shadow-sm border-0" role="alert" style="background:#fee2e2; color:#991b1b;">
+                <i class="fa-solid fa-circle-exclamation fs-5 flex-shrink-0"></i>
+                <div class="small fw-semibold"><?= e($error); ?></div>
             </div>
         <?php endif; ?>
 
         <form action="login.php" method="POST">
             <?= csrf_field(); ?>
             <div class="mb-3">
-                <label for="username" class="form-label text-muted small fw-semibold">USERNAME</label>
+                <label for="username" class="form-label text-muted small fw-bold" style="font-size:0.72rem; letter-spacing:0.05em;">USERNAME</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user"></i></span>
-                    <input type="text" name="username" id="username" class="form-control border-start-0 ps-0" placeholder="Masukkan username" required autofocus>
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user text-wine"></i></span>
+                    <input type="text" name="username" id="username" class="form-control border-start-0 ps-1" placeholder="Masukkan username" required autofocus>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label for="password" class="form-label text-muted small fw-semibold">PASSWORD</label>
+                <label for="password" class="form-label text-muted small fw-bold" style="font-size:0.72rem; letter-spacing:0.05em;">PASSWORD</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" name="password" id="password" class="form-control border-start-0 ps-0" placeholder="Masukkan password" required>
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-lock text-wine"></i></span>
+                    <input type="password" name="password" id="password" class="form-control border-start-0 border-end-0 ps-1" placeholder="Masukkan password" required>
+                    <button class="btn btn-light border border-start-0 text-muted" type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()">
+                        <i class="fa-regular fa-eye" id="togglePasswordIcon"></i>
+                    </button>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary-custom w-100 py-2.5">
+            <button type="submit" class="btn btn-wine-login w-100 py-3 rounded-3 fs-6">
                 <i class="fa-solid fa-right-to-bracket me-2"></i> Masuk ke Sistem
             </button>
         </form>
 
         <div class="mt-4 pt-3 text-center border-top">
-            <small class="text-muted">Akses Default Demo:</small>
-            <div class="d-flex justify-content-center gap-3 mt-2 text-muted small">
-                <span><strong>Admin:</strong> admin / admin123</span>
-                <span>|</span>
-                <span><strong>CEO:</strong> ceo / ceo123</span>
+            <span class="badge bg-light text-muted border px-2.5 py-1 mb-2 fw-semibold" style="font-size:0.7rem;">
+                <i class="fa-solid fa-key me-1 text-gold"></i> Akses Akun Demo
+            </span>
+            <div class="d-flex justify-content-center gap-2.5 text-dark small fw-semibold flex-wrap" style="font-size:0.78rem;">
+                <span><i class="fa-solid fa-user-gear me-1 text-wine"></i> Admin: <code>admin</code> / <code>admin123</code></span>
+                <span class="text-muted">|</span>
+                <span><i class="fa-solid fa-user-tie me-1 text-primary"></i> CEO: <code>ceo</code> / <code>ceo123</code></span>
             </div>
         </div>
     </div>
+
+    <!-- Footer Copyright -->
+    <div class="text-center mt-3 small text-white-50" style="font-size: 0.72rem; z-index: 2;">
+        &copy; <?= date('Y'); ?> Adam Jaya Enterprise &middot; Procurement & Operational Portal
+    </div>
+
+    <script>
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const icon = document.getElementById('togglePasswordIcon');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    </script>
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
