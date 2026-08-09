@@ -63,14 +63,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Custom CSS dengan Cache Buster -->
+    <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/assets/css/style.css'); ?>">
 </head>
 <body class="login-body">
 
     <div class="login-card">
         <div class="text-center mb-4">
-            <img src="assets/adamjaya.png" alt="Adam Jaya Enterprise Logo" class="login-brand-logo mb-3">
+            <img src="assets/adamjaya.png" alt="Adam Jaya Enterprise Logo" class="login-brand-logo mb-3" style="width: 82px !important; max-width: 82px !important; height: 82px !important; object-fit: contain !important; background: #ffffff !important; padding: 6px !important; border-radius: 50% !important; border: 2.5px solid var(--gold) !important; box-shadow: 0 8px 24px rgba(201, 151, 62, 0.35) !important;">
             <h3 class="fw-extrabold text-wine mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.02em; font-size: 1.45rem;">ADAM JAYA</h3>
             <div class="login-subtitle">ENTERPRISE SYSTEM</div>
         </div>

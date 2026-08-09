@@ -1293,14 +1293,15 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 }
 
 .login-brand-logo {
-    width: 78px;
-    height: 78px;
-    object-fit: contain;
-    background: #ffffff;
-    padding: 7px;
-    border-radius: 50%;
-    border: 2.5px solid var(--gold);
-    box-shadow: 0 8px 24px rgba(201, 151, 62, 0.35);
+    width: 82px !important;
+    max-width: 82px !important;
+    height: 82px !important;
+    object-fit: contain !important;
+    background: #ffffff !important;
+    padding: 6px !important;
+    border-radius: 50% !important;
+    border: 2.5px solid var(--gold) !important;
+    box-shadow: 0 8px 24px rgba(201, 151, 62, 0.35) !important;
     transition: transform 0.3s ease;
 }
 
