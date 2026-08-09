@@ -1340,6 +1340,82 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     .action-btns { justify-content: flex-end; flex-wrap: wrap; }
 }
 
+@media (max-width: 576px) {
+    #main-content {
+        padding: 0.6rem 0.6rem 2rem 0.6rem !important;
+    }
+    .page-header {
+        padding: 1.1rem 0.85rem 1.35rem !important;
+        margin-bottom: 1rem !important;
+        border-radius: 14px !important;
+    }
+    .page-title {
+        font-size: 1.15rem !important;
+        line-height: 1.25 !important;
+    }
+    .page-eyebrow {
+        font-size: 0.68rem !important;
+        padding: 3px 8px !important;
+        margin-bottom: 0.35rem !important;
+    }
+    .page-subtitle {
+        font-size: 0.78rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .stats-card {
+        border-radius: 12px !important;
+    }
+    .stats-card .card-body {
+        padding: 0.65rem 0.7rem !important;
+        gap: 0.5rem !important;
+    }
+    .stat-icon {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 0.95rem !important;
+        border-radius: 10px !important;
+    }
+    .stat-value, .stat-number {
+        font-size: 0.92rem !important;
+        font-weight: 800 !important;
+        line-height: 1.15 !important;
+        word-break: break-word;
+    }
+    .stat-label {
+        font-size: 0.65rem !important;
+        margin-top: 2px !important;
+    }
+    .glass-card {
+        padding: 0.85rem !important;
+        border-radius: 14px !important;
+        margin-bottom: 1rem !important;
+    }
+    .filter-card {
+        padding: 0.75rem !important;
+        border-radius: 12px !important;
+    }
+    .top-navbar {
+        height: 50px !important;
+        padding: 0 0.65rem !important;
+        margin-bottom: 0.85rem !important;
+        border-radius: 10px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .stat-value, .stat-number {
+        font-size: 0.82rem !important;
+    }
+    .stat-icon {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.85rem !important;
+    }
+    .stats-card .card-body {
+        padding: 0.55rem 0.5rem !important;
+    }
+}
+
 /* =====================================================================
    TRAFFIC ACTIVITY WIDGET
    ===================================================================== */
