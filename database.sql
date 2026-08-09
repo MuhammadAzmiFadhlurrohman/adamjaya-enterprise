@@ -1564,4 +1564,22 @@ INSERT INTO `favorit_pembeli` (`id`, `user_id`, `nama_pembeli`, `telepon_pembeli
 ('28', '84', 'Saeful kebayoran lama', '85283763362', NULL, '2026-08-08 07:33:23'),
 ('29', '84', 'Imas Cibaligo', '8159900575', NULL, '2026-08-08 07:59:23');
 
+-- --------------------------------------------------------
+-- Table structure for `riwayat_stok`
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `riwayat_stok` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `jenis_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `aksi` varchar(50) NOT NULL,
+  `stok_sebelum` decimal(10,4) NOT NULL DEFAULT 0.0000,
+  `perubahan` decimal(10,4) NOT NULL DEFAULT 0.0000,
+  `stok_sesudah` decimal(10,4) NOT NULL DEFAULT 0.0000,
+  `keterangan` text DEFAULT NULL,
+  `tanggal` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `jenis_id` (`jenis_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

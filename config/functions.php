@@ -18,6 +18,29 @@ function e($str) {
 }
 
 /**
+ * Auto Migration Helper: Pastikan Tabel riwayat_stok ada di Database
+ */
+function ensure_riwayat_stok_table_exists($conn) {
+    static $checked = false;
+    if ($checked || !$conn) return;
+    @mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `riwayat_stok` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `jenis_id` int(11) NOT NULL,
+      `user_id` int(11) NOT NULL,
+      `aksi` varchar(50) NOT NULL,
+      `stok_sebelum` decimal(10,4) NOT NULL DEFAULT 0.0000,
+      `perubahan` decimal(10,4) NOT NULL DEFAULT 0.0000,
+      `stok_sesudah` decimal(10,4) NOT NULL DEFAULT 0.0000,
+      `keterangan` text DEFAULT NULL,
+      `tanggal` datetime DEFAULT current_timestamp(),
+      PRIMARY KEY (`id`),
+      KEY `jenis_id` (`jenis_id`),
+      KEY `user_id` (`user_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+    $checked = true;
+}
+
+/**
  * Format Angka ke Format Rupiah
  */
 function formatRupiah($val, $with_prefix = true) {

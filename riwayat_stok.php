@@ -2,6 +2,9 @@
 require_once __DIR__ . '/includes/header.php';
 require_login();
 
+// Auto-create tabel riwayat_stok jika belum ada di database live
+ensure_riwayat_stok_table_exists($conn);
+
 $query = "SELECT r.*, j.nama_jenis, j.satuan, b.nama_barang, u.username 
           FROM riwayat_stok r 
           JOIN jenis_barang j ON r.jenis_id = j.id 
