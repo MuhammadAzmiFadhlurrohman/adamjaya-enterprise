@@ -1295,10 +1295,10 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     .page-title { font-size: 1.3rem; }
     .filter-card { padding: 1rem; }
 
-    .table thead { display: none; }
-    .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+    .table:not(.modal-detail-table) thead { display: none; }
+    .table:not(.modal-detail-table), .table:not(.modal-detail-table) tbody, .table:not(.modal-detail-table) tr, .table:not(.modal-detail-table) td { display: block; width: 100%; }
 
-    .table tr {
+    .table:not(.modal-detail-table) tr {
         margin-bottom: 1rem;
         border: 1px solid var(--line);
         border-radius: 12px;
@@ -1308,11 +1308,11 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         border-left: 4px solid var(--danger) !important;
     }
     
-    .table tr.status-selesai { border-left-color: var(--success) !important; }
-    .table tr.status-proses { border-left-color: var(--warning) !important; }
-    .table tr.status-belum { border-left-color: var(--danger) !important; }
+    .table:not(.modal-detail-table) tr.status-selesai { border-left-color: var(--success) !important; }
+    .table:not(.modal-detail-table) tr.status-proses { border-left-color: var(--warning) !important; }
+    .table:not(.modal-detail-table) tr.status-belum { border-left-color: var(--danger) !important; }
 
-    .table td {
+    .table:not(.modal-detail-table) td {
         padding: 0.55rem 0.35rem;
         text-align: right;
         padding-left: 48%;
@@ -1321,9 +1321,9 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         border-bottom: 1px solid #F1EFEC;
     }
 
-    .table td:last-child { border-bottom: none; }
+    .table:not(.modal-detail-table) td:last-child { border-bottom: none; }
 
-    .table td::before {
+    .table:not(.modal-detail-table) td::before {
         content: attr(data-label);
         position: absolute;
         left: 0.35rem;
@@ -1335,6 +1335,57 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         letter-spacing: 0.04em;
         text-align: left;
         color: var(--wine);
+    }
+
+    /* Modal Detail Table Clean Mobile Override */
+    .modal-detail-table {
+        display: table !important;
+        width: 100% !important;
+        font-size: 0.78rem !important;
+    }
+    .modal-detail-table thead {
+        display: table-header-group !important;
+    }
+    .modal-detail-table thead th {
+        padding: 0.45rem 0.4rem !important;
+        font-size: 0.65rem !important;
+        white-space: nowrap !important;
+        background: #F8FAFC !important;
+        color: #475569 !important;
+    }
+    .modal-detail-table tbody {
+        display: table-row-group !important;
+    }
+    .modal-detail-table tbody tr {
+        display: table-row !important;
+        border: none !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .modal-detail-table tbody td {
+        display: table-cell !important;
+        padding: 0.5rem 0.35rem !important;
+        border: none !important;
+        border-bottom: 1px solid #F1F5F9 !important;
+        vertical-align: middle !important;
+    }
+    .modal-detail-table tbody td::before {
+        display: none !important;
+        content: none !important;
+    }
+    .modal-detail-table tfoot {
+        display: table-footer-group !important;
+    }
+    .modal-detail-table tfoot tr {
+        display: table-row !important;
+        border: none !important;
+    }
+    .modal-detail-table tfoot td {
+        display: table-cell !important;
+        padding: 0.6rem 0.4rem !important;
+        border: none !important;
     }
 
     .action-btns { justify-content: flex-end; flex-wrap: wrap; }
