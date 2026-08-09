@@ -2,6 +2,9 @@
 -- DATABASE SCHEMA: ADAM JAYA ENTERPRISE
 -- ========================================================
 
+-- Disable foreign key checks for clean import
+SET FOREIGN_KEY_CHECKS = 0;
+
 CREATE DATABASE IF NOT EXISTS `adamjaya_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `adamjaya_db`;
 
@@ -173,3 +176,6 @@ INSERT INTO `favorit_pembeli` (`id`, `user_id`, `nama_pembeli`, `telepon_pembeli
 (1, 1, 'PT Mitra Perkasa', '081122334455', 'Jl. Slamet Riyadi No. 120, Surakarta'),
 (2, 1, 'CV Bangun Jaya', '085678901234', 'Jl. Ir. Juanda No. 45, Jebres, Surakarta')
 ON DUPLICATE KEY UPDATE `nama_pembeli`=`nama_pembeli`;
+
+-- Re-enable foreign key checks
+SET FOREIGN_KEY_CHECKS = 1;
