@@ -160,7 +160,7 @@ $csrf_token_val = generate_csrf_token();
 
 <!-- 3. DETAIL BARANG TABLE CARD -->
 <div class="modal-table-section mb-3">
-    <div class="section-header-bar d-flex align-items-center justify-content-between">
+    <div class="section-header-bar d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
             <i class="fa-solid fa-box-archive text-white"></i>
             <h6 class="mb-0 text-white fw-bold">Detail Barang</h6>
@@ -172,7 +172,9 @@ $csrf_token_val = generate_csrf_token();
             </a>
         </div>
     </div>
-    <div class="table-responsive">
+
+    <!-- Desktop Table View (>= 768px) -->
+    <div class="table-responsive d-none d-md-block">
         <table class="table modal-detail-table align-middle mb-0">
             <thead>
                 <tr>
@@ -222,6 +224,47 @@ $csrf_token_val = generate_csrf_token();
                 </tr>
             </tfoot>
         </table>
+    </div>
+
+    <!-- Mobile Card View (< 768px) -->
+    <div class="p-3 d-block d-md-none bg-light border-top">
+        <?php if (count($items_data) > 0): ?>
+            <?php 
+            $no = 1;
+            foreach ($items_data as $d):
+                $sub = $d['jumlah'] * $d['harga_satuan'];
+            ?>
+                <div class="bg-white p-3 rounded-3 border shadow-sm mb-2">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                        <div>
+                            <span class="badge bg-secondary-subtle text-dark rounded-pill me-1" style="font-size:0.65rem;">#<?= $no++; ?></span>
+                            <strong class="text-dark" style="font-size:0.9rem;"><?= e($d['nama_barang']); ?></strong>
+                            <small class="text-muted d-block mt-0.5" style="font-size:0.75rem;"><i class="fa-solid fa-tag me-1 text-gold"></i> <?= e($d['nama_jenis'] ?: '-'); ?></small>
+                        </div>
+                        <?php if ($d['is_custom']): ?>
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size:0.65rem; font-weight:600;">Custom</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-light">
+                        <span class="small text-muted" style="font-size:0.75rem;">
+                            <strong><?= format_stok($d['jumlah']); ?> <?= e($d['satuan']); ?></strong> &times; <?= formatRupiah($d['harga_satuan']); ?>
+                        </span>
+                        <span class="fw-bold text-wine" style="font-size:0.95rem;"><?= formatRupiah($sub); ?></span>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="text-center py-3 text-muted small">Belum ada rincian barang.</div>
+        <?php endif; ?>
+
+        <!-- Grand Total Banner Mobile -->
+        <div class="p-3 rounded-3 text-white shadow-sm mt-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: linear-gradient(135deg, #7a1e33 0%, #4a0b18 100%); border: 1px solid rgba(201,168,76,0.4);">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-calculator text-gold fs-5"></i>
+                <span class="fw-bold text-white small">TOTAL ESTIMASI DANA:</span>
+            </div>
+            <span class="fw-bold text-gold" style="font-size:1.15rem; font-weight:800;"><?= formatRupiah($grand_total); ?></span>
+        </div>
     </div>
 </div>
 
