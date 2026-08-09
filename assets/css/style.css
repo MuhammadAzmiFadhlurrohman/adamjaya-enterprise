@@ -577,9 +577,28 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 }
 
 /* ---------- STAT CARDS ---------- */
-.stats-row { position: relative; z-index: 2; margin-top: 0; margin-bottom: 0.85rem !important; }
+.stats-row {
+    position: relative;
+    z-index: 2;
+    margin-top: 0;
+    margin-bottom: 0.75rem !important;
+    --bs-gutter-x: 0.65rem;
+    --bs-gutter-y: 0.65rem;
+}
 
-.stats-card, .glass-card {
+.stats-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.glass-card {
     background: var(--surface);
     border-radius: var(--radius);
     border: 1px solid var(--line);
@@ -594,10 +613,11 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 }
 
 .stats-card .card-body {
-    padding: 0.9rem 1rem;
+    padding: 0.85rem 0.95rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.7rem;
+    height: 100%;
 }
 
 .stat-icon {
@@ -1462,27 +1482,33 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         margin-bottom: 0.5rem !important;
     }
     .stats-card {
+        height: 100% !important;
         border-radius: 12px !important;
     }
     .stats-card .card-body {
-        padding: 0.65rem 0.7rem !important;
-        gap: 0.5rem !important;
+        padding: 0.65rem 0.6rem !important;
+        gap: 0.55rem !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
     }
     .stat-icon {
         width: 36px !important;
         height: 36px !important;
-        font-size: 0.95rem !important;
-        border-radius: 10px !important;
+        font-size: 0.92rem !important;
+        border-radius: 9px !important;
+        flex-shrink: 0 !important;
     }
     .stat-value, .stat-number {
-        font-size: 0.92rem !important;
+        font-size: 0.88rem !important;
         font-weight: 800 !important;
         line-height: 1.15 !important;
         word-break: break-word;
     }
     .stat-label {
         font-size: 0.65rem !important;
-        margin-top: 2px !important;
+        line-height: 1.2 !important;
+        margin-top: 1px !important;
     }
     .glass-card {
         padding: 0.85rem !important;
