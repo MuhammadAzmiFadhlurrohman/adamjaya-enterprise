@@ -227,29 +227,50 @@ $csrf_token_val = generate_csrf_token();
     </div>
 
     <!-- Mobile Card View (< 768px) -->
-    <div class="p-3 d-block d-md-none bg-light border-top">
+    <div class="d-block d-md-none bg-white rounded-bottom border-top-0">
         <?php if (count($items_data) > 0): ?>
             <?php 
             $no = 1;
             foreach ($items_data as $d):
                 $sub = $d['jumlah'] * $d['harga_satuan'];
             ?>
-                <div class="bg-white p-3 rounded-3 border shadow-sm mb-2">
-                    <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
-                        <div>
-                            <span class="badge bg-secondary-subtle text-dark rounded-pill me-1" style="font-size:0.65rem;">#<?= $no++; ?></span>
-                            <strong class="text-dark" style="font-size:0.9rem;"><?= e($d['nama_barang']); ?></strong>
-                            <small class="text-muted d-block mt-0.5" style="font-size:0.75rem;"><i class="fa-solid fa-tag me-1 text-gold"></i> <?= e($d['nama_jenis'] ?: '-'); ?></small>
+                <div class="p-3 border-bottom position-relative">
+                    <!-- Top Badge Row -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <!-- Number Circle -->
+                        <div class="d-flex align-items-center justify-content-center fw-bold rounded-circle" 
+                             style="width:26px; height:26px; background:#FCEAEA; color:#7A1E33; font-size:0.75rem;">
+                            <?= $no++; ?>
                         </div>
-                        <?php if ($d['is_custom']): ?>
-                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size:0.65rem; font-weight:600;">Custom</span>
+                        <!-- Badges Right -->
+                        <div class="d-flex align-items-center gap-1.5">
+                            <?php if ($d['is_custom']): ?>
+                                <span class="badge rounded-pill px-2.5 py-1" style="background:#E3F2FD; color:#0288D1; font-weight:600; font-size:0.68rem;">Harga Manual</span>
+                            <?php endif; ?>
+                            <span class="badge rounded-pill px-2.5 py-1" style="background:#5C6B73; color:#FFFFFF; font-weight:600; font-size:0.68rem;">
+                                <?= format_stok($d['jumlah']); ?> <?= ucfirst(e($d['satuan'])); ?>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Item Name & Varian Subtitle -->
+                    <div class="mb-2">
+                        <h6 class="fw-bold text-dark mb-0.5" style="font-size:0.95rem; color:#212121; line-height:1.3;"><?= e($d['nama_barang']); ?></h6>
+                        <?php if (!empty($d['nama_jenis']) && $d['nama_jenis'] !== '-'): ?>
+                            <div style="font-size:0.82rem; color:#757575; font-weight:500;"><?= e($d['nama_jenis']); ?></div>
                         <?php endif; ?>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-light">
-                        <span class="small text-muted" style="font-size:0.75rem;">
-                            <strong><?= format_stok($d['jumlah']); ?> <?= e($d['satuan']); ?></strong> &times; <?= formatRupiah($d['harga_satuan']); ?>
-                        </span>
-                        <span class="fw-bold text-wine" style="font-size:0.95rem;"><?= formatRupiah($sub); ?></span>
+
+                    <!-- Harga Row -->
+                    <div class="d-flex justify-content-between align-items-center pt-1" style="font-size:0.82rem;">
+                        <span style="color:#757575;">Harga</span>
+                        <span style="color:#333333; font-weight:500;"><?= formatRupiah($d['harga_satuan']); ?> / <?= e($d['satuan']); ?></span>
+                    </div>
+
+                    <!-- Subtotal Row -->
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-light mt-1">
+                        <span class="fw-bold" style="color:#212121; font-size:0.92rem;">Subtotal</span>
+                        <span class="fw-bold" style="color:#7A1E33; font-size:1.05rem; font-weight:800;"><?= formatRupiah($sub); ?></span>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -258,12 +279,14 @@ $csrf_token_val = generate_csrf_token();
         <?php endif; ?>
 
         <!-- Grand Total Banner Mobile -->
-        <div class="p-3 rounded-3 text-white shadow-sm mt-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: linear-gradient(135deg, #7a1e33 0%, #4a0b18 100%); border: 1px solid rgba(201,168,76,0.4);">
-            <div class="d-flex align-items-center gap-2">
-                <i class="fa-solid fa-calculator text-gold fs-5"></i>
-                <span class="fw-bold text-white small">TOTAL ESTIMASI DANA:</span>
+        <div class="p-3 bg-white border-top">
+            <div class="p-3 rounded-3 text-white shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: linear-gradient(135deg, #7a1e33 0%, #4a0b18 100%); border: 1px solid rgba(201,168,76,0.4);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-calculator text-gold fs-5"></i>
+                    <span class="fw-bold text-white small">TOTAL ESTIMASI DANA:</span>
+                </div>
+                <span class="fw-bold text-gold" style="font-size:1.15rem; font-weight:800;"><?= formatRupiah($grand_total); ?></span>
             </div>
-            <span class="fw-bold text-gold" style="font-size:1.15rem; font-weight:800;"><?= formatRupiah($grand_total); ?></span>
         </div>
     </div>
 </div>
