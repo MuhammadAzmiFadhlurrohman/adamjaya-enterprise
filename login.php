@@ -55,6 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Adam Jaya Enterprise</title>
+    <!-- Favicon / Logo Sidebar Tab Icon -->
+    <link rel="icon" type="image/png" href="assets/adamjaya.png">
+    <link rel="shortcut icon" type="image/png" href="assets/adamjaya.png">
+    <link rel="apple-touch-icon" href="assets/adamjaya.png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 -->
