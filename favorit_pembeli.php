@@ -108,7 +108,7 @@ $total_fav = mysqli_num_rows($result);
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">NOMOR TELEPON / WA</label>
-                        <input type="text" name="telepon_pembeli" class="form-control" placeholder="08xxxxxxxxxx">
+                        <input type="tel" name="telepon_pembeli" class="form-control" inputmode="numeric" pattern="[0-9]*" placeholder="08xxxxxxxxxx">
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">ALAMAT PEMBELI</label>
@@ -143,7 +143,7 @@ $total_fav = mysqli_num_rows($result);
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">NOMOR TELEPON / WA</label>
-                        <input type="text" name="telepon_pembeli" id="edit_telepon_pembeli" class="form-control">
+                        <input type="tel" name="telepon_pembeli" id="edit_telepon_pembeli" class="form-control" inputmode="numeric" pattern="[0-9]*">
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">ALAMAT PEMBELI</label>
