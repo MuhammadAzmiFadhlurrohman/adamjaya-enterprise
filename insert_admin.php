@@ -82,11 +82,11 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <!-- HEADER CURVED EXECUTIVE BANNER -->
 <header class="page-header">
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <span class="page-eyebrow"><i class="fa-solid fa-store"></i> Panel Operational &middot; Pengadaan Barang</span>
             <h1 class="page-title">Daftar Pembelian & Transaksi</h1>
-            <p class="page-subtitle">Pantau, verifikasi, dan kelola seluruh pengajuan pembelian dari satu tempat.</p>
+            <p class="page-subtitle mb-0">Pantau, verifikasi, dan kelola seluruh pengajuan pembelian dari satu tempat.</p>
         </div>
         <div class="header-action">
             <a href="export_excel.php?<?= http_build_query($_GET); ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
@@ -102,7 +102,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 </header>
 
 <!-- Summary KPI Cards -->
-<div class="row g-3 stats-row mb-4">
+<div class="row g-2.5 stats-row mb-3">
     <div class="col-6 col-md-3">
         <div class="stats-card">
             <div class="card-body">

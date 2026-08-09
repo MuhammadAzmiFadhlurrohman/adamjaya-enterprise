@@ -490,8 +490,8 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 .page-header {
     position: relative;
     color: #ffffff;
-    padding: 1.8rem 1.75rem 2.4rem;
-    margin-bottom: 1.35rem;
+    padding: 1.6rem 1.75rem 2.75rem;
+    margin-bottom: 0.65rem;
     border-radius: var(--radius);
     background:
         radial-gradient(800px 220px at 10% -20%, rgba(201,168,76,0.4), transparent 60%),
@@ -506,9 +506,9 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     content: '';
     position: absolute;
     left: 0; right: 0; bottom: 0;
-    height: 16px;
+    height: 14px;
     background: var(--bg);
-    border-radius: 16px 16px 0 0;
+    border-radius: 14px 14px 0 0;
 }
 
 .page-eyebrow {
@@ -549,7 +549,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-top: 0.35rem;
+    margin-bottom: 0.6rem;
 }
 
 .btn-pengajuan-header {
@@ -577,7 +577,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 }
 
 /* ---------- STAT CARDS ---------- */
-.stats-row { position: relative; z-index: 2; margin-top: 0.25rem; }
+.stats-row { position: relative; z-index: 2; margin-top: 0; margin-bottom: 0.85rem !important; }
 
 .stats-card, .glass-card {
     background: var(--surface);
