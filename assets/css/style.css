@@ -1289,6 +1289,19 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     #sidebar-wrapper.show { left: 0; }
     #main-content { margin-left: 0; width: 100%; max-width: 100%; padding: 0.85rem 0.85rem 2rem 0.85rem; }
     .page-header { padding: 1.5rem 1.1rem 2rem; border-radius: var(--radius); }
+
+    /* Sticky Mobile Top Header Bar */
+    .top-navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+        margin-left: -0.85rem !important;
+        margin-right: -0.85rem !important;
+        margin-top: -0.85rem !important;
+        border-radius: 0 0 14px 14px !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+        margin-bottom: 1rem !important;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1475,10 +1488,13 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         border-radius: 12px !important;
     }
     .top-navbar {
-        height: 50px !important;
-        padding: 0 0.65rem !important;
+        height: 52px !important;
+        padding: 0 0.75rem !important;
+        margin-left: -0.6rem !important;
+        margin-right: -0.6rem !important;
+        margin-top: -0.6rem !important;
         margin-bottom: 0.85rem !important;
-        border-radius: 10px !important;
+        border-radius: 0 0 12px 12px !important;
     }
 }
 
