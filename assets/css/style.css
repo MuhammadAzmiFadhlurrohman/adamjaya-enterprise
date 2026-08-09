@@ -1388,7 +1388,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
         border: none !important;
     }
 
-    .action-btns { justify-content: flex-end; flex-wrap: wrap; }
+    .action-btns { justify-content: flex-end; flex-wrap: nowrap !important; gap: 0.35rem; }
 }
 
 @media (max-width: 576px) {

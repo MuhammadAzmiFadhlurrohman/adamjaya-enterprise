@@ -318,16 +318,22 @@ $csrf_token_val = generate_csrf_token();
                         <button type="button" class="btn-close btn-sm" onclick="resetPaymentSelection()"></button>
                     </div>
 
-                    <div class="d-flex flex-wrap gap-2 mb-2" id="sub_choice_buttons">
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="showProofUploadForm()">
-                            <i class="fa-solid fa-file-arrow-up me-1"></i> Unggah Bukti
-                        </button>
-                        <button type="button" class="btn btn-success btn-sm" onclick="processPaymentWithoutProof(<?= $p['id']; ?>, '<?= $csrf_token_val; ?>')">
-                            <i class="fa-solid fa-circle-check me-1"></i> Proses Langsung Lunas
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="resetPaymentSelection()">
-                            <i class="fa-solid fa-xmark me-1"></i> Batal
-                        </button>
+                    <div class="row g-2 mb-2" id="sub_choice_buttons">
+                        <div class="col-6 col-sm-4">
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 fw-semibold py-1.5" onclick="showProofUploadForm()">
+                                <i class="fa-solid fa-file-arrow-up me-1"></i> Unggah Bukti
+                            </button>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <button type="button" class="btn btn-success btn-sm w-100 fw-semibold py-1.5" onclick="processPaymentWithoutProof(<?= $p['id']; ?>, '<?= $csrf_token_val; ?>')">
+                                <i class="fa-solid fa-circle-check me-1"></i> Langsung Lunas
+                            </button>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <button type="button" class="btn btn-secondary btn-sm w-100 fw-semibold py-1.5" onclick="resetPaymentSelection()">
+                                <i class="fa-solid fa-xmark me-1"></i> Batal
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Inline Form Upload Bukti -->
