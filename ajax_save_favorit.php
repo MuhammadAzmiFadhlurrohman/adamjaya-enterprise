@@ -28,9 +28,19 @@ if (empty($nama)) {
     exit;
 }
 
+$user_id = (int)(current_user()['id'] ?? 0);
+$u_check = mysqli_query($conn, "SELECT id FROM users WHERE id = $user_id");
+if (!$u_check || mysqli_num_rows($u_check) === 0) {
+    $u_fallback = mysqli_query($conn, "SELECT id FROM users ORDER BY id ASC LIMIT 1");
+    if ($u_row = mysqli_fetch_assoc($u_fallback)) {
+        $user_id = (int)$u_row['id'];
+    }
+}
+
 // Auto-create tabel favorit_pembeli jika belum ada di database
 @mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `favorit_pembeli` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) DEFAULT NULL,
     `nama_pembeli` varchar(100) NOT NULL,
     `telepon_pembeli` varchar(30) DEFAULT NULL,
     `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -56,21 +66,41 @@ if ($stmt_check) {
     }
 }
 
-// Insert baru ke favorit_pembeli
-$stmt = mysqli_prepare($conn, "INSERT INTO favorit_pembeli (nama_pembeli, telepon_pembeli) VALUES (?, ?)");
-if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "ss", $nama, $telepon);
+// Deteksi apakah tabel favorit_pembeli memiliki kolom user_id
+$col_u = mysqli_query($conn, "SHOW COLUMNS FROM favorit_pembeli LIKE 'user_id'");
+$has_user_id = ($col_u && mysqli_num_rows($col_u) > 0);
 
-    if (mysqli_stmt_execute($stmt)) {
-        $new_id = mysqli_insert_id($conn);
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Data pembeli berhasil disimpan ke Favorit!',
-            'id' => $new_id,
-            'nama_pembeli' => $nama,
-            'telepon_pembeli' => $telepon
-        ]);
-        exit;
+if ($has_user_id) {
+    $stmt = mysqli_prepare($conn, "INSERT INTO favorit_pembeli (user_id, nama_pembeli, telepon_pembeli) VALUES (?, ?, ?)");
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "iss", $user_id, $nama, $telepon);
+        if (mysqli_stmt_execute($stmt)) {
+            $new_id = mysqli_insert_id($conn);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Data pembeli berhasil disimpan ke Favorit!',
+                'id' => $new_id,
+                'nama_pembeli' => $nama,
+                'telepon_pembeli' => $telepon
+            ]);
+            exit;
+        }
+    }
+} else {
+    $stmt = mysqli_prepare($conn, "INSERT INTO favorit_pembeli (nama_pembeli, telepon_pembeli) VALUES (?, ?)");
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "ss", $nama, $telepon);
+        if (mysqli_stmt_execute($stmt)) {
+            $new_id = mysqli_insert_id($conn);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Data pembeli berhasil disimpan ke Favorit!',
+                'id' => $new_id,
+                'nama_pembeli' => $nama,
+                'telepon_pembeli' => $telepon
+            ]);
+            exit;
+        }
     }
 }
 
