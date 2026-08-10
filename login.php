@@ -107,17 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fa-solid fa-right-to-bracket me-2"></i> Masuk ke Sistem
             </button>
         </form>
-
-        <div class="mt-4 pt-3 text-center border-top">
-            <span class="badge bg-light text-muted border px-2.5 py-1 mb-2 fw-semibold" style="font-size:0.7rem;">
-                <i class="fa-solid fa-key me-1 text-gold"></i> Akses Akun Demo
-            </span>
-            <div class="d-flex justify-content-center gap-2.5 text-dark small fw-semibold flex-wrap" style="font-size:0.78rem;">
-                <span><i class="fa-solid fa-user-gear me-1 text-wine"></i> Admin: <code>admin</code> / <code>admin123</code></span>
-                <span class="text-muted">|</span>
-                <span><i class="fa-solid fa-user-tie me-1 text-primary"></i> CEO: <code>ceo</code> / <code>ceo123</code></span>
-            </div>
-        </div>
     </div>
 
     <!-- Footer Copyright -->
