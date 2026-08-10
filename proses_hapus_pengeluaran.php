@@ -13,7 +13,11 @@ if (!verify_csrf_token($csrf_token)) {
 
 if ($id > 0) {
     // Delete detail items first to prevent foreign key constraint failures
-    @mysqli_query($conn, "DELETE FROM pengeluaran_detail WHERE pengeluaran_id = $id OR header_id = $id");
+    $stmt_del_det = mysqli_prepare($conn, "DELETE FROM pengeluaran_detail WHERE pengeluaran_id = ?");
+    if ($stmt_del_det) {
+        mysqli_stmt_bind_param($stmt_del_det, "i", $id);
+        mysqli_stmt_execute($stmt_del_det);
+    }
     
     $stmt = mysqli_prepare($conn, "DELETE FROM pengeluaran_header WHERE id = ?");
     mysqli_stmt_bind_param($stmt, "i", $id);
