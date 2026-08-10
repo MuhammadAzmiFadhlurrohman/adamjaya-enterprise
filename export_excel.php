@@ -65,6 +65,14 @@ $nama_bulan = [
 $bulan_teks = !empty($bulan) ? ($nama_bulan[str_pad($bulan, 2, '0', STR_PAD_LEFT)] ?? 'Bulan ' . $bulan) : 'Semua Bulan';
 $tahun_teks = !empty($tahun) ? $tahun : 'Semua Tahun';
 
+// Embed logo sebagai base64 agar tampil di Excel tanpa bergantung URL eksternal
+$logo_path = __DIR__ . '/assets/adamjaya.png';
+$logo_base64 = '';
+if (file_exists($logo_path)) {
+    $logo_data = file_get_contents($logo_path);
+    $logo_base64 = 'data:image/png;base64,' . base64_encode($logo_data);
+}
+
 // Set Headers untuk Excel (.xls) Download dengan Formatted HTML
 $filename = "Laporan_Pembelian_AdamJaya_" . date('Ymd_His') . ".xls";
 header("Content-Type: application/vnd.ms-excel; charset=utf-8");
@@ -119,10 +127,14 @@ header("Cache-Control: max-age=0");
 <body>
     <table style="width: 100%;">
         <tr>
-            <td width="55" height="55" style="background-color: #7A1E33; color: #FFD700; font-size: 20pt; font-weight: bold; text-align: center; vertical-align: middle; border: 2px solid #D4A843;">
-                AJ
+            <td width="65" style="vertical-align: middle; text-align: center;">
+                <?php if (!empty($logo_base64)): ?>
+                <img src="<?= $logo_base64; ?>" width="55" height="55" alt="Adam Jaya Logo" />
+                <?php else: ?>
+                <img src="assets/adamjaya.png" width="55" height="55" alt="Adam Jaya Logo" />
+                <?php endif; ?>
             </td>
-            <td colspan="8" style="vertical-align: middle; padding-left: 12px;">
+            <td colspan="8" style="vertical-align: middle; padding-left: 10px;">
                 <div class="company-title">ADAM JAYA ENTERPRISE</div>
                 <div class="report-subtitle">LAPORAN PEMBELIAN BARANG &middot; Periode: <?= e($bulan_teks); ?> <?= e($tahun_teks); ?></div>
                 <div class="filter-info">Diunduh pada: <?= date('d F Y, H:i:s'); ?> WIB &middot; Oleh: <?= e(ucwords((string)(current_user()['username'] ?? 'Admin'))); ?></div>
