@@ -4,8 +4,8 @@ require_login();
 
 $is_admin = is_admin();
 
-// Parameter Filter
-$bulan = sanitize($_GET['bulan'] ?? '');
+// Parameter Filter (Default bulan ini)
+$bulan = isset($_GET['bulan']) ? sanitize($_GET['bulan']) : date('m');
 $tahun = sanitize($_GET['tahun'] ?? date('Y'));
 $status_pembayaran = sanitize($_GET['status_pembayaran'] ?? '');
 $status_pengiriman = sanitize($_GET['status_pengiriman'] ?? '');
@@ -84,7 +84,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 <header class="page-header">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-            <span class="page-eyebrow"><i class="fa-solid fa-store"></i> Panel Operational &middot; Pengadaan Barang</span>
+            <span class="page-eyebrow d-none d-md-block"><i class="fa-solid fa-store"></i> Panel Operational &middot; Pengadaan Barang</span>
             <h1 class="page-title">Daftar Pembelian & Transaksi</h1>
             <p class="page-subtitle mb-0">Pantau, verifikasi, dan kelola seluruh pengajuan pembelian dari satu tempat.</p>
         </div>

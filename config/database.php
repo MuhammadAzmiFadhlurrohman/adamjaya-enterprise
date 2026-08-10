@@ -46,4 +46,6 @@ if (file_exists(__DIR__ . '/database.production.php')) {
     }
 
     mysqli_set_charset($conn, "utf8mb4");
+    date_default_timezone_set('Asia/Jakarta');
+    @mysqli_query($conn, "SET time_zone = '+07:00'");
 }
