@@ -19,7 +19,19 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            <!-- PAGE CONTENT FOOTER (Paling Bawah Setiap Halaman) -->
+            <footer class="page-content-footer mt-5 pt-3 pb-3 border-top">
+                <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2 text-center text-md-start">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-building text-gold"></i>
+                        <span class="fw-bold text-dark small">ADAM JAYA ENTERPRISE</span>
+                        <span class="text-muted small d-none d-sm-inline">&middot; Operational Management System</span>
+                    </div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">
+                        &copy; <?= date('Y'); ?> ADAM JAYA ENTERPRISE &middot; All Rights Reserved &middot; <span class="badge bg-light text-dark border px-2 py-1 rounded-pill"><i class="fa-solid fa-shield-halved text-success me-1"></i> System Secure</span>
+                    </div>
+                </div>
+            </footer>
 
         </div><!-- End #main-content -->
     </div><!-- End d-flex -->
