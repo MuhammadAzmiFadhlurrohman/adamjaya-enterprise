@@ -1407,19 +1407,23 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     #sidebar-wrapper {
         left: -260px;
         width: 260px;
-        height: auto !important;
-        max-height: 100vh !important;
-        max-height: 100dvh !important;
-        border-radius: 0 0 16px 0;
+        height: 100vh !important;
+        height: 100dvh !important;
+        top: 0;
+        bottom: 0;
+        border-radius: 0 16px 16px 0;
         box-shadow: 4px 0 25px rgba(0,0,0,0.35);
-        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
     }
     #sidebar-wrapper .sidebar-nav {
-        flex-grow: 0 !important;
-        padding-bottom: 0.5rem !important;
+        flex-grow: 1 !important;
+        overflow-y: auto;
+        padding-bottom: 1rem !important;
     }
     #sidebar-wrapper .sidebar-footer {
-        margin-top: 0.5rem !important;
+        margin-top: auto !important;
+        flex-shrink: 0;
     }
     #sidebar-wrapper.show { left: 0; }
     #main-content {
