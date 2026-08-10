@@ -185,7 +185,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                             <i class="fa-solid fa-pen"></i> Edit
                                         </a>
                                         <a href="#" class="action-btn btn-delete" 
-                                           onclick="confirmDelete(event, 'proses_pengeluaran.php?action=delete&id=<?= $h['id']; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
+                                           onclick="confirmDelete(event, 'proses_hapus_pengeluaran.php?id=<?= $h['id']; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
                                             <i class="fa-solid fa-trash"></i> Hapus
                                         </a>
                                     <?php endif; ?>
