@@ -107,43 +107,39 @@ $total_fav = mysqli_num_rows($result);
                         <input type="text" name="nama_pembeli" class="form-control" placeholder="Contoh: PT Mitra Perkasa" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-semibold">NOMOR TELEPON / WA</label>
-                        <input type="tel" name="telepon_pembeli" class="form-control" inputmode="numeric" pattern="[0-9]*" placeholder="08xxxxxxxxxx">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-semibold">ALAMAT PEMBELI</label>
-                        <textarea name="alamat_pembeli" class="form-control" rows="3" placeholder="Alamat lengkap..."></textarea>
+                        <label class="form-label text-muted small fw-semibold">Nomor Telepon</label>
+                        <input type="tel" name="telepon_pembeli" class="form-control" inputmode="numeric" placeholder="08xxxxxxxxxx">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary-custom">Simpan Kontak</button>
+                    <button type="submit" class="btn btn-primary-custom">Simpan Pembeli</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal Edit Favorit -->
+<!-- Modal Edit Pembeli -->
 <div class="modal fade" id="editFavoritModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content glass-modal">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Pembeli Favorit</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-pen-to-square me-2 text-info"></i> Edit Data Pembeli</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="proses_favorit.php" method="POST">
+            <form action="proses_favorit_pembeli.php" method="POST">
                 <?= csrf_field(); ?>
                 <input type="hidden" name="action" value="update">
-                <input type="hidden" name="id" id="edit_id">
+                <input type="hidden" name="id" id="edit_fav_id">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-semibold">NAMA PEMBELI / PT / CV</label>
+                        <label class="form-label text-muted small fw-semibold">Nama Pembeli</label>
                         <input type="text" name="nama_pembeli" id="edit_nama_pembeli" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-semibold">NOMOR TELEPON / WA</label>
-                        <input type="tel" name="telepon_pembeli" id="edit_telepon_pembeli" class="form-control" inputmode="numeric" pattern="[0-9]*">
+                        <label class="form-label text-muted small fw-semibold">Nomor Telepon</label>
+                        <input type="tel" name="telepon_pembeli" id="edit_telepon_pembeli" class="form-control" inputmode="numeric">
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">ALAMAT PEMBELI</label>

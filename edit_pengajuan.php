@@ -150,7 +150,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                 <label class="form-label text-muted small fw-semibold">Nomor Telepon</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light">+62</span>
-                    <input type="tel" name="telepon_pembeli" id="telepon_pembeli" class="form-control" inputmode="numeric" pattern="[0-9]*" value="<?= e($p['telepon_pembeli']); ?>" placeholder="81234567890">
+                    <input type="tel" name="telepon_pembeli" id="telepon_pembeli" class="form-control" inputmode="numeric" value="<?= e($p['telepon_pembeli']); ?>" placeholder="81234567890">
                 </div>
                 <small class="text-muted" style="font-size:0.7rem;">Opsional, hanya valid jika diisi</small>
             </div>
@@ -240,7 +240,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         </div>
                         <div class="col-6 col-md-3">
                             <label class="form-label text-muted small fw-semibold">Harga Satuan (Rp) *</label>
-                            <input type="text" name="harga_<?= $idx; ?>" id="harga_<?= $idx; ?>" class="form-control rupiah-input fw-bold text-wine" inputmode="numeric" pattern="[0-9]*" value="<?= formatRupiah($item['harga_satuan']); ?>" oninput="calculateRow(<?= $idx; ?>)" required>
+                            <input type="text" name="harga_<?= $idx; ?>" id="harga_<?= $idx; ?>" class="form-control rupiah-input fw-bold text-wine" inputmode="numeric" value="<?= formatRupiah($item['harga_satuan']); ?>" oninput="calculateRow(<?= $idx; ?>)" required>
                             <div class="mt-1 small text-muted <?= $item['is_custom'] ? 'd-none' : ''; ?>" id="harga_info_wrapper_<?= $idx; ?>">
                                 <div id="harga_label_<?= $idx; ?>"><i class="fa-solid fa-tag me-1"></i> Harga standar: <strong><?= formatRupiah($item['harga_satuan']); ?></strong></div>
                             </div>
@@ -669,7 +669,7 @@ function addItemRow() {
             </div>
             <div class="col-6 col-md-3">
                 <label class="form-label text-muted small fw-semibold">Harga Satuan (Rp) *</label>
-                <input type="text" name="harga_${idx}" id="harga_${idx}" class="form-control rupiah-input fw-bold text-wine" inputmode="numeric" pattern="[0-9]*" placeholder="Rp 0" oninput="calculateRow(${idx})" required>
+                <input type="text" name="harga_${idx}" id="harga_${idx}" class="form-control rupiah-input fw-bold text-wine" inputmode="numeric" placeholder="Rp 0" oninput="calculateRow(${idx})" required>
                 <div class="mt-1 small text-muted" id="harga_info_wrapper_${idx}">
                     <div id="harga_label_${idx}"><i class="fa-solid fa-tag me-1"></i> Harga standar: -</div>
                 </div>
