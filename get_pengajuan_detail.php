@@ -210,7 +210,7 @@ $csrf_token_val = generate_csrf_token();
                                 <span class="text-muted d-block small"><?= e($d['nama_jenis'] ?: '-'); ?></span>
                                 <?php if ($is_non_stok_custom_item): ?>
                                     <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 mt-1" style="font-size:0.68rem; font-weight:700;">
-                                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item (Non-Stok)
+                                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item
                                     </span>
                                 <?php endif; ?>
                             </td>
@@ -263,7 +263,7 @@ $csrf_token_val = generate_csrf_token();
                         <div class="d-flex align-items-center gap-1.5">
                             <?php if ($is_non_stok_custom_item): ?>
                                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1" style="font-weight:700; font-size:0.68rem;">
-                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item (Non-Stok)
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item
                                 </span>
                             <?php endif; ?>
                             <?php if ($is_custom_price): ?>

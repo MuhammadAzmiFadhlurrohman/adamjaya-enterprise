@@ -181,6 +181,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
             <?php foreach ($items as $idx => $item): 
                 $stok_db = (float)$item['stok_db'];
                 $qty_lama = (float)$item['jumlah'];
+                $is_custom_item_switch = ($item['is_custom'] == 1 && (empty($item['jenis_id']) || $item['jenis_id'] == 0));
             ?>
                 <div class="item-card-row mb-3" data-index="<?= $idx; ?>" id="row_<?= $idx; ?>">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -191,7 +192,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <div class="form-check form-switch m-0">
-                                <input class="form-check-input" type="checkbox" name="is_custom_<?= $idx; ?>" value="1" id="is_custom_<?= $idx; ?>" <?= $item['is_custom'] ? 'checked' : ''; ?> onchange="toggleCustomItem(<?= $idx; ?>)">
+                                <input class="form-check-input" type="checkbox" name="is_custom_<?= $idx; ?>" value="1" id="is_custom_<?= $idx; ?>" <?= $is_custom_item_switch ? 'checked' : ''; ?> onchange="toggleCustomItem(<?= $idx; ?>)">
                                 <label class="form-check-label fw-bold text-wine small text-nowrap" for="is_custom_<?= $idx; ?>">Custom Item</label>
                             </div>
                             <?php if ($idx > 0): ?>
@@ -201,10 +202,10 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                     </div>
 
                     <!-- 1. Pilihan Barang Reguler -->
-                    <div class="row g-3 <?= $item['is_custom'] ? 'd-none' : ''; ?>" id="reguler_fields_<?= $idx; ?>">
+                    <div class="row g-3 <?= $is_custom_item_switch ? 'd-none' : ''; ?>" id="reguler_fields_<?= $idx; ?>">
                         <div class="col-6 col-md-6">
                             <label class="form-label text-muted small fw-semibold">Pilih Barang *</label>
-                            <select name="barang_id_<?= $idx; ?>" id="barang_id_<?= $idx; ?>" class="form-select" onchange="loadVarianOptions(<?= $idx; ?>)" <?= $item['is_custom'] ? '' : 'required'; ?>>
+                            <select name="barang_id_<?= $idx; ?>" id="barang_id_<?= $idx; ?>" class="form-select" onchange="loadVarianOptions(<?= $idx; ?>)" <?= $is_custom_item_switch ? '' : 'required'; ?>>
                                 <option value="">-- Pilih Barang --</option>
                                 <?php foreach ($barang_induk_list as $b): ?>
                                     <option value="<?= $b['id']; ?>" <?= ($item['barang_id'] == $b['id']) ? 'selected' : ''; ?>><?= e($b['nama_barang']); ?></option>
@@ -213,14 +214,14 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         </div>
                         <div class="col-6 col-md-6">
                             <label class="form-label text-muted small fw-semibold">Pilih Jenis *</label>
-                            <select name="jenis_id_<?= $idx; ?>" id="jenis_id_<?= $idx; ?>" class="form-select" onchange="onVarianSelected(<?= $idx; ?>)" <?= $item['is_custom'] ? '' : 'required'; ?>>
+                            <select name="jenis_id_<?= $idx; ?>" id="jenis_id_<?= $idx; ?>" class="form-select" onchange="onVarianSelected(<?= $idx; ?>)" <?= $is_custom_item_switch ? '' : 'required'; ?>>
                                 <option value="<?= $item['jenis_id']; ?>" data-stok="<?= $stok_db; ?>" data-satuan="<?= e($item['satuan']); ?>" data-harga="<?= $item['harga_satuan']; ?>"><?= e($item['nama_jenis']); ?></option>
                             </select>
                         </div>
                     </div>
 
                     <!-- Custom Item Inputs Container -->
-                    <div class="row g-3 <?= $item['is_custom'] ? '' : 'd-none'; ?>" id="custom_fields_<?= $idx; ?>">
+                    <div class="row g-3 <?= $is_custom_item_switch ? '' : 'd-none'; ?>" id="custom_fields_<?= $idx; ?>">
                         <div class="col-6 col-md-6">
                             <label class="form-label text-muted small fw-semibold">Nama Barang Custom *</label>
                             <input type="text" name="custom_nama_<?= $idx; ?>" id="custom_nama_<?= $idx; ?>" class="form-control" value="<?= e($item['nama_barang']); ?>" placeholder="Contoh: Mesin giling kedelai pak ukat">
@@ -236,7 +237,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         <div class="col-6 col-md-3">
                             <label class="form-label text-muted small fw-semibold">Jumlah (QTY) *</label>
                             <input type="number" step="0.01" inputmode="decimal" name="jumlah_<?= $idx; ?>" id="jumlah_<?= $idx; ?>" class="form-control fw-bold" value="<?= (float)$item['jumlah']; ?>" data-qty-lama="<?= (float)$item['jumlah']; ?>" oninput="calculateRow(<?= $idx; ?>)" placeholder="Jumlah" required>
-                            <div class="mt-1 small text-muted <?= $item['is_custom'] ? 'd-none' : ''; ?>" id="stok_info_wrapper_<?= $idx; ?>">
+                            <div class="mt-1 small text-muted <?= $is_custom_item_switch ? 'd-none' : ''; ?>" id="stok_info_wrapper_<?= $idx; ?>">
                                 <div id="stok_label_<?= $idx; ?>"><i class="fa-solid fa-boxes-stacked me-1"></i> Stok tersedia: <strong><?= format_stok($stok_db); ?> <?= e($item['satuan']); ?></strong></div>
                             </div>
                         </div>
@@ -247,7 +248,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         <div class="col-6 col-md-3">
                             <label class="form-label text-muted small fw-semibold">Harga Satuan (Rp) *</label>
                             <input type="text" name="harga_<?= $idx; ?>" id="harga_<?= $idx; ?>" class="form-control rupiah-input fw-bold text-wine" inputmode="numeric" value="<?= formatRupiah($item['harga_satuan']); ?>" oninput="calculateRow(<?= $idx; ?>)" required>
-                            <div class="mt-1 small text-muted <?= $item['is_custom'] ? 'd-none' : ''; ?>" id="harga_info_wrapper_<?= $idx; ?>">
+                            <div class="mt-1 small text-muted <?= $is_custom_item_switch ? 'd-none' : ''; ?>" id="harga_info_wrapper_<?= $idx; ?>">
                                 <div id="harga_label_<?= $idx; ?>"><i class="fa-solid fa-tag me-1"></i> Harga standar: <strong><?= formatRupiah($item['harga_satuan']); ?></strong></div>
                             </div>
                         </div>
