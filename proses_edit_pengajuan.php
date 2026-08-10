@@ -148,7 +148,7 @@ try {
             }
 
             // Lock Tabel Record jenis_barang (SELECT FOR UPDATE)
-            $stmt_lock = mysqli_prepare($conn, "SELECT j.stok, j.nama_jenis, j.satuan, b.nama_barang 
+            $stmt_lock = mysqli_prepare($conn, "SELECT j.stok, j.harga, j.nama_jenis, j.satuan, b.nama_barang 
                                                 FROM jenis_barang j 
                                                 JOIN stok_barang b ON j.barang_id = b.id 
                                                 WHERE j.id = ? FOR UPDATE");
@@ -162,6 +162,11 @@ try {
             }
 
             $stok_sebelum = (float)$row_lock['stok'];
+            $harga_standar = (float)$row_lock['harga'];
+
+            // Jika harga yang diinput berbeda dari harga standar master, tandai sebagai Harga Custom (is_custom = 1)
+            $item_is_custom = ($is_custom == 1 || abs($harga - $harga_standar) > 0.01) ? 1 : 0;
+
             if ($stok_sebelum < $jumlah) {
                 throw new Exception("Stok tidak mencukupi untuk item {$row_lock['nama_barang']} - {$row_lock['nama_jenis']}. Stok tersedia: $stok_sebelum {$row_lock['satuan']}.");
             }
@@ -180,7 +185,7 @@ try {
             mysqli_stmt_execute($stmt_log);
 
             $items_to_insert[] = [
-                'is_custom' => 0,
+                'is_custom' => $item_is_custom,
                 'jenis_id' => $jenis_id,
                 'nama_barang' => $row_lock['nama_barang'],
                 'nama_jenis' => $row_lock['nama_jenis'],
