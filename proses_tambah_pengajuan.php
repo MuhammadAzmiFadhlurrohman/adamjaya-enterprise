@@ -41,9 +41,7 @@ if (!in_array($status_pengiriman, ['belum_dikirim', 'sudah_dikirim'])) {
 }
 
 if (empty($nama_pembeli)) {
-    set_flash('error', 'Gagal', 'Nama pembeli wajib diisi.');
-    header('Location: tambah_pengajuan.php');
-    exit;
+    $nama_pembeli = 'Umum';
 }
 
 // Deteksi seluruh indeks item dari POST (_N)

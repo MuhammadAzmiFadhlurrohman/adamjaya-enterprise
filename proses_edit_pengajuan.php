@@ -18,6 +18,9 @@ $pengajuan_id = (int)($_POST['id'] ?? 0);
 $user_id = current_user()['id'];
 $nama_pembeli = sanitize($_POST['nama_pembeli'] ?? '');
 $telepon_pembeli = sanitize($_POST['telepon_pembeli'] ?? '');
+if (empty($nama_pembeli)) {
+    $nama_pembeli = 'Umum';
+}
 
 $custom_id = sanitize($_POST['custom_id'] ?? '');
 $custom_tanggal = sanitize($_POST['custom_tanggal'] ?? date('Y-m-d'));

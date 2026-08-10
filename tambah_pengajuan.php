@@ -98,9 +98,15 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
 
     <!-- SECTION 2: DATA PEMBELI -->
     <div class="form-section-card mb-4">
-        <div class="d-flex align-items-center gap-2 mb-3">
-            <i class="fa-solid fa-user-tag text-wine fs-5"></i>
-            <h5 class="fw-bold text-wine mb-0">Data Pembeli <i class="fa-regular fa-star text-warning ms-1"></i></h5>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-user-tag text-wine fs-5"></i>
+                <h5 class="fw-bold text-wine mb-0">Data Pembeli</h5>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-warning text-dark border shadow-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5" onclick="saveAsFavorit(event)" title="Klik untuk simpan nama pembeli ke Daftar Favorit">
+                <i class="fa-solid fa-star text-warning fs-6"></i>
+                <span class="small text-wine fw-bold" style="font-size:0.76rem;">Simpan Pembeli Favorit</span>
+            </button>
         </div>
 
         <div class="mb-3">
@@ -117,8 +123,8 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
 
         <div class="row g-3">
             <div class="col-6 col-md-6">
-                <label class="form-label text-muted small fw-semibold">Nama Pembeli *</label>
-                <input type="text" name="nama_pembeli" id="nama_pembeli" class="form-control" placeholder="Masukkan nama pembeli" required>
+                <label class="form-label text-muted small fw-semibold">Nama Pembeli (Opsional)</label>
+                <input type="text" name="nama_pembeli" id="nama_pembeli" class="form-control" placeholder="Masukkan nama pembeli (opsional)">
             </div>
             <div class="col-6 col-md-6">
                 <label class="form-label text-muted small fw-semibold">Nomor Telepon</label>
@@ -306,6 +312,85 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
 let rowIndexCounter = 1;
 const barangIndukList = <?= json_encode($barang_induk_list); ?>;
 let searchTimeout = null;
+
+function saveAsFavorit(event) {
+    if (event) event.preventDefault();
+    
+    const namaInput = document.getElementById('nama_pembeli');
+    const teleponInput = document.getElementById('telepon_pembeli');
+    
+    const nama = namaInput ? namaInput.value.trim() : '';
+    const telepon = teleponInput ? teleponInput.value.trim() : '';
+    
+    if (!nama) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Nama Pembeli Kosong',
+                text: 'Silakan isi Nama Pembeli terlebih dahulu sebelum menyimpan ke favorit.',
+                confirmColor: '#7A1E33'
+            });
+        } else {
+            alert('Silakan isi Nama Pembeli terlebih dahulu!');
+        }
+        if (namaInput) namaInput.focus();
+        return;
+    }
+    
+    fetch('ajax_save_favorit.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nama_pembeli: nama, telepon_pembeli: telepon })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Tersimpan!',
+                    text: data.message || 'Data pembeli berhasil disimpan ke Favorit!',
+                    timer: 1800,
+                    showConfirmButton: false
+                });
+            } else {
+                alert(data.message || 'Data pembeli berhasil disimpan ke Favorit!');
+            }
+            
+            // Tambahkan ke dropdown select_favorit jika belum ada
+            const selectFav = document.getElementById('select_favorit');
+            if (selectFav) {
+                let exists = false;
+                for (let i = 0; i < selectFav.options.length; i++) {
+                    if (selectFav.options[i].value == data.id) {
+                        exists = true;
+                        selectFav.selectedIndex = i;
+                        break;
+                    }
+                }
+                if (!exists && data.id) {
+                    const newOpt = document.createElement('option');
+                    newOpt.value = data.id;
+                    newOpt.text = data.nama_pembeli;
+                    newOpt.setAttribute('data-nama', data.nama_pembeli);
+                    newOpt.setAttribute('data-telepon', data.telepon_pembeli);
+                    newOpt.selected = true;
+                    selectFav.appendChild(newOpt);
+                }
+            }
+        } else {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message || 'Terjadi kesalahan.' });
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat menyimpan.');
+            }
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Terjadi kesalahan koneksi saat menyimpan favorit.');
+    });
+}
 
 function selectFormPaymentMethod(method) {
     const hiddenStatus = document.getElementById("form_status_pembayaran");
