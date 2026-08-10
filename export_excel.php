@@ -2,7 +2,7 @@
 require_once __DIR__ . '/config/auth.php';
 require_login();
 
-$bulan = sanitize($_GET['bulan'] ?? '');
+$bulan = isset($_GET['bulan']) ? sanitize($_GET['bulan']) : date('m');
 $tahun = sanitize($_GET['tahun'] ?? date('Y'));
 $status_pembayaran = sanitize($_GET['status_pembayaran'] ?? '');
 $status_pengiriman = sanitize($_GET['status_pengiriman'] ?? '');

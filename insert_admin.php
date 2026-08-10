@@ -89,7 +89,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             <p class="page-subtitle mb-0">Pantau, verifikasi, dan kelola seluruh pengajuan pembelian dari satu tempat.</p>
         </div>
         <div class="header-action">
-            <a href="export_excel.php?<?= http_build_query($_GET); ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
+            <a href="export_excel.php?<?= http_build_query(['bulan' => $bulan, 'tahun' => $tahun, 'status_pembayaran' => $status_pembayaran, 'status_pengiriman' => $status_pengiriman, 'search' => $search]); ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Ekspor Excel
             </a>
             <?php if ($is_admin): ?>
