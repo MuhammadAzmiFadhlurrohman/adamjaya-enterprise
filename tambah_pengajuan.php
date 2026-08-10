@@ -63,7 +63,7 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
             <div class="col-6 col-md-3">
                 <div class="custom-input-box pink">
                     <label class="fw-bold text-wine small mb-1 d-block"><i class="fa-solid fa-pen text-wine me-1"></i> ID Pengajuan</label>
-                    <input type="number" step="1" name="custom_id" id="custom_id" class="form-control text-wine fw-bold" value="<?= e($default_custom_id); ?>" placeholder="Contoh: 2026080001" required>
+                    <input type="number" step="1" name="custom_id" id="custom_id" class="form-control text-wine fw-bold" value="<?= e($default_custom_id); ?>" placeholder="Contoh: 48291" required>
                 </div>
             </div>
 

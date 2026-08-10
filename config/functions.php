@@ -165,45 +165,43 @@ function display_flash_msg() {
 }
 
 /**
- * Custom Auto-Increment ID Nota / Pengajuan (Angka Integer Murni)
- * Format Integer: YYYYMM0001 (Contoh: 2026080001)
+ * Custom 5-Digit Random ID Nota / Pengajuan (Contoh: 48291, 71940)
  */
 function generate_pengajuan_custom_id($conn) {
-    $prefix = date('Ym');
-    $query = "SELECT custom_id FROM pengajuan WHERE custom_id LIKE '{$prefix}%' ORDER BY custom_id DESC LIMIT 1";
-    $result = mysqli_query($conn, $query);
+    do {
+        $rand_id = (string)mt_rand(10000, 99999);
+        $stmt = mysqli_prepare($conn, "SELECT id FROM pengajuan WHERE custom_id = ?");
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "s", $rand_id);
+            mysqli_stmt_execute($stmt);
+            $res = mysqli_stmt_get_result($stmt);
+            $exists = ($res && mysqli_num_rows($res) > 0);
+        } else {
+            $exists = false;
+        }
+    } while ($exists);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $last_id = $row['custom_id'];
-        $last_num = (int)substr($last_id, strlen($prefix));
-        $next_num = $last_num + 1;
-    } else {
-        $next_num = 1;
-    }
-
-    return $prefix . str_pad($next_num, 4, '0', STR_PAD_LEFT);
+    return $rand_id;
 }
 
 /**
- * Custom Auto-Increment ID Pengeluaran Kas (Angka Integer Murni)
- * Format Integer: 88YYYYMM0001 (Contoh: 882026080001)
+ * Custom 5-Digit Random ID Pengeluaran Kas (Contoh: 38192, 90214)
  */
 function generate_pengeluaran_custom_id($conn) {
-    $prefix = '88' . date('Ym');
-    $query = "SELECT custom_id FROM pengeluaran_header WHERE custom_id LIKE '{$prefix}%' ORDER BY custom_id DESC LIMIT 1";
-    $result = mysqli_query($conn, $query);
+    do {
+        $rand_id = (string)mt_rand(10000, 99999);
+        $stmt = mysqli_prepare($conn, "SELECT id FROM pengeluaran_header WHERE custom_id = ?");
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "s", $rand_id);
+            mysqli_stmt_execute($stmt);
+            $res = mysqli_stmt_get_result($stmt);
+            $exists = ($res && mysqli_num_rows($res) > 0);
+        } else {
+            $exists = false;
+        }
+    } while ($exists);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $last_id = $row['custom_id'];
-        $last_num = (int)substr($last_id, strlen($prefix));
-        $next_num = $last_num + 1;
-    } else {
-        $next_num = 1;
-    }
-
-    return $prefix . str_pad($next_num, 4, '0', STR_PAD_LEFT);
+    return $rand_id;
 }
 
 /**
