@@ -343,8 +343,16 @@ function saveAsFavorit(event) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nama_pembeli: nama, telepon_pembeli: telepon })
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => res.text())
+    .then(text => {
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error("Non-JSON Server Response:", text);
+            throw new Error("Respon server tidak valid: " + text.substring(0, 80));
+        }
+
         if (data.status === 'success') {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
@@ -389,7 +397,11 @@ function saveAsFavorit(event) {
     })
     .catch(err => {
         console.error(err);
-        alert('Terjadi kesalahan koneksi saat menyimpan favorit.');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'error', title: 'Kesalahan Sistem', text: err.message || 'Terjadi kesalahan koneksi saat menyimpan favorit.' });
+        } else {
+            alert(err.message || 'Terjadi kesalahan koneksi saat menyimpan favorit.');
+        }
     });
 }
 
