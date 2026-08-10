@@ -201,13 +201,20 @@ $csrf_token_val = generate_csrf_token();
                             <td>
                                 <span class="text-muted d-block small"><?= e($d['nama_jenis'] ?: '-'); ?></span>
                                 <?php if ($d['is_custom']): ?>
-                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-0.5 mt-1" style="font-size:0.65rem; font-weight:600;">
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 mt-1" style="font-size:0.68rem; font-weight:700;">
                                         <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item
                                     </span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-center fw-semibold text-dark"><?= format_stok($d['jumlah']); ?> <?= e($d['satuan']); ?></td>
-                            <td class="text-end text-muted"><?= formatRupiah($d['harga_satuan']); ?></td>
+                            <td class="text-end text-muted">
+                                <div><?= formatRupiah($d['harga_satuan']); ?></div>
+                                <?php if ($d['is_custom']): ?>
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5 mt-1" style="font-size:0.66rem; font-weight:700;">
+                                        <i class="fa-solid fa-tag me-1"></i> Harga Custom
+                                    </span>
+                                <?php endif; ?>
+                            </td>
                             <td class="text-end fw-bold text-dark"><?= formatRupiah($sub); ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -245,7 +252,9 @@ $csrf_token_val = generate_csrf_token();
                         <!-- Badges Right -->
                         <div class="d-flex align-items-center gap-1.5">
                             <?php if ($d['is_custom']): ?>
-                                <span class="badge rounded-pill px-2.5 py-1" style="background:#E3F2FD; color:#0288D1; font-weight:600; font-size:0.68rem;">Harga Manual</span>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1" style="font-weight:700; font-size:0.68rem;">
+                                    <i class="fa-solid fa-tag me-1"></i> Harga Custom
+                                </span>
                             <?php endif; ?>
                             <span class="badge rounded-pill px-2.5 py-1" style="background:#5C6B73; color:#FFFFFF; font-weight:600; font-size:0.68rem;">
                                 <?= format_stok($d['jumlah']); ?> <?= ucfirst(e($d['satuan'])); ?>
@@ -263,8 +272,13 @@ $csrf_token_val = generate_csrf_token();
 
                     <!-- Harga Row -->
                     <div class="d-flex justify-content-between align-items-center pt-1" style="font-size:0.82rem;">
-                        <span style="color:#757575;">Harga</span>
-                        <span style="color:#333333; font-weight:500;"><?= formatRupiah($d['harga_satuan']); ?> / <?= e($d['satuan']); ?></span>
+                        <span style="color:#757575;">Harga Satuan</span>
+                        <div class="text-end">
+                            <span style="color:#333333; font-weight:600;"><?= formatRupiah($d['harga_satuan']); ?> / <?= e($d['satuan']); ?></span>
+                            <?php if ($d['is_custom']): ?>
+                                <span class="d-block text-danger fw-bold mt-0.5" style="font-size:0.7rem;"><i class="fa-solid fa-tag me-1"></i> Harga Custom</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
                     <!-- Subtotal Row -->
