@@ -15,8 +15,14 @@ if (!$p) {
     exit;
 }
 
-// Ambil Items Detail
-$stmt_detail = mysqli_prepare($conn, "SELECT * FROM pengajuan_detail WHERE pengajuan_id = ? ORDER BY id ASC");
+// Ambil Items Detail dengan perbandingan harga master
+$stmt_detail = mysqli_prepare($conn, "
+    SELECT d.*, j.harga as harga_master 
+    FROM pengajuan_detail d 
+    LEFT JOIN jenis_barang j ON d.jenis_id = j.id 
+    WHERE d.pengajuan_id = ? 
+    ORDER BY d.id ASC
+");
 mysqli_stmt_bind_param($stmt_detail, "i", $id);
 mysqli_stmt_execute($stmt_detail);
 $res_detail = mysqli_stmt_get_result($stmt_detail);
@@ -192,6 +198,8 @@ $csrf_token_val = generate_csrf_token();
                     $no = 1;
                     foreach ($items_data as $d):
                         $sub = $d['jumlah'] * $d['harga_satuan'];
+                        $is_non_stok_custom_item = empty($d['jenis_id']);
+                        $is_custom_price = $is_non_stok_custom_item || ($d['harga_master'] !== null && abs((float)$d['harga_satuan'] - (float)$d['harga_master']) > 0.01);
                     ?>
                         <tr>
                             <td class="text-center text-muted small"><?= $no++; ?></td>
@@ -200,16 +208,16 @@ $csrf_token_val = generate_csrf_token();
                             </td>
                             <td>
                                 <span class="text-muted d-block small"><?= e($d['nama_jenis'] ?: '-'); ?></span>
-                                <?php if ($d['is_custom']): ?>
+                                <?php if ($is_non_stok_custom_item): ?>
                                     <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 mt-1" style="font-size:0.68rem; font-weight:700;">
-                                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item
+                                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item (Non-Stok)
                                     </span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-center fw-semibold text-dark"><?= format_stok($d['jumlah']); ?> <?= e($d['satuan']); ?></td>
                             <td class="text-end text-muted">
                                 <div><?= formatRupiah($d['harga_satuan']); ?></div>
-                                <?php if ($d['is_custom']): ?>
+                                <?php if ($is_custom_price): ?>
                                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5 mt-1" style="font-size:0.66rem; font-weight:700;">
                                         <i class="fa-solid fa-tag me-1"></i> Harga Custom
                                     </span>
@@ -240,6 +248,8 @@ $csrf_token_val = generate_csrf_token();
             $no = 1;
             foreach ($items_data as $d):
                 $sub = $d['jumlah'] * $d['harga_satuan'];
+                $is_non_stok_custom_item = empty($d['jenis_id']);
+                $is_custom_price = $is_non_stok_custom_item || ($d['harga_master'] !== null && abs((float)$d['harga_satuan'] - (float)$d['harga_master']) > 0.01);
             ?>
                 <div class="p-3 border-bottom position-relative">
                     <!-- Top Badge Row -->
@@ -251,7 +261,12 @@ $csrf_token_val = generate_csrf_token();
                         </div>
                         <!-- Badges Right -->
                         <div class="d-flex align-items-center gap-1.5">
-                            <?php if ($d['is_custom']): ?>
+                            <?php if ($is_non_stok_custom_item): ?>
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1" style="font-weight:700; font-size:0.68rem;">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Custom Item (Non-Stok)
+                                </span>
+                            <?php endif; ?>
+                            <?php if ($is_custom_price): ?>
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1" style="font-weight:700; font-size:0.68rem;">
                                     <i class="fa-solid fa-tag me-1"></i> Harga Custom
                                 </span>
@@ -275,7 +290,7 @@ $csrf_token_val = generate_csrf_token();
                         <span style="color:#757575;">Harga Satuan</span>
                         <div class="text-end">
                             <span style="color:#333333; font-weight:600;"><?= formatRupiah($d['harga_satuan']); ?> / <?= e($d['satuan']); ?></span>
-                            <?php if ($d['is_custom']): ?>
+                            <?php if ($is_custom_price): ?>
                                 <span class="d-block text-danger fw-bold mt-0.5" style="font-size:0.7rem;"><i class="fa-solid fa-tag me-1"></i> Harga Custom</span>
                             <?php endif; ?>
                         </div>

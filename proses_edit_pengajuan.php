@@ -185,7 +185,7 @@ try {
             mysqli_stmt_execute($stmt_log);
 
             $items_to_insert[] = [
-                'is_custom' => $item_is_custom,
+                'is_custom' => 0,
                 'jenis_id' => $jenis_id,
                 'nama_barang' => $row_lock['nama_barang'],
                 'nama_jenis' => $row_lock['nama_jenis'],
