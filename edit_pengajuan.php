@@ -51,23 +51,21 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
     <option value="pcs">
 </datalist>
 
-<!-- HEADER TITLE BAR EDIT FORMULIR PEMBELIAN -->
-<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden bg-white" style="border-left: 4px solid var(--wine) !important;">
-    <div class="card-body p-3 p-md-3.5 d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="d-flex align-items-center gap-2.5">
-            <div class="stat-icon icon-wine" style="width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;">
-                <i class="fa-solid fa-pen-to-square text-wine fs-5"></i>
-            </div>
-            <div>
-                <h5 class="fw-bold text-wine mb-0" style="font-size: 1.1rem; line-height: 1.2;">Edit Pembelian Barang #<?= e($p['custom_id']); ?></h5>
-                <small class="text-muted d-block" style="font-size: 0.75rem;">Perbarui rincian item, data pembeli, atau status transaksi nota ini</small>
-            </div>
+<!-- HEADER CURVED EXECUTIVE BANNER -->
+<header class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <span class="page-eyebrow d-none d-md-block"><i class="fa-solid fa-pen-to-square"></i> Operational &middot; Edit Pengajuan</span>
+            <h1 class="page-title">Edit Pembelian Barang #<?= e($p['custom_id']); ?></h1>
+            <p class="page-subtitle mb-0">Perbarui rincian item, data pembeli, atau status transaksi nota ini</p>
         </div>
-        <a href="insert_admin.php<?= !empty($return_row) ? '#' . e($return_row) : ''; ?>" class="btn btn-secondary-custom btn-sm rounded-pill px-3 fw-bold">
-            <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar
-        </a>
+        <div class="header-action">
+            <a href="insert_admin.php<?= !empty($return_row) ? '#' . e($return_row) : ''; ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar
+            </a>
+        </div>
     </div>
-</div>
+</header>
 
 <form action="proses_edit_pengajuan.php" method="POST" id="formEditPengajuan" enctype="multipart/form-data">
     <?= csrf_field(); ?>

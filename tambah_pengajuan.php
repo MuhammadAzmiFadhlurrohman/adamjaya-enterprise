@@ -25,23 +25,21 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
     <option value="pcs">
 </datalist>
 
-<!-- HEADER TITLE BAR FORMULIR PEMBELIAN -->
-<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden bg-white" style="border-left: 4px solid var(--wine) !important;">
-    <div class="card-body p-3 p-md-3.5 d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="d-flex align-items-center gap-2.5">
-            <div class="stat-icon icon-wine" style="width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;">
-                <i class="fa-solid fa-file-signature text-wine fs-5"></i>
-            </div>
-            <div>
-                <h5 class="fw-bold text-wine mb-0" style="font-size: 1.1rem; line-height: 1.2;">Formulir Pembelian Barang</h5>
-                <small class="text-muted d-block" style="font-size: 0.75rem;">Lengkapi rincian transaksi & pengadaan barang</small>
-            </div>
+<!-- HEADER CURVED EXECUTIVE BANNER -->
+<header class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <span class="page-eyebrow d-none d-md-block"><i class="fa-solid fa-cart-flatbed"></i> Operational &middot; Pengadaan Barang</span>
+            <h1 class="page-title">Formulir Pembelian Barang</h1>
+            <p class="page-subtitle mb-0">Lengkapi rincian transaksi, data pembeli, rincian barang & pembayaran</p>
         </div>
-        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1.5 fw-bold" style="font-size:0.72rem;">
-            <i class="fa-solid fa-circle-exclamation me-1"></i> Wajib diisi lengkap
-        </span>
+        <div class="header-action">
+            <a href="insert_admin.php" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar
+            </a>
+        </div>
     </div>
-</div>
+</header>
 
 <form action="proses_tambah_pengajuan.php" method="POST" id="formPengajuan" enctype="multipart/form-data">
     <?= csrf_field(); ?>
@@ -239,13 +237,16 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
             </button>
         </div>
 
-        <!-- Grand Total Footer (Green Premium Banner) -->
+        <!-- Grand Total Footer (Executive Green Banner) -->
         <div class="p-3 p-md-4 rounded-3 text-white shadow-sm mt-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border: 1px solid #059669;">
             <div class="d-flex align-items-center gap-2">
-                <i class="fa-solid fa-calculator fs-4 opacity-90"></i>
-                <h5 class="fw-bold mb-0 text-white" style="letter-spacing: 0.5px;">TOTAL ESTIMASI DANA:</h5>
+                <i class="fa-solid fa-calculator fs-4 text-warning"></i>
+                <div>
+                    <h5 class="fw-bold mb-0 text-white" style="letter-spacing: 0.5px;">TOTAL ESTIMASI DANA:</h5>
+                    <small style="color: rgba(255,255,255,0.85); font-size: 0.75rem;">Kalkulasi otomatis seluruh rincian item & varian</small>
+                </div>
             </div>
-            <h3 class="fw-bolder mb-0 text-white" id="grandTotalDisplay" style="font-size: 1.6rem; text-shadow: 0 1px 3px rgba(0,0,0,0.2);">Rp 0</h3>
+            <h3 class="fw-bolder mb-0 text-white" id="grandTotalDisplay" style="font-size: 1.8rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Rp 0</h3>
         </div>
     </div>
 
@@ -301,9 +302,9 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
     </div>
 
     <!-- SECTION 6 (BOTTOM): TOMBOL SUBMIT SIMPAN PEMBELIAN -->
-    <div class="mb-5">
-        <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm" style="background:#166D47; border:none; border-radius:10px;">
-            <i class="fa-solid fa-paper-plane me-2"></i> Simpan Pembelian
+    <div class="text-end mb-5">
+        <button type="submit" class="btn btn-lg px-5 rounded-pill shadow-lg fw-bold text-white" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border: none;">
+            <i class="fa-solid fa-paper-plane me-2 text-warning"></i> Simpan Pembelian Barang
         </button>
     </div>
 </form>
