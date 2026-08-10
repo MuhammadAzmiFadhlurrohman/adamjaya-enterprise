@@ -21,17 +21,11 @@
                 </div>
             </div>
 
-            <!-- PAGE CONTENT FOOTER (Paling Bawah Setiap Halaman) -->
-            <footer class="page-content-footer mt-5 pt-3 pb-3 border-top">
-                <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2 text-center text-md-start">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-building text-gold"></i>
-                        <span class="fw-bold text-dark small">ADAM JAYA ENTERPRISE</span>
-                        <span class="text-muted small d-none d-sm-inline">&middot; Operational Management System</span>
-                    </div>
-                    <div class="text-muted small" style="font-size: 0.75rem;">
-                        &copy; <?= date('Y'); ?> ADAM JAYA ENTERPRISE &middot; All Rights Reserved &middot; <span class="badge bg-light text-dark border px-2 py-1 rounded-pill"><i class="fa-solid fa-shield-halved text-success me-1"></i> System Secure</span>
-                    </div>
+            <!-- PAGE CONTENT FOOTER (Sama Eksak Dengan Style Footer Sidebar) -->
+            <footer class="page-content-footer mt-5 mb-3 p-3 rounded-3 text-center shadow-sm" style="background: linear-gradient(135deg, #7A1E33 0%, #4a0b18 100%); border-top: 2px solid #D4A843;">
+                <div class="sidebar-copyright">
+                    <span class="text-white fw-bold d-block mb-0" style="font-size: 0.78rem; letter-spacing: 0.5px;">&copy; <?= date('Y'); ?> ADAM JAYA ENTERPRISE</span>
+                    <small class="d-block" style="color: #ffd700; font-size: 0.7rem; font-weight: 600; margin-top: 2px;">v2 &middot; All Rights Reserved</small>
                 </div>
             </footer>
 
