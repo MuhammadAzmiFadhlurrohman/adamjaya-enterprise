@@ -4,6 +4,8 @@ require_login();
 
 $is_admin = is_admin();
 
+$search = sanitize($_GET['search'] ?? '');
+
 // Check for explicit reset flag
 if (isset($_GET['reset']) && $_GET['reset'] === '1') {
     $search = '';
