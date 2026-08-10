@@ -205,19 +205,34 @@ try {
     }
 
     // 5. INSERT DETAIL PENGAJUAN BARU
-    $stmt_det = mysqli_prepare($conn, "INSERT INTO pengajuan_detail (pengajuan_id, is_custom, jenis_id, nama_barang, nama_jenis, jumlah, satuan, harga_satuan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     foreach ($items_to_insert as $item) {
-        mysqli_stmt_bind_param($stmt_det, "iiissdsd", 
-            $pengajuan_id, 
-            $item['is_custom'], 
-            $item['jenis_id'], 
-            $item['nama_barang'], 
-            $item['nama_jenis'], 
-            $item['jumlah'], 
-            $item['satuan'], 
-            $item['harga_satuan']
-        );
-        mysqli_stmt_execute($stmt_det);
+        if (empty($item['jenis_id']) || $item['jenis_id'] <= 0) {
+            $stmt_det = mysqli_prepare($conn, "INSERT INTO pengajuan_detail (pengajuan_id, is_custom, jenis_id, nama_barang, nama_jenis, jumlah, satuan, harga_satuan) VALUES (?, ?, NULL, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt_det, "iissdsd", 
+                $pengajuan_id, 
+                $item['is_custom'], 
+                $item['nama_barang'], 
+                $item['nama_jenis'], 
+                $item['jumlah'], 
+                $item['satuan'], 
+                $item['harga_satuan']
+            );
+        } else {
+            $stmt_det = mysqli_prepare($conn, "INSERT INTO pengajuan_detail (pengajuan_id, is_custom, jenis_id, nama_barang, nama_jenis, jumlah, satuan, harga_satuan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt_det, "iiissdsd", 
+                $pengajuan_id, 
+                $item['is_custom'], 
+                $item['jenis_id'], 
+                $item['nama_barang'], 
+                $item['nama_jenis'], 
+                $item['jumlah'], 
+                $item['satuan'], 
+                $item['harga_satuan']
+            );
+        }
+        if (!mysqli_stmt_execute($stmt_det)) {
+            throw new Exception("Gagal memperbarui detail pengajuan: " . mysqli_error($conn));
+        }
     }
 
     // Commit Transaction
