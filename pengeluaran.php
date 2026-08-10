@@ -176,7 +176,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                             </td>
                             <td data-label="Aksi" class="text-center">
                                 <div class="action-btns justify-content-end justify-content-md-center">
-                                    <button class="action-btn btn-detail" onclick="openDetailPengeluaranModal(<?= $h['id']; ?>)">
+                                    <button type="button" class="action-btn btn-detail" onclick="openDetailPengeluaranModal(<?= $h['id']; ?>)">
                                         <i class="fa-solid fa-eye"></i> Detail
                                     </button>
 
@@ -239,7 +239,7 @@ function openDetailPengeluaranModal(id) {
     const myModal = new bootstrap.Modal(document.getElementById('modalDetailPengeluaran'));
     myModal.show();
 
-    fetch(`get_pengeluaran_detail.php?id=${id}`)
+    fetch(`ajax_pengeluaran_detail.php?id=${id}`)
         .then(response => response.text())
         .then(html => {
             modalBody.innerHTML = html;

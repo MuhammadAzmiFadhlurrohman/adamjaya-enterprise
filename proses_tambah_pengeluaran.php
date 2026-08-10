@@ -36,7 +36,7 @@ if (empty($item_indexes)) {
 mysqli_autocommit($conn, FALSE);
 
 try {
-    $custom_id = generate_custom_id($conn, 'pengeluaran_header', 'EXP');
+    $custom_id = generate_pengeluaran_custom_id($conn);
     $grand_total = 0.0;
     $items_to_insert = [];
 
