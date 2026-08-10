@@ -94,19 +94,22 @@ require_admin();
             </div>
         </div>
 
-        <!-- GRAND TOTAL EXECUTIVE BANNER -->
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-3.5 p-md-4 rounded-4 shadow-sm mt-4 text-white" style="background: linear-gradient(135deg, var(--wine) 0%, #4a0b18 100%); border: 1px solid rgba(201, 168, 76, 0.35);">
-            <div>
-                <h5 class="fw-bold mb-0 text-white" style="letter-spacing: 0.5px;">TOTAL PENGELUARAN KAS:</h5>
-                <small class="text-white-50">Kalkulasi otomatis dari seluruh rincian item pengeluaran</small>
+        <!-- GRAND TOTAL BANNER -->
+        <div class="p-3 p-md-4 rounded-3 text-white shadow-sm mt-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: linear-gradient(135deg, #7A1E33 0%, #4a0b18 100%); border: 1px solid #7A1E33;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-calculator fs-4 text-warning"></i>
+                <div>
+                    <h5 class="fw-bold mb-0 text-white" style="letter-spacing: 0.5px;">TOTAL PENGELUARAN KAS:</h5>
+                    <small style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Kalkulasi otomatis dari seluruh rincian item pengeluaran</small>
+                </div>
             </div>
-            <h3 class="fw-bolder mb-0 text-gold" id="expGrandTotalDisplay" style="font-size: 1.8rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Rp 0</h3>
+            <h3 class="fw-bolder mb-0" id="expGrandTotalDisplay" style="font-size: 1.8rem; color: #ffd700 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">Rp 0</h3>
         </div>
     </div>
 
     <div class="text-end mb-5">
-        <button type="submit" class="btn btn-wine btn-lg px-5 rounded-pill shadow-lg fw-bold">
-            <i class="fa-solid fa-floppy-disk me-2"></i> Simpan Pengeluaran Kas
+        <button type="submit" class="btn btn-lg px-5 rounded-pill shadow-lg fw-bold text-white" style="background: linear-gradient(135deg, #7A1E33 0%, #4a0b18 100%); border: none;">
+            <i class="fa-solid fa-floppy-disk me-2 text-warning"></i> Simpan Pengeluaran Kas
         </button>
     </div>
 </form>
