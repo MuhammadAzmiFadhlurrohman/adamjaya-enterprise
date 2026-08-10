@@ -65,13 +65,6 @@ $nama_bulan = [
 $bulan_teks = !empty($bulan) ? ($nama_bulan[str_pad($bulan, 2, '0', STR_PAD_LEFT)] ?? 'Bulan ' . $bulan) : 'Semua Bulan';
 $tahun_teks = !empty($tahun) ? $tahun : 'Semua Tahun';
 
-// Logo Base64 Data URI untuk Excel
-$logo_path = __DIR__ . '/assets/adamjaya.png';
-$logo_src = 'https://erpfinance.adamjaya.store/assets/adamjaya.png';
-if (file_exists($logo_path)) {
-    $logo_src = 'data:image/png;base64,' . base64_encode(file_get_contents($logo_path));
-}
-
 // Set Headers untuk Excel (.xls) Download dengan Formatted HTML
 $filename = "Laporan_Pembelian_AdamJaya_" . date('Ymd_His') . ".xls";
 header("Content-Type: application/vnd.ms-excel; charset=utf-8");
@@ -126,10 +119,10 @@ header("Cache-Control: max-age=0");
 <body>
     <table style="width: 100%;">
         <tr>
-            <td width="70" style="vertical-align: middle; text-align: center;">
-                <img src="<?= $logo_src; ?>" width="55" height="55" alt="Logo" />
+            <td width="55" height="55" style="background-color: #7A1E33; color: #FFD700; font-size: 20pt; font-weight: bold; text-align: center; vertical-align: middle; border: 2px solid #D4A843;">
+                AJ
             </td>
-            <td colspan="8" style="vertical-align: middle; padding-left: 10px;">
+            <td colspan="8" style="vertical-align: middle; padding-left: 12px;">
                 <div class="company-title">ADAM JAYA ENTERPRISE</div>
                 <div class="report-subtitle">LAPORAN PEMBELIAN BARANG &middot; Periode: <?= e($bulan_teks); ?> <?= e($tahun_teks); ?></div>
                 <div class="filter-info">Diunduh pada: <?= date('d F Y, H:i:s'); ?> WIB &middot; Oleh: <?= e(ucwords((string)(current_user()['username'] ?? 'Admin'))); ?></div>
@@ -162,25 +155,25 @@ header("Cache-Control: max-age=0");
                     $grand_total_semua += $total_row;
                     $row_class = ($no % 2 === 0) ? 'even' : 'odd';
                     
-                    // Format Status Bayar Label & Style
+                    // Format Status Bayar Label & Style (Mendukung 'dibayar' dan 'lunas')
                     $st_bayar = strtolower($row['status_pembayaran'] ?? '');
                     $bayar_class = 'status-belum';
                     $bayar_label = 'Belum Dibayar';
-                    if ($st_bayar === 'lunas') {
+                    if ($st_bayar === 'dibayar' || $st_bayar === 'lunas') {
                         $bayar_class = 'status-lunas';
-                        $bayar_label = 'Lunas';
+                        $bayar_label = 'Dibayar';
                     } else if ($st_bayar === 'dp') {
                         $bayar_class = 'status-dp';
                         $bayar_label = 'DP';
                     }
                     
-                    // Format Status Kirim Label & Style
+                    // Format Status Kirim Label & Style (Mendukung 'sudah_dikirim', 'dikirim', 'terkirim')
                     $st_kirim = strtolower($row['status_pengiriman'] ?? '');
                     $kirim_class = 'status-pending';
                     $kirim_label = 'Pending';
-                    if ($st_kirim === 'terkirim') {
+                    if ($st_kirim === 'sudah_dikirim' || $st_kirim === 'dikirim' || $st_kirim === 'terkirim') {
                         $kirim_class = 'status-terkirim';
-                        $kirim_label = 'Terkirim';
+                        $kirim_label = 'Sudah Dikirim';
                     } else if ($st_kirim === 'diproses') {
                         $kirim_class = 'status-diproses';
                         $kirim_label = 'Diproses';
