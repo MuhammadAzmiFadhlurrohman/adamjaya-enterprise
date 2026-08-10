@@ -232,10 +232,10 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <th width="100">ID Nota</th>
                     <th>Pelanggan & Tanggal Waktu</th>
                     <th>Admin</th>
-                    <th>Estimasi Dana</th>
-                    <th>Status Bayar</th>
-                    <th>Status Kirim</th>
-                    <th class="text-center" width="160">Aksi</th>
+                    <th class="text-nowrap">Estimasi Dana</th>
+                    <th class="text-nowrap">Status Bayar</th>
+                    <th class="text-nowrap">Status Kirim</th>
+                    <th class="text-center text-nowrap" width="160">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -244,7 +244,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                         $status_class = ($p['status_pembayaran'] === 'dibayar' && $p['status_pengiriman'] === 'sudah_dikirim') ? 'status-selesai' : (($p['status_pembayaran'] === 'dibayar') ? 'status-proses' : 'status-belum');
                     ?>
                         <tr id="row-nota-<?= $p['id']; ?>" class="<?= $status_class; ?>">
-                            <td data-label="ID Nota">
+                            <td data-label="ID Nota" class="text-nowrap">
                                 <span class="id-chip <?= $status_class; ?>">#<?= e($p['custom_id']); ?></span>
                             </td>
                             <td data-label="Pelanggan & Waktu">
@@ -253,12 +253,12 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     <i class="fa-regular fa-clock me-1 text-gold"></i> <?= date('d M Y, H:i', strtotime($p['created_at'])); ?>
                                 </small>
                             </td>
-                            <td data-label="Admin Input">
+                            <td data-label="Admin Input" class="text-nowrap">
                                 <span class="badge bg-light text-dark border px-2 py-1 rounded-pill fw-medium" style="font-size: 0.82rem;">
                                     <i class="fa-solid fa-user-circle me-1 text-wine"></i> <?= e($p['username'] ?: 'Admin'); ?>
                                 </span>
                             </td>
-                            <td data-label="Estimasi Dana">
+                            <td data-label="Estimasi Dana" class="text-nowrap">
                                 <strong class="text-success amount-cell fs-6"><?= formatRupiah($p['estimasi_dana']); ?></strong>
                             </td>
                             <td data-label="Status Bayar">

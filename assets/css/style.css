@@ -890,6 +890,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     letter-spacing: 0.06em;
     border-bottom: 1px solid var(--line);
     padding: 0.85rem 1rem;
+    white-space: nowrap !important;
 }
 
 .table-custom tbody tr, .table tbody tr { transition: background-color 0.15s ease; }
@@ -900,6 +901,23 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     vertical-align: middle;
     border-color: #F1EFEC;
     font-size: 0.85rem;
+}
+
+/* Enforce single-line nowrap on all monetary amounts, badges, chips, and price cells */
+.amount-cell,
+.price-cell,
+.id-chip,
+.badge-status,
+.text-nowrap,
+.table td.amount-cell,
+.table td[data-label="Estimasi Dana"],
+.table td[data-label="Total Biaya"],
+.table td[data-label="Nilai Transaksi"],
+.table td[data-label="Subtotal"],
+.table td[data-label="Harga Satuan"],
+.table td[data-label="HARGA SATUAN"],
+.table td[data-label="Total Nilai Pembelian"] {
+    white-space: nowrap !important;
 }
 
 .id-chip {
