@@ -19,6 +19,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
             <!-- PAGE CONTENT FOOTER (Paling Bawah Setiap Halaman) -->
             <footer class="page-content-footer mt-5 pt-3 pb-3 border-top">
                 <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2 text-center text-md-start">
