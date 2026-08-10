@@ -65,6 +65,13 @@ $nama_bulan = [
 $bulan_teks = !empty($bulan) ? ($nama_bulan[str_pad($bulan, 2, '0', STR_PAD_LEFT)] ?? 'Bulan ' . $bulan) : 'Semua Bulan';
 $tahun_teks = !empty($tahun) ? $tahun : 'Semua Tahun';
 
+// Logo Base64 Data URI untuk Excel
+$logo_path = __DIR__ . '/assets/adamjaya.png';
+$logo_src = 'https://erpfinance.adamjaya.store/assets/adamjaya.png';
+if (file_exists($logo_path)) {
+    $logo_src = 'data:image/png;base64,' . base64_encode(file_get_contents($logo_path));
+}
+
 // Set Headers untuk Excel (.xls) Download dengan Formatted HTML
 $filename = "Laporan_Pembelian_AdamJaya_" . date('Ymd_His') . ".xls";
 header("Content-Type: application/vnd.ms-excel; charset=utf-8");
@@ -117,15 +124,16 @@ header("Cache-Control: max-age=0");
     </style>
 </head>
 <body>
-    <table>
+    <table style="width: 100%;">
         <tr>
-            <td colspan="9" class="company-title">ADAM JAYA ENTERPRISE - LAPORAN PEMBELIAN BARANG</td>
-        </tr>
-        <tr>
-            <td colspan="9" class="report-subtitle">Periode: <?= e($bulan_teks); ?> <?= e($tahun_teks); ?></td>
-        </tr>
-        <tr>
-            <td colspan="9" class="filter-info">Diunduh pada: <?= date('d F Y, H:i:s'); ?> WIB &middot; Oleh: <?= e(current_user()['username'] ?? 'Admin'); ?></td>
+            <td width="70" style="vertical-align: middle; text-align: center;">
+                <img src="<?= $logo_src; ?>" width="55" height="55" alt="Logo" />
+            </td>
+            <td colspan="8" style="vertical-align: middle; padding-left: 10px;">
+                <div class="company-title">ADAM JAYA ENTERPRISE</div>
+                <div class="report-subtitle">LAPORAN PEMBELIAN BARANG &middot; Periode: <?= e($bulan_teks); ?> <?= e($tahun_teks); ?></div>
+                <div class="filter-info">Diunduh pada: <?= date('d F Y, H:i:s'); ?> WIB &middot; Oleh: <?= e(ucwords((string)(current_user()['username'] ?? 'Admin'))); ?></div>
+            </td>
         </tr>
         <tr><td colspan="9"></td></tr>
     </table>
@@ -182,8 +190,8 @@ header("Cache-Control: max-age=0");
                     <td class="text-center"><?= $no++; ?></td>
                     <td class="text-center text-bold" style="mso-number-format:'\@';">'<?= e($row['custom_id']); ?></td>
                     <td class="text-center"><?= date('d/m/Y H:i', strtotime($row['created_at'])); ?></td>
-                    <td><?= e(ucwords($row['username'])); ?></td>
-                    <td><?= e(ucwords($row['nama_pembeli'])); ?></td>
+                    <td><?= e(ucwords((string)($row['username'] ?? ''))); ?></td>
+                    <td><?= e(ucwords((string)($row['nama_pembeli'] ?? ''))); ?></td>
                     <td class="text-center" style="mso-number-format:'\@';">'<?= e($row['telepon_pembeli'] ?: '-'); ?></td>
                     <td class="<?= $bayar_class; ?>"><?= e($bayar_label); ?></td>
                     <td class="<?= $kirim_class; ?>"><?= e($kirim_label); ?></td>
