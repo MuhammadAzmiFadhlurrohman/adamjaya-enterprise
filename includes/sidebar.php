@@ -32,7 +32,7 @@ $active_user = current_user();
             <!-- ADMIN MENU -->
             <div class="sidebar-section-title">Pengadaan & Transaksi</div>
             <li class="nav-item">
-                <a href="insert_admin.php" class="nav-link <?= ($current_page == 'insert_admin.php') ? 'active' : ''; ?>">
+                <a href="insert_admin.php" class="nav-link <?= in_array($current_page, ['insert_admin.php', 'tambah_pengajuan.php', 'edit_pengajuan.php']) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-cart-flatbed"></i>
                     <span>Daftar Pembelian</span>
                 </a>
@@ -40,7 +40,7 @@ $active_user = current_user();
 
             <div class="sidebar-section-title">Manajemen Stok</div>
             <li class="nav-item">
-                <a href="stok_barang.php" class="nav-link <?= ($current_page == 'stok_barang.php') ? 'active' : ''; ?>">
+                <a href="stok_barang.php" class="nav-link <?= in_array($current_page, ['stok_barang.php', 'jenis_barang.php']) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-box-archive"></i>
                     <span>Master Barang</span>
                 </a>
@@ -54,7 +54,7 @@ $active_user = current_user();
 
             <div class="sidebar-section-title">Operasional</div>
             <li class="nav-item">
-                <a href="pengeluaran.php" class="nav-link <?= ($current_page == 'pengeluaran.php') ? 'active' : ''; ?>">
+                <a href="pengeluaran.php" class="nav-link <?= in_array($current_page, ['pengeluaran.php', 'tambah_pengeluaran.php', 'edit_pengeluaran.php', 'upload_bukti_pembelian.php', 'upload_bukti_transfer.php', 'upload_bukti_tunai.php']) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-wallet"></i>
                     <span>Pengeluaran Kas</span>
                 </a>
@@ -86,13 +86,13 @@ $active_user = current_user();
             <!-- CEO MENU (READ-ONLY) -->
             <div class="sidebar-section-title">Monitoring Laporan</div>
             <li class="nav-item">
-                <a href="insert_admin.php" class="nav-link <?= ($current_page == 'insert_admin.php') ? 'active' : ''; ?>">
+                <a href="insert_admin.php" class="nav-link <?= in_array($current_page, ['insert_admin.php', 'tambah_pengajuan.php', 'edit_pengajuan.php']) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-cart-flatbed"></i>
                     <span>Laporan Pengajuan</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="pengeluaran.php" class="nav-link <?= ($current_page == 'pengeluaran.php') ? 'active' : ''; ?>">
+                <a href="pengeluaran.php" class="nav-link <?= in_array($current_page, ['pengeluaran.php', 'tambah_pengeluaran.php', 'edit_pengeluaran.php']) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-wallet"></i>
                     <span>Laporan Pengeluaran</span>
                 </a>
