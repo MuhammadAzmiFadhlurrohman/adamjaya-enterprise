@@ -115,10 +115,10 @@ $active_user = current_user();
     </ul>
 
     <!-- SIDEBAR FOOTER -->
-    <div class="sidebar-footer" style="padding:0.75rem 0.85rem; border-top:1px solid rgba(201,168,76,0.35); background:rgba(0,0,0,0.35); flex-shrink:0; margin-top:auto;">
-        <div class="sidebar-copyright" style="text-align:center; font-size:0.7rem; color:rgba(255,255,255,0.75); line-height:1.3;">
-            <span style="font-weight:600; color:#ffffff;">&copy; <?= date('Y'); ?> ADAM JAYA ENTERPRISE</span>
-            <small class="d-block" style="font-size:0.65rem; color:#ffd700; margin-top:2px;">v2 &middot; All Rights Reserved</small>
+    <div class="sidebar-footer">
+        <div class="sidebar-copyright">
+            <span>&copy; <?= date('Y'); ?> ADAM JAYA ENTERPRISE</span>
+            <small class="d-block">v2 &middot; All Rights Reserved</small>
         </div>
     </div>
 </div>
