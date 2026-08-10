@@ -296,8 +296,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="6">
+                    <tr class="no-data-row">
+                        <td colspan="6" class="no-data-td">
                             <div class="no-data">
                                 <i class="fa-solid fa-folder-open"></i>
                                 <h5>Data Pengajuan Tidak Ditemukan</h5>

@@ -194,8 +194,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr>
-                        <td colspan="6">
+                    <tr class="no-data-row">
+                        <td colspan="6" class="no-data-td">
                             <div class="no-data">
                                 <i class="fa-solid fa-wallet"></i>
                                 <h5>Belum Ada Catatan Pengeluaran Kas</h5>

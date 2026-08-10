@@ -851,6 +851,49 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     transform: scale(1.1);
 }
 
+/* ---------- NO DATA EMPTY STATE ---------- */
+.no-data {
+    text-align: center !important;
+    padding: 3.5rem 1.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+
+.no-data i {
+    font-size: 2.8rem !important;
+    color: var(--wine, #7a1e33) !important;
+    margin-bottom: 1.25rem !important;
+    background: rgba(122, 30, 51, 0.08) !important;
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(122, 30, 51, 0.15) !important;
+    box-shadow: 0 4px 15px rgba(122, 30, 51, 0.08) !important;
+}
+
+.no-data h5 {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: var(--ink, #1e1814) !important;
+    margin-bottom: 0.4rem !important;
+    letter-spacing: -0.01em !important;
+}
+
+.no-data p {
+    font-size: 0.85rem !important;
+    color: var(--ink-soft, #6b6b7a) !important;
+    margin-bottom: 0 !important;
+    max-width: 420px !important;
+    line-height: 1.5 !important;
+}
+
 /* ---------- TABLE CONTAINER & CHIPS ---------- */
 .table-container {
     background: var(--surface);
@@ -1489,6 +1532,28 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 
     .table:not(.modal-detail-table) thead { display: none; }
     .table:not(.modal-detail-table), .table:not(.modal-detail-table) tbody, .table:not(.modal-detail-table) tr, .table:not(.modal-detail-table) td { display: block; width: 100%; }
+
+    /* Override mobile responsive layout for empty state rows */
+    .table:not(.modal-detail-table) tr.no-data-row,
+    .table:not(.modal-detail-table) tr:has(.no-data) {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .table:not(.modal-detail-table) td.no-data-td,
+    .table:not(.modal-detail-table) td:has(.no-data) {
+        display: block !important;
+        padding: 0 !important;
+        border: none !important;
+        text-align: center !important;
+    }
+    .table:not(.modal-detail-table) td.no-data-td::before,
+    .table:not(.modal-detail-table) td:has(.no-data)::before {
+        display: none !important;
+        content: none !important;
+    }
 
     .table:not(.modal-detail-table) tr {
         margin-bottom: 1rem;
