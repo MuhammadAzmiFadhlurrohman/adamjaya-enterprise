@@ -4,7 +4,10 @@ require_login();
 
 $is_admin = is_admin();
 
-$search = sanitize($_GET['search'] ?? '');
+// Check for explicit reset flag
+if (isset($_GET['reset']) && $_GET['reset'] === '1') {
+    $search = '';
+}
 
 $where_clause = "";
 $params = [];
@@ -69,7 +72,7 @@ $total_induk = mysqli_num_rows($result);
                        onkeyup="filterTableLive(this.value)"
                        autocomplete="off">
                 <?php if (!empty($search)): ?>
-                    <a href="stok_barang.php" class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted text-decoration-none" title="Reset">
+                    <a href="stok_barang.php?reset=1" onclick="sessionStorage.removeItem('stok_barang_search')" class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted text-decoration-none" title="Reset">
                         <i class="fa-solid fa-xmark"></i>
                     </a>
                 <?php endif; ?>
@@ -81,7 +84,7 @@ $total_induk = mysqli_num_rows($result);
 
         <?php if (!empty($search)): ?>
             <div>
-                <a href="stok_barang.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-medium">
+                <a href="stok_barang.php?reset=1" onclick="sessionStorage.removeItem('stok_barang_search')" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-medium">
                     <i class="fa-solid fa-rotate-left me-1"></i> Reset Pencarian
                 </a>
             </div>
@@ -142,7 +145,7 @@ $total_induk = mysqli_num_rows($result);
                             </td>
                             <td data-label="Aksi & Varian" class="text-end">
                                 <div class="action-btns justify-content-end">
-                                    <a href="jenis_barang.php?barang_id=<?= $b['id']; ?>" class="action-btn btn-edit" title="Lihat/Kelola Varian">
+                                    <a href="jenis_barang.php?barang_id=<?= $b['id']; ?>&search=<?= urlencode($search); ?>" class="action-btn btn-edit" title="Lihat/Kelola Varian">
                                         <i class="fa-solid fa-layer-group"></i> Varian
                                     </a>
                                     <?php if ($is_admin): ?>
@@ -150,7 +153,7 @@ $total_induk = mysqli_num_rows($result);
                                             <i class="fa-solid fa-pen"></i> Edit
                                         </button>
                                         <a href="#" class="action-btn btn-delete" 
-                                           onclick="confirmDelete(event, 'proses_stok_barang.php?action=delete&id=<?= $b['id']; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
+                                           onclick="confirmDelete(event, 'proses_stok_barang.php?action=delete&id=<?= $b['id']; ?>&csrf_token=<?= generate_csrf_token(); ?>&search=<?= urlencode($search); ?>')">
                                             <i class="fa-solid fa-trash"></i> Hapus
                                         </a>
                                     <?php endif; ?>
@@ -208,6 +211,7 @@ $total_induk = mysqli_num_rows($result);
                 <div class="modal-body">
                     <?= csrf_field(); ?>
                     <input type="hidden" name="action" value="create">
+                    <input type="hidden" name="search" value="<?= e($search); ?>">
                     
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">NAMA BARANG INDUK *</label>
@@ -241,6 +245,7 @@ $total_induk = mysqli_num_rows($result);
                     <?= csrf_field(); ?>
                     <input type="hidden" name="action" value="update">
                     <input type="hidden" name="id" id="edit_id">
+                    <input type="hidden" name="search" value="<?= e($search); ?>">
                     
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">NAMA BARANG INDUK *</label>
@@ -265,7 +270,10 @@ $total_induk = mysqli_num_rows($result);
 
 <script>
 function filterTableLive(query) {
-    const q = query.toLowerCase().trim();
+    if (query !== undefined) {
+        sessionStorage.setItem('stok_barang_search', query);
+    }
+    const q = (query || '').toLowerCase().trim();
     const rows = document.querySelectorAll('tbody tr[id^="row-barang-"]');
     
     rows.forEach(row => {
@@ -301,6 +309,21 @@ function editBarang(barang) {
 
 document.addEventListener("DOMContentLoaded", function() {
     const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    const isReset = urlParams.get('reset');
+    
+    if (isReset === '1') {
+        sessionStorage.removeItem('stok_barang_search');
+    } else if (searchParam !== null) {
+        sessionStorage.setItem('stok_barang_search', searchParam);
+    } else {
+        const savedSearch = sessionStorage.getItem('stok_barang_search');
+        if (savedSearch && savedSearch.trim() !== '') {
+            window.location.href = 'stok_barang.php?search=' + encodeURIComponent(savedSearch);
+            return;
+        }
+    }
+
     const scrollTo = urlParams.get('scroll_to') || window.location.hash.replace('#', '');
     if (scrollTo) {
         setTimeout(() => {

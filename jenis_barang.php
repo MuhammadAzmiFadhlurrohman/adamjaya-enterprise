@@ -37,14 +37,16 @@ if ($barang_id > 0) {
             <span class="page-eyebrow"><i class="fa-solid fa-layer-group"></i> Katalog Varian &middot; Adam Jaya</span>
             <h1 class="page-title">Varian & Stok Detail</h1>
             <p class="page-subtitle mb-0">Manajemen varian spesifikasi, harga standar, stok persediaan, dan satuan.</p>
-        </div>
-        <?php if ($is_admin): ?>
-            <div class="header-action">
-                <button class="btn btn-pengajuan-header" data-bs-toggle="modal" data-bs-target="#addJenisModal">
+        <div class="header-action d-flex align-items-center gap-2">
+            <a href="stok_barang.php" id="btnBackToStok" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold text-nowrap">
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Barang Induk
+            </a>
+            <?php if ($is_admin): ?>
+                <button class="btn btn-pengajuan-header text-nowrap" data-bs-toggle="modal" data-bs-target="#addJenisModal">
                     <i class="fa-solid fa-plus-circle me-1"></i> Tambah Varian Baru
                 </button>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </header>
 
@@ -361,6 +363,12 @@ function editJenis(j) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    const savedSearch = sessionStorage.getItem('stok_barang_search');
+    const btnBack = document.getElementById('btnBackToStok');
+    if (savedSearch && savedSearch.trim() !== '' && btnBack) {
+        btnBack.href = 'stok_barang.php?search=' + encodeURIComponent(savedSearch);
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const scrollTo = urlParams.get('scroll_to') || window.location.hash.replace('#', '');
     if (scrollTo) {

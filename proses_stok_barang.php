@@ -4,10 +4,12 @@ require_admin();
 
 $action = $_REQUEST['action'] ?? '';
 $csrf_token = $_REQUEST['csrf_token'] ?? '';
+$search = sanitize($_REQUEST['search'] ?? '');
+$search_query_str = !empty($search) ? '&search=' . urlencode($search) : '';
 
 if (!verify_csrf_token($csrf_token)) {
     set_flash('error', 'Gagal', 'Token CSRF tidak valid.');
-    header('Location: stok_barang.php');
+    header('Location: stok_barang.php' . (!empty($search) ? '?search=' . urlencode($search) : ''));
     exit;
 }
 
@@ -16,7 +18,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($nama_barang)) {
         set_flash('error', 'Gagal', 'Nama barang induk tidak boleh kosong.');
-        header('Location: stok_barang.php');
+        header('Location: stok_barang.php' . (!empty($search) ? '?search=' . urlencode($search) : ''));
         exit;
     }
 
@@ -40,11 +42,11 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (mysqli_stmt_execute($stmt)) {
         $new_id = mysqli_insert_id($conn);
         set_flash('success', 'Berhasil', 'Barang induk berhasil ditambahkan.');
-        header("Location: stok_barang.php?scroll_to=row-barang-$new_id#row-barang-$new_id");
+        header("Location: stok_barang.php?scroll_to=row-barang-$new_id#row-barang-$new_id" . $search_query_str);
         exit;
     } else {
         set_flash('error', 'Gagal', 'Gagal menambah barang induk.');
-        header('Location: stok_barang.php');
+        header('Location: stok_barang.php' . (!empty($search) ? '?search=' . urlencode($search) : ''));
         exit;
     }
 
@@ -76,11 +78,11 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (mysqli_stmt_execute($stmt)) {
         set_flash('success', 'Berhasil', 'Data barang induk berhasil diperbarui.');
-        header("Location: stok_barang.php?scroll_to=row-barang-$id#row-barang-$id");
+        header("Location: stok_barang.php?scroll_to=row-barang-$id#row-barang-$id" . $search_query_str);
         exit;
     } else {
         set_flash('error', 'Gagal', 'Gagal memperbarui barang induk.');
-        header('Location: stok_barang.php');
+        header('Location: stok_barang.php' . (!empty($search) ? '?search=' . urlencode($search) : ''));
         exit;
     }
 
@@ -94,7 +96,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         set_flash('error', 'Gagal', 'Gagal menghapus barang induk.');
     }
-    header('Location: stok_barang.php');
+    header('Location: stok_barang.php' . (!empty($search) ? '?search=' . urlencode($search) : ''));
     exit;
 }
 
