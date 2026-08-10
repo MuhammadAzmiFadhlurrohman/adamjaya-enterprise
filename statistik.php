@@ -96,13 +96,17 @@ $query_top_stock = "SELECT pd.nama_barang, pd.nama_jenis, pd.satuan,
                     ORDER BY total_qty DESC LIMIT 10";
 $res_top_stock = mysqli_query($conn, $query_top_stock);
 $top_stock_list = [];
-$stock_labels = [];
+$stock_labels_short = [];
+$stock_labels_full = [];
 $stock_values = [];
 while ($s = mysqli_fetch_assoc($res_top_stock)) {
     $top_stock_list[] = $s;
-    if (count($stock_labels) < 5) {
-        $label = $s['nama_barang'] . ($s['nama_jenis'] ? ' ('.$s['nama_jenis'].')' : '');
-        $stock_labels[] = $label;
+    if (count($stock_labels_short) < 5) {
+        $full = $s['nama_barang'] . (!empty($s['nama_jenis']) && $s['nama_jenis'] !== '-' ? ' ('.$s['nama_jenis'].')' : '');
+        $full_clean = preg_replace('/^Item:\s*/i', '', $full);
+        $short = (mb_strlen($full_clean) > 20) ? mb_substr($full_clean, 0, 18) . '...' : $full_clean;
+        $stock_labels_short[] = $short;
+        $stock_labels_full[] = $full_clean;
         $stock_values[] = (float)$s['total_qty'];
     }
 }
@@ -574,9 +578,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // ──────────────────────────────────────────────
     // Chart 6: Bar — Top 5 Stok Paling Banyak Dibeli (Tumbuh 1 per 1 dari 0)
     // ──────────────────────────────────────────────
-    const stockData   = <?= json_encode($stock_values); ?>;
-    const stockLabels = <?= json_encode($stock_labels); ?>;
-    let stockCurrent  = stockData.map(() => 0);
+    const stockData       = <?= json_encode($stock_values); ?>;
+    const stockLabels     = <?= json_encode($stock_labels_short); ?>;
+    const stockLabelsFull = <?= json_encode($stock_labels_full); ?>;
+    let stockCurrent      = stockData.map(() => 0);
 
     const stockChart = new Chart(document.getElementById('topStockChart').getContext('2d'), {
         type: 'bar',
@@ -596,10 +601,32 @@ document.addEventListener("DOMContentLoaded", function() {
             responsive: true,
             maintainAspectRatio: false,
             animation: { duration: 550, easing: 'easeOutQuart' },
-            plugins: { legend: { display: false } },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const idx = context[0].dataIndex;
+                            return stockLabelsFull[idx] || context[0].label;
+                        }
+                    }
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } },
-                x: { grid: { display: false }, border: { display: false } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(0,0,0,0.04)' }, 
+                    border: { display: false }
+                },
+                x: { 
+                    grid: { display: false }, 
+                    border: { display: false },
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0,
+                        font: { size: 11 }
+                    }
+                }
             }
         }
     });
