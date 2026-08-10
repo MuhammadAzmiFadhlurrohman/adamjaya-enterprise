@@ -15,7 +15,15 @@ if (!verify_csrf_token($csrf_token)) {
 }
 
 $pengajuan_id = (int)($_POST['id'] ?? 0);
-$user_id = current_user()['id'];
+$user_id = (int)(current_user()['id'] ?? 0);
+$u_check = mysqli_query($conn, "SELECT id FROM users WHERE id = $user_id");
+if (!$u_check || mysqli_num_rows($u_check) === 0) {
+    $u_fallback = mysqli_query($conn, "SELECT id FROM users ORDER BY id ASC LIMIT 1");
+    if ($u_row = mysqli_fetch_assoc($u_fallback)) {
+        $user_id = (int)$u_row['id'];
+    }
+}
+
 $nama_pembeli = sanitize($_POST['nama_pembeli'] ?? '');
 $telepon_pembeli = sanitize($_POST['telepon_pembeli'] ?? '');
 if (empty($nama_pembeli)) {

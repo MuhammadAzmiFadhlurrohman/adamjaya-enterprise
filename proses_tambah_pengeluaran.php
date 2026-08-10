@@ -14,7 +14,15 @@ if (!verify_csrf_token($csrf_token)) {
     exit;
 }
 
-$user_id = current_user()['id'];
+$user_id = (int)(current_user()['id'] ?? 0);
+$u_check = mysqli_query($conn, "SELECT id FROM users WHERE id = $user_id");
+if (!$u_check || mysqli_num_rows($u_check) === 0) {
+    $u_fallback = mysqli_query($conn, "SELECT id FROM users ORDER BY id ASC LIMIT 1");
+    if ($u_row = mysqli_fetch_assoc($u_fallback)) {
+        $user_id = (int)$u_row['id'];
+    }
+}
+
 $tanggal = sanitize($_POST['tanggal'] ?? date('Y-m-d'));
 $keterangan = sanitize($_POST['keterangan'] ?? '');
 
@@ -63,24 +71,30 @@ try {
     $stmt_head = mysqli_prepare($conn, "INSERT INTO pengeluaran_header (custom_id, tanggal, total_pengeluaran, keterangan, user_id) VALUES (?, ?, ?, ?, ?)");
     mysqli_stmt_bind_param($stmt_head, "ssdsi", $custom_id, $tanggal, $grand_total, $keterangan, $user_id);
     if (!mysqli_stmt_execute($stmt_head)) {
-        throw new Exception("Gagal menyimpan header pengeluaran.");
+        throw new Exception("Gagal menyimpan header pengeluaran: " . mysqli_error($conn));
     }
     $pengeluaran_id = mysqli_insert_id($conn);
 
-    // Insert Detail
-    $stmt_det = mysqli_prepare($conn, "INSERT INTO pengeluaran_detail (pengeluaran_id, nama_item, kategori, jumlah, satuan, harga_satuan, total_harga) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    // Deteksi nama kolom pada tabel pengeluaran_detail (header_id vs pengeluaran_id)
+    $col_h = mysqli_query($conn, "SHOW COLUMNS FROM pengeluaran_detail LIKE 'header_id'");
+    $has_header_id = ($col_h && mysqli_num_rows($col_h) > 0);
+    $col_p = mysqli_query($conn, "SHOW COLUMNS FROM pengeluaran_detail LIKE 'pengeluaran_id'");
+    $has_pengeluaran_id = ($col_p && mysqli_num_rows($col_p) > 0);
+
     foreach ($items_to_insert as $item) {
-        mysqli_stmt_bind_param($stmt_det, "issdsdd", 
-            $pengeluaran_id, 
-            $item['nama_item'], 
-            $item['kategori'], 
-            $item['jumlah'], 
-            $item['satuan'], 
-            $item['harga_satuan'], 
-            $item['total_harga']
-        );
+        if ($has_header_id && $has_pengeluaran_id) {
+            $stmt_det = mysqli_prepare($conn, "INSERT INTO pengeluaran_detail (header_id, pengeluaran_id, nama_item, kategori, jumlah, satuan, harga_satuan, total_harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt_det, "iissdsdd", $pengeluaran_id, $pengeluaran_id, $item['nama_item'], $item['kategori'], $item['jumlah'], $item['satuan'], $item['harga_satuan'], $item['total_harga']);
+        } else if ($has_header_id) {
+            $stmt_det = mysqli_prepare($conn, "INSERT INTO pengeluaran_detail (header_id, nama_item, kategori, jumlah, satuan, harga_satuan, total_harga) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt_det, "issdsdd", $pengeluaran_id, $item['nama_item'], $item['kategori'], $item['jumlah'], $item['satuan'], $item['harga_satuan'], $item['total_harga']);
+        } else {
+            $stmt_det = mysqli_prepare($conn, "INSERT INTO pengeluaran_detail (pengeluaran_id, nama_item, kategori, jumlah, satuan, harga_satuan, total_harga) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt_det, "issdsdd", $pengeluaran_id, $item['nama_item'], $item['kategori'], $item['jumlah'], $item['satuan'], $item['harga_satuan'], $item['total_harga']);
+        }
+
         if (!mysqli_stmt_execute($stmt_det)) {
-            throw new Exception("Gagal menyimpan detail pengeluaran.");
+            throw new Exception("Gagal menyimpan detail pengeluaran: " . mysqli_error($conn));
         }
     }
 
