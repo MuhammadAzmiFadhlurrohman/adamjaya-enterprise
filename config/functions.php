@@ -1,4 +1,7 @@
 <?php
+// Always enforce Asia/Jakarta (WIB) timezone
+date_default_timezone_set('Asia/Jakarta');
+
 // ========================================================
 // HELPER & UTILITY FUNCTIONS: ADAM JAYA ENTERPRISE
 // ========================================================

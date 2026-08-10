@@ -39,11 +39,11 @@ if ($barang_id > 0) {
             <p class="page-subtitle mb-0">Manajemen varian spesifikasi, harga standar, stok persediaan, dan satuan.</p>
         <div class="header-action d-flex align-items-center gap-2">
             <a href="stok_barang.php" id="btnBackToStok" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold text-nowrap">
-                <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Barang Induk
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali
             </a>
             <?php if ($is_admin): ?>
                 <button class="btn btn-pengajuan-header text-nowrap" data-bs-toggle="modal" data-bs-target="#addJenisModal">
-                    <i class="fa-solid fa-plus-circle me-1"></i> Tambah Varian Baru
+                    <i class="fa-solid fa-plus-circle me-1"></i> Tambah Varian
                 </button>
             <?php endif; ?>
         </div>
