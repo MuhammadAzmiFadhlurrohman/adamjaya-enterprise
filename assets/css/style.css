@@ -2343,80 +2343,84 @@ body.login-body {
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        padding: 0.4rem 0.85rem !important;
+        padding: 0.8rem 1rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     body.login-body .login-card {
-        padding: 1.15rem 1.15rem 0.95rem !important;
-        border-radius: 18px !important;
+        padding: 1.8rem 1.4rem 1.35rem !important;
+        border-radius: 22px !important;
         width: 100% !important;
-        max-width: 100% !important;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45) !important;
+        max-width: 380px !important;
+        margin: 0 auto !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 30px rgba(201, 168, 76, 0.15) !important;
     }
 
     body.login-body .login-brand-logo-container {
-        margin-bottom: 0.25rem !important;
-    }
-
-    body.login-body .login-brand-logo {
-        width: 54px !important;
-        max-width: 54px !important;
-        height: 54px !important;
-        padding: 4px !important;
-    }
-
-    body.login-body .login-card h3 {
-        font-size: 1.2rem !important;
-        margin-bottom: 0.1rem !important;
-    }
-
-    body.login-body .login-subtitle {
-        font-size: 0.62rem !important;
-        letter-spacing: 0.1em !important;
-    }
-
-    body.login-body .login-card .text-center.mb-4 {
-        margin-bottom: 0.55rem !important;
-    }
-
-    body.login-body .login-card .mb-3.5 {
         margin-bottom: 0.5rem !important;
     }
 
+    body.login-body .login-brand-logo {
+        width: 68px !important;
+        max-width: 68px !important;
+        height: 68px !important;
+        padding: 5px !important;
+    }
+
+    body.login-body .login-card h3 {
+        font-size: 1.35rem !important;
+        margin-bottom: 0.2rem !important;
+    }
+
+    body.login-body .login-subtitle {
+        font-size: 0.66rem !important;
+        letter-spacing: 0.14em !important;
+    }
+
+    body.login-body .login-card .text-center.mb-4 {
+        margin-bottom: 1rem !important;
+    }
+
+    body.login-body .login-card .mb-3.5 {
+        margin-bottom: 0.9rem !important;
+    }
+
     body.login-body .login-card .mb-4 {
-        margin-bottom: 0.55rem !important;
+        margin-bottom: 1.1rem !important;
     }
 
     body.login-body .login-input-group .form-control {
-        padding-top: 0.45rem !important;
-        padding-bottom: 0.45rem !important;
-        font-size: 0.84rem !important;
+        padding-top: 0.62rem !important;
+        padding-bottom: 0.62rem !important;
+        font-size: 0.88rem !important;
     }
 
     body.login-body .login-input-group .input-group-text {
-        padding-left: 0.65rem !important;
-        padding-right: 0.45rem !important;
+        padding-left: 0.85rem !important;
+        padding-right: 0.6rem !important;
     }
 
     body.login-body .btn-wine-login {
-        padding: 0.58rem 1.1rem !important;
-        font-size: 0.86rem !important;
-        border-radius: 11px !important;
+        padding: 0.72rem 1.25rem !important;
+        font-size: 0.9rem !important;
+        border-radius: 12px !important;
     }
 
     body.login-body .login-card .mt-4.pt-3 {
-        margin-top: 0.45rem !important;
-        padding-top: 0.35rem !important;
+        margin-top: 0.9rem !important;
+        padding-top: 0.6rem !important;
     }
 
     body.login-body .login-card .rounded-pill {
-        padding: 0.2rem 0.65rem !important;
-        font-size: 0.62rem !important;
+        padding: 0.28rem 0.85rem !important;
+        font-size: 0.65rem !important;
     }
 
     body.login-body .text-center.mt-3.5 {
-        margin-top: 0.35rem !important;
-        font-size: 0.66rem !important;
+        margin-top: 0.8rem !important;
+        font-size: 0.7rem !important;
     }
 }
 
