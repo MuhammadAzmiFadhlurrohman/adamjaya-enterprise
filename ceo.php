@@ -16,16 +16,33 @@ $res_pembeli = mysqli_query($conn, "SELECT COUNT(DISTINCT nama_pembeli) as total
 $row_pembeli = mysqli_fetch_assoc($res_pembeli);
 
 // Data Grafik Barang Paling Banyak Terjual / Dikeluarkan
-$query_top_sold = "SELECT nama_barang, SUM(jumlah) as total_qty 
-                   FROM pengajuan_detail 
-                   GROUP BY nama_barang 
-                   ORDER BY total_qty DESC LIMIT 6";
+$query_top_sold = "SELECT 
+    CASE 
+        WHEN nama_barang REGEXP '^(Item|item)\\s*:' THEN TRIM(REGEXP_REPLACE(nama_barang, '^(Item|item)\\s*:\\s*', ''))
+        ELSE nama_barang 
+    END as raw_name,
+    nama_jenis,
+    SUM(jumlah) as total_qty 
+FROM pengajuan_detail 
+GROUP BY raw_name, nama_jenis 
+ORDER BY total_qty DESC LIMIT 6";
+
 $res_top_sold = mysqli_query($conn, $query_top_sold);
 $sold_labels = [];
 $sold_values = [];
 if ($res_top_sold && mysqli_num_rows($res_top_sold) > 0) {
     while ($s = mysqli_fetch_assoc($res_top_sold)) {
-        $sold_labels[] = $s['nama_barang'];
+        $name = trim($s['raw_name']);
+        if (!empty($s['nama_jenis']) && $s['nama_jenis'] !== '-') {
+            $name .= ' (' . trim($s['nama_jenis']) . ')';
+        }
+        // Jika nama hanya berupa ukuran/berat (contoh: "6 kg", "8kg", "1kg", "2kg"), tambahkan nama yang deskriptif "Plastik"
+        if (preg_match('/^\d+\s*(kg|g|mm|meter|pack|unit)\)?$/i', $name)) {
+            $name = 'Plastik ' . rtrim($name, ')');
+        }
+        $name = trim(rtrim($name, ')'));
+
+        $sold_labels[] = $name;
         $sold_values[] = (float)$s['total_qty'];
     }
 }
