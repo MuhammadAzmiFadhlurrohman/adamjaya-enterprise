@@ -57,30 +57,31 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             min-height: 100vh;
         }
 
-        /* Fixed Left Control Sidebar */
+        /* Fixed Left Control Sidebar (Compact & Sleek) */
         .print-sidebar {
-            width: 320px;
+            width: 250px;
             height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
             background: #ffffff;
-            border-right: 1px solid #cbd5e1;
-            padding: 1.5rem 1.25rem;
+            border-right: 1px solid #e2e8f0;
+            padding: 1.1rem 0.95rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             z-index: 100;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.06);
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
             overflow-y: auto;
             box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         /* Main Preview Container on the Right */
         .print-preview-container {
-            margin-left: 320px;
+            margin-left: 250px;
             min-height: 100vh;
-            padding: 2rem 1.5rem;
+            padding: 1.5rem 1rem;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -134,13 +135,13 @@ while ($row = mysqli_fetch_assoc($res_d)) {
         .btn-paper-option {
             width: 100%;
             text-align: left;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            border: 1.5px solid #cbd5e1;
+            padding: 0.5rem 0.65rem;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
             background: #f8fafc;
             color: #334155;
             font-weight: 600;
-            font-size: 0.86rem;
+            font-size: 0.78rem;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
@@ -157,7 +158,14 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             background: linear-gradient(135deg, #7A1E33 0%, #4a0b18 100%) !important;
             border-color: #58101F !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(122, 30, 51, 0.3);
+            box-shadow: 0 2px 6px rgba(122, 30, 51, 0.25);
+        }
+
+        .default-box-compact {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.6rem 0.7rem;
         }
 
         .btn-wine-print {
@@ -165,10 +173,11 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             border: 1px solid #58101F;
             color: #ffffff;
             font-weight: 700;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(122, 30, 51, 0.35);
-            transition: all 0.25s ease;
+            font-size: 0.82rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(122, 30, 51, 0.25);
+            transition: all 0.2s ease;
         }
 
         .btn-wine-print:hover {
@@ -221,59 +230,59 @@ while ($row = mysqli_fetch_assoc($res_d)) {
     <div class="print-sidebar">
         <div>
             <!-- Header Title -->
-            <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom">
-                <img src="assets/adamjaya.png" alt="Adam Jaya Logo" style="width: 34px; height: 34px; object-fit: contain;">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <img src="assets/adamjaya.png" alt="Adam Jaya Logo" style="width: 28px; height: 28px; object-fit: contain;">
                 <div>
-                    <h6 class="fw-extrabold text-wine mb-0" style="letter-spacing: 0.03em; font-family: 'Plus Jakarta Sans', sans-serif;">ADAM JAYA</h6>
-                    <small class="text-muted fw-bold" style="font-size: 0.68rem; letter-spacing: 0.08em;">PENGATURAN CETAK</small>
+                    <h6 class="fw-bold text-wine mb-0" style="letter-spacing: 0.02em; font-size: 0.92rem; font-family: 'Plus Jakarta Sans', sans-serif;">ADAM JAYA</h6>
+                    <small class="text-muted fw-bold" style="font-size: 0.64rem; letter-spacing: 0.06em;">PENGATURAN CETAK</small>
                 </div>
             </div>
 
             <!-- Paper Size Options -->
-            <div class="mb-4">
-                <label class="form-label text-muted small fw-bold mb-2" style="font-size: 0.72rem; letter-spacing: 0.06em;">
-                    <i class="fa-solid fa-receipt me-1 text-wine"></i> UKURAN KERTAS PRINTER
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold mb-1.5" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+                    <i class="fa-solid fa-receipt me-1 text-wine"></i> UKURAN KERTAS
                 </label>
                 
-                <div class="d-flex flex-column gap-2">
+                <div class="d-flex flex-column gap-1.5">
                     <button id="btn-58mm" onclick="selectPaperSize('58mm')" class="btn-paper-option">
-                        <span><i class="fa-solid fa-receipt me-2"></i> 58mm (POS Thermal)</span>
+                        <span><i class="fa-solid fa-receipt me-1.5"></i> 58mm (Thermal)</span>
                         <i class="fa-solid fa-check check-icon" style="display: none;"></i>
                     </button>
                     <button id="btn-80mm" onclick="selectPaperSize('80mm')" class="btn-paper-option">
-                        <span><i class="fa-solid fa-receipt me-2"></i> 80mm (POS Thermal)</span>
+                        <span><i class="fa-solid fa-receipt me-1.5"></i> 80mm (Thermal)</span>
                         <i class="fa-solid fa-check check-icon" style="display: none;"></i>
                     </button>
                     <button id="btn-A4" onclick="selectPaperSize('A4')" class="btn-paper-option">
-                        <span><i class="fa-solid fa-file-lines me-2"></i> Halaman A4 / PDF</span>
+                        <span><i class="fa-solid fa-file-lines me-1.5"></i> Kertas A4 / PDF</span>
                         <i class="fa-solid fa-check check-icon" style="display: none;"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Set As Default Button Section -->
-            <div class="mb-4 p-3 bg-light rounded-3 border">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-bold text-dark" style="font-size: 0.76rem;">Default Pilihan:</span>
-                    <span id="defaultBadge" class="badge bg-warning text-dark border border-warning px-2 py-1" style="font-size: 0.7rem; display: none;">
+            <!-- Set As Default Compact Box -->
+            <div class="default-box-compact mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <span class="text-secondary fw-semibold" style="font-size: 0.7rem;">Default:</span>
+                    <span id="defaultBadge" class="badge bg-warning text-dark border border-warning px-1.5 py-0.5" style="font-size: 0.65rem; display: none;">
                         <i class="fa-solid fa-star me-1"></i> <b id="defaultSizeText">80mm</b>
                     </span>
                 </div>
-                <button onclick="saveCurrentAsDefault()" class="btn btn-warning btn-sm w-100 fw-bold rounded-3 shadow-sm py-2" title="Jadikan ukuran saat ini sebagai default cetak selanjutnya">
+                <button onclick="saveCurrentAsDefault()" class="btn btn-warning btn-sm w-100 fw-bold py-1 px-2 rounded-2 shadow-xs" style="font-size: 0.72rem;" title="Jadikan ukuran saat ini sebagai default cetak selanjutnya">
                     <i class="fa-solid fa-star me-1 text-dark"></i> Set Sebagai Default
                 </button>
-                <small class="text-muted d-block text-center mt-2" style="font-size: 0.68rem; line-height: 1.3;">
-                    Pilihan default akan tersimpan otomatis untuk pencetakan struk selanjutnya.
+                <small class="text-muted d-block text-center mt-1" style="font-size: 0.63rem; line-height: 1.2;">
+                    Tersimpan otomatis untuk pencetakan berikutnya.
                 </small>
             </div>
         </div>
 
         <!-- Bottom Action Buttons -->
-        <div class="pt-3 border-top">
-            <button onclick="window.print()" class="btn btn-wine-print w-100 mb-2">
-                <i class="fa-solid fa-print me-1.5"></i> CETAK STRUK SEKARANG
+        <div class="pt-2 border-top">
+            <button onclick="window.print()" class="btn btn-wine-print w-100 mb-1.5">
+                <i class="fa-solid fa-print me-1"></i> CETAK STRUK SEKARANG
             </button>
-            <button onclick="window.close()" class="btn btn-light border text-muted w-100 btn-sm py-2 rounded-3">
+            <button onclick="window.close()" class="btn btn-light border text-muted w-100 btn-sm py-1.5 rounded-2" style="font-size: 0.76rem;">
                 <i class="fa-solid fa-xmark me-1"></i> Tutup Halaman
             </button>
         </div>
