@@ -259,7 +259,14 @@ if ($barang_id > 0) {
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-semibold">SATUAN</label>
-                            <input type="text" name="satuan" class="form-control" list="preset_satuan_list" placeholder="Pilih atau ketik (unit / kg / meter / mm)" value="unit" required>
+                            <select name="satuan" class="form-select" required>
+                                <option value="unit" selected>unit</option>
+                                <option value="kg">kg</option>
+                                <option value="pack">pack</option>
+                                <option value="mm">mm</option>
+                                <option value="meter">meter</option>
+                                <option value="pcs">pcs</option>
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3 mt-3">
@@ -312,7 +319,14 @@ if ($barang_id > 0) {
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-semibold">SATUAN</label>
-                            <input type="text" name="satuan" id="edit_j_satuan" class="form-control" list="preset_satuan_list" required>
+                            <select name="satuan" id="edit_j_satuan" class="form-select" required>
+                                <option value="unit">unit</option>
+                                <option value="kg">kg</option>
+                                <option value="pack">pack</option>
+                                <option value="mm">mm</option>
+                                <option value="meter">meter</option>
+                                <option value="pcs">pcs</option>
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3 mt-3">
@@ -357,7 +371,15 @@ function editJenis(j) {
     const stokNum = parseFloat(j.stok) || 0;
     document.getElementById('edit_j_stok').value = (stokNum % 1 === 0) ? stokNum.toFixed(0) : stokNum;
     
-    document.getElementById('edit_j_satuan').value = j.satuan;
+    const selectSatuan = document.getElementById('edit_j_satuan');
+    selectSatuan.value = j.satuan;
+    if (selectSatuan.value !== j.satuan && j.satuan) {
+        const customOpt = document.createElement('option');
+        customOpt.value = j.satuan;
+        customOpt.textContent = j.satuan;
+        selectSatuan.appendChild(customOpt);
+        selectSatuan.value = j.satuan;
+    }
     document.getElementById('edit_j_harga').value = formatRupiahJS(j.harga, 'Rp ');
     new bootstrap.Modal(document.getElementById('editJenisModal')).show();
 }

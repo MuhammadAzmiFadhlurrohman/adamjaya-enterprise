@@ -20,8 +20,9 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
 <datalist id="preset_satuan_list">
     <option value="unit">
     <option value="kg">
-    <option value="meter">
+    <option value="pack">
     <option value="mm">
+    <option value="meter">
     <option value="pcs">
 </datalist>
 

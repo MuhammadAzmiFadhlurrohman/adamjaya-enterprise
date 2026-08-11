@@ -46,8 +46,9 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
 <datalist id="preset_satuan_list">
     <option value="unit">
     <option value="kg">
-    <option value="meter">
+    <option value="pack">
     <option value="mm">
+    <option value="meter">
     <option value="pcs">
 </datalist>
 
