@@ -11,20 +11,6 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adam Jaya Enterprise - Sistem Manajemen Operasional</title>
     
-    <!-- Instant Dark Mode Init Script (Prevent FOUC) -->
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('adamjaya_theme');
-            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.setAttribute('data-bs-theme', 'dark');
-                document.documentElement.classList.add('dark-mode');
-            } else {
-                document.documentElement.setAttribute('data-bs-theme', 'light');
-                document.documentElement.classList.remove('dark-mode');
-            }
-        })();
-    </script>
-    
     <!-- Favicon / Logo Sidebar Tab Icon -->
     <link rel="icon" type="image/png" href="assets/adamjaya.png">
     <link rel="shortcut icon" type="image/png" href="assets/adamjaya.png">
@@ -83,14 +69,8 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
                     </div>
                 </div>
                 
-                <!-- Right: Theme Switch, Username, Avatar Initial Badge & Logout Button -->
-                <div class="d-flex align-items-center gap-2.5">
-                    <!-- Dark Mode / Light Mode Toggle Button -->
-                    <button id="theme-toggle-btn" class="btn-theme-toggle" type="button" title="Ganti Mode Tampilan (Dark/Light)">
-                        <i class="fa-solid fa-moon theme-icon-dark"></i>
-                        <i class="fa-solid fa-sun theme-icon-light"></i>
-                    </button>
-
+                <!-- Right: Username, Avatar Initial Badge & Logout Button -->
+                <div class="d-flex align-items-center gap-3">
                     <div class="d-flex align-items-center gap-2">
                         <!-- Username & Role (Berada di KIRI Inisial Avatar) -->
                         <div class="text-end">

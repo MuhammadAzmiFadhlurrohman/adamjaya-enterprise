@@ -44,9 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Auto Init Rupiah Masking
   initRupiahMasking();
 
-  // Feature 1: Init Dark/Light Theme Toggle
-  initThemeToggle();
-
   // Feature 2: Init Animated KPI Counters
   setTimeout(animateKPICounters, 100);
 
@@ -278,29 +275,6 @@ function confirmDelete(event, url, message = "Data yang dihapus tidak dapat dike
     if (result.isConfirmed) {
       window.location.href = url;
     }
-  });
-}
-
-/* ========================================================
-   FEATURE 1: DARK MODE / LIGHT MODE TOGGLE HANDLER
-   ======================================================== */
-function initThemeToggle() {
-  const themeBtn = document.getElementById("theme-toggle-btn");
-  if (!themeBtn) return;
-
-  themeBtn.addEventListener("click", function () {
-    const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark" || document.documentElement.classList.contains("dark-mode");
-    const nextTheme = isDark ? "light" : "dark";
-
-    document.documentElement.setAttribute("data-bs-theme", nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark-mode");
-    } else {
-      document.documentElement.classList.remove("dark-mode");
-    }
-
-    localStorage.setItem("adamjaya_theme", nextTheme);
-    showToast("info", "Tema Diubah", `Mode ${nextTheme === 'dark' ? 'Gelap 🌙' : 'Terang ☀️'} telah diaktifkan.`, 2500);
   });
 }
 
