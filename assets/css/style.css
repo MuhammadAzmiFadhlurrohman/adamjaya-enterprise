@@ -2155,3 +2155,61 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     vertical-align: middle;
     display: inline-block;
 }
+
+/* ========================================================
+   CUSTOM THEME SCROLLBAR DESIGN (ADAM JAYA ENTERPRISE)
+   ======================================================== */
+
+/* Firefox Standard Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #7a1e33 rgba(122, 30, 51, 0.08);
+}
+
+/* Webkit Browsers (Chrome, Edge, Safari, Opera) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(240, 238, 235, 0.6);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #7a1e33 0%, #58101f 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #d4a843 0%, #7a1e33 100%);
+    border-color: #ffffff;
+    box-shadow: 0 0 10px rgba(212, 168, 67, 0.6);
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Sidebar, Table & Modal Inner Custom Scrollbar */
+.sidebar-wrapper::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.sidebar-wrapper::-webkit-scrollbar-track,
+.table-responsive::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d4a843 0%, #7a1e33 100%);
+    border-radius: 10px;
+}
