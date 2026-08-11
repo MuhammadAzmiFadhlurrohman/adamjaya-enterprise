@@ -241,7 +241,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                         </div>
                         <div class="col-6 col-md-3">
                             <label class="form-label text-muted small fw-semibold">Satuan *</label>
-                            <input type="text" name="satuan_<?= $idx; ?>" id="satuan_<?= $idx; ?>" class="form-control" list="preset_satuan_list" value="<?= e($item['satuan']); ?>" placeholder="unit / kg / pcs" required>
+                            <input type="text" name="satuan_<?= $idx; ?>" id="satuan_<?= $idx; ?>" class="form-control" list="preset_satuan_list" value="<?= e($item['satuan']); ?>" placeholder="unit / kg / pcs" required <?= $is_custom_item_switch ? '' : 'readonly'; ?>>
                         </div>
                         <div class="col-6 col-md-3">
                             <label class="form-label text-muted small fw-semibold">Harga Satuan (Rp) *</label>
@@ -656,12 +656,21 @@ function toggleCustomItem(idx) {
     const barangSelect = document.getElementById(`barang_id_${idx}`);
     const jenisSelect = document.getElementById(`jenis_id_${idx}`);
     const customNama = document.getElementById(`custom_nama_${idx}`);
+    const satuanInput = document.getElementById(`satuan_${idx}`);
 
     if (rowElem) {
         if (isCustom) {
             rowElem.classList.add('is-custom-row');
         } else {
             rowElem.classList.remove('is-custom-row');
+        }
+    }
+
+    if (satuanInput) {
+        if (isCustom) {
+            satuanInput.removeAttribute('readonly');
+        } else {
+            satuanInput.setAttribute('readonly', 'readonly');
         }
     }
 
@@ -769,7 +778,7 @@ function addItemRow() {
             </div>
             <div class="col-6 col-md-3">
                 <label class="form-label text-muted small fw-semibold">Satuan *</label>
-                <input type="text" name="satuan_${idx}" id="satuan_${idx}" class="form-control" list="preset_satuan_list" value="unit" placeholder="unit / kg / pcs" required>
+                <input type="text" name="satuan_${idx}" id="satuan_${idx}" class="form-control" list="preset_satuan_list" value="unit" placeholder="unit / kg / pcs" required readonly>
             </div>
             <div class="col-6 col-md-3">
                 <label class="form-label text-muted small fw-semibold">Harga Satuan (Rp) *</label>
