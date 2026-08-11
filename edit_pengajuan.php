@@ -181,7 +181,7 @@ $res_fav = mysqli_query($conn, "SELECT * FROM favorit_pembeli ORDER BY nama_pemb
                 $qty_lama = (float)$item['jumlah'];
                 $is_custom_item_switch = ($item['is_custom'] == 1 && (empty($item['jenis_id']) || $item['jenis_id'] == 0));
             ?>
-                <div class="item-card-row mb-3" data-index="<?= $idx; ?>" id="row_<?= $idx; ?>">
+                <div class="item-card-row mb-3 <?= $is_custom_item_switch ? 'is-custom-row' : ''; ?>" data-index="<?= $idx; ?>" id="row_<?= $idx; ?>">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <div class="d-flex align-items-center gap-2">
                             <div class="badge-item-wine">
@@ -647,6 +647,7 @@ function onVarianSelected(idx) {
 
 function toggleCustomItem(idx) {
     const isCustom = document.getElementById(`is_custom_${idx}`).checked;
+    const rowElem = document.getElementById(`row_${idx}`);
     const regFields = document.getElementById(`reguler_fields_${idx}`);
     const custFields = document.getElementById(`custom_fields_${idx}`);
     const stokWrapper = document.getElementById(`stok_info_wrapper_${idx}`);
@@ -655,6 +656,14 @@ function toggleCustomItem(idx) {
     const barangSelect = document.getElementById(`barang_id_${idx}`);
     const jenisSelect = document.getElementById(`jenis_id_${idx}`);
     const customNama = document.getElementById(`custom_nama_${idx}`);
+
+    if (rowElem) {
+        if (isCustom) {
+            rowElem.classList.add('is-custom-row');
+        } else {
+            rowElem.classList.remove('is-custom-row');
+        }
+    }
 
     if (isCustom) {
         regFields.classList.add('d-none');

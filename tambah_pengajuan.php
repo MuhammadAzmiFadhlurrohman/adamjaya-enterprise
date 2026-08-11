@@ -607,6 +607,7 @@ function onVarianSelected(idx) {
 
 function toggleCustomItem(idx) {
     const isCustom = document.getElementById(`is_custom_${idx}`).checked;
+    const rowElem = document.getElementById(`row_${idx}`);
     const regFields = document.getElementById(`reguler_fields_${idx}`);
     const custFields = document.getElementById(`custom_fields_${idx}`);
     const stokWrapper = document.getElementById(`stok_info_wrapper_${idx}`);
@@ -615,6 +616,14 @@ function toggleCustomItem(idx) {
     const barangSelect = document.getElementById(`barang_id_${idx}`);
     const jenisSelect = document.getElementById(`jenis_id_${idx}`);
     const customNama = document.getElementById(`custom_nama_${idx}`);
+
+    if (rowElem) {
+        if (isCustom) {
+            rowElem.classList.add('is-custom-row');
+        } else {
+            rowElem.classList.remove('is-custom-row');
+        }
+    }
 
     if (isCustom) {
         regFields.classList.add('d-none');
