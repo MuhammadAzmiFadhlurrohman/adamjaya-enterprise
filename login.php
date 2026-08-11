@@ -50,10 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="login-html">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Login - Adam Jaya Enterprise</title>
     <!-- Favicon / Logo Sidebar Tab Icon -->
     <link rel="icon" type="image/png" href="assets/adamjaya.png">
