@@ -336,7 +336,7 @@ while ($row = mysqli_fetch_assoc($res_d)) {
                         <div class="small text-muted ps-2" style="font-size: 0.9em;"><?= e($item['nama_jenis']); ?></div>
                     <?php endif; ?>
                     <div class="d-flex justify-content-between small">
-                        <span><?= number_format($item['jumlah'], 2, ',', '.'); ?> <?= e($item['satuan']); ?> x <?= formatRupiah($item['harga_satuan']); ?></span>
+                        <span><?= ($item['jumlah'] == (int)$item['jumlah']) ? number_format($item['jumlah'], 0, ',', '.') : rtrim(rtrim(number_format($item['jumlah'], 2, ',', '.'), '0'), ','); ?> <?= e($item['satuan']); ?> x <?= formatRupiah($item['harga_satuan']); ?></span>
                         <span class="fw-bold"><?= formatRupiah($item['subtotal']); ?></span>
                     </div>
                 <?php endforeach; ?>
