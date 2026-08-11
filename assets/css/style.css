@@ -2328,9 +2328,9 @@ body.login-body {
 }
 
 /* ========================================================
-   SINGLE SCREEN NO-SCROLL LOGIN FOR MOBILE DEVICES
+   SINGLE SCREEN NO-SCROLL LOGIN FOR MOBILE & DESKTOP
    ======================================================== */
-@media (max-width: 576px), (max-height: 740px) {
+@media (max-width: 576px) {
     html.login-html,
     body.login-body {
         height: 100% !important;
@@ -2349,6 +2349,7 @@ body.login-body {
     body.login-body .login-card {
         padding: 1.15rem 1.15rem 0.95rem !important;
         border-radius: 18px !important;
+        width: 100% !important;
         max-width: 100% !important;
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45) !important;
     }
@@ -2416,5 +2417,14 @@ body.login-body {
     body.login-body .text-center.mt-3.5 {
         margin-top: 0.35rem !important;
         font-size: 0.66rem !important;
+    }
+}
+
+/* Desktop Fix (Guarantees max-width: 440px on all desktop resolutions) */
+@media (min-width: 577px) {
+    body.login-body .login-card {
+        width: 100% !important;
+        max-width: 440px !important;
+        margin: 0 auto !important;
     }
 }
