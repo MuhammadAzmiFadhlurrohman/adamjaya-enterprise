@@ -125,11 +125,11 @@ $res_audit = mysqli_query($conn, $query_audit);
     <div class="col-md-6 dash-reveal" style="--reveal-delay: 0.45s">
         <div class="glass-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-pie text-wine me-2"></i> Pengeluaran Berdasarkan Kategori</h5>
-                <span class="badge bg-gold-soft text-wine small fw-bold">Live Breakdown</span>
+                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-column text-wine me-2"></i> Tren Nilai Pengadaan Bulanan</h5>
+                <span class="badge bg-gold-soft text-wine small fw-bold">Performa Periode</span>
             </div>
             <div style="position: relative; height: 260px;">
-                <canvas id="chartKategori"></canvas>
+                <canvas id="chartPengadaan"></canvas>
             </div>
         </div>
     </div>
@@ -137,11 +137,11 @@ $res_audit = mysqli_query($conn, $query_audit);
     <div class="col-md-6 dash-reveal" style="--reveal-delay: 0.55s">
         <div class="glass-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-column text-wine me-2"></i> Tren Nilai Pengadaan Bulanan</h5>
-                <span class="badge bg-gold-soft text-wine small fw-bold">Performa Periode</span>
+                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-pie text-wine me-2"></i> Pengeluaran Berdasarkan Kategori</h5>
+                <span class="badge bg-gold-soft text-wine small fw-bold">Live Breakdown</span>
             </div>
             <div style="position: relative; height: 260px;">
-                <canvas id="chartPengadaan"></canvas>
+                <canvas id="chartKategori"></canvas>
             </div>
         </div>
     </div>
