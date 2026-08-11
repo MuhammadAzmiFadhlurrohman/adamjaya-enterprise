@@ -15,17 +15,23 @@ $row_stok = mysqli_fetch_assoc($res_stok);
 $res_pembeli = mysqli_query($conn, "SELECT COUNT(DISTINCT nama_pembeli) as total_pembeli FROM pengajuan");
 $row_pembeli = mysqli_fetch_assoc($res_pembeli);
 
-// Data Grafik Pengeluaran Per Kategori
-$query_cat = "SELECT d.kategori, SUM(d.total_harga) as total 
-              FROM pengeluaran_detail d 
-              JOIN pengeluaran_header h ON d.pengeluaran_id = h.id 
-              GROUP BY d.kategori ORDER BY total DESC";
-$res_cat = mysqli_query($conn, $query_cat);
-$cat_labels = [];
-$cat_values = [];
-while ($c = mysqli_fetch_assoc($res_cat)) {
-    $cat_labels[] = $c['kategori'];
-    $cat_values[] = (float)$c['total'];
+// Data Grafik Barang Paling Banyak Terjual / Dikeluarkan
+$query_top_sold = "SELECT nama_barang, SUM(jumlah) as total_qty 
+                   FROM pengajuan_detail 
+                   GROUP BY nama_barang 
+                   ORDER BY total_qty DESC LIMIT 6";
+$res_top_sold = mysqli_query($conn, $query_top_sold);
+$sold_labels = [];
+$sold_values = [];
+if ($res_top_sold && mysqli_num_rows($res_top_sold) > 0) {
+    while ($s = mysqli_fetch_assoc($res_top_sold)) {
+        $sold_labels[] = $s['nama_barang'];
+        $sold_values[] = (float)$s['total_qty'];
+    }
+}
+if (empty($sold_labels)) {
+    $sold_labels = ['Belum Ada Data'];
+    $sold_values = [0];
 }
 
 // Data Grafik Pengadaan Bulanan
@@ -144,11 +150,11 @@ if ($res_audit) {
     <div class="col-md-6 dash-reveal" style="--reveal-delay: 0.55s">
         <div class="glass-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-pie text-wine me-2"></i> Pengeluaran Berdasarkan Kategori</h5>
-                <span class="badge bg-gold-soft text-wine small fw-bold">Live Breakdown</span>
+                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-fire text-wine me-2"></i> Barang Paling Banyak Terjual</h5>
+                <span class="badge bg-gold-soft text-wine small fw-bold">Top Selling Items</span>
             </div>
             <div style="position: relative; height: 260px;">
-                <canvas id="chartKategori"></canvas>
+                <canvas id="chartTerjual"></canvas>
             </div>
         </div>
     </div>
@@ -156,14 +162,14 @@ if ($res_audit) {
 
 <!-- AUDIT STOK DAFTAR PERSEDIAAN BARANG -->
 <div class="table-container mb-4">
-    <div class="table-container-header">
-        <h2><i class="fa-solid fa-shield-halved me-2 text-wine"></i> Audit Persediaan Stok Varian Terendah</h2>
-        <a href="stok_barang.php" class="btn btn-sm btn-outline-indigo">Lihat Seluruh Stok &rarr;</a>
+    <div class="table-container-header d-flex justify-content-between align-items-center flex-wrap gap-2 p-3 border-bottom">
+        <h2 class="mb-0"><i class="fa-solid fa-shield-halved me-2 text-wine"></i> Audit Persediaan Stok Varian Terendah</h2>
+        <a href="stok_barang.php" class="btn btn-sm btn-outline-indigo px-3 rounded-pill fw-bold" style="font-size: 0.78rem;">Lihat Seluruh Stok &rarr;</a>
     </div>
 
     <!-- DESKTOP VIEW (Table Format) -->
-    <div class="table-responsive d-none d-md-block">
-        <table class="table align-middle">
+    <div class="table-responsive d-none d-md-block p-2">
+        <table class="table align-middle mb-0">
             <thead>
                 <tr>
                     <th>Barang Induk & Varian</th>
@@ -204,39 +210,41 @@ if ($res_audit) {
         </table>
     </div>
 
-    <!-- MOBILE VIEW (2 Columns Grid / Dua Jajar Ke Bawah) -->
-    <div class="d-block d-md-none p-2">
-        <div class="row g-2">
+    <!-- MOBILE VIEW (2 Columns Grid / Dua Jajar Ke Bawah - Lega & Rapi) -->
+    <div class="d-block d-md-none p-3">
+        <div class="row g-3">
             <?php foreach ($audit_items as $audit): 
                 $stok_val = (float)$audit['stok'];
             ?>
                 <div class="col-6">
-                    <div class="card h-100 border shadow-sm rounded-3 p-2.5 bg-white position-relative">
-                        <div class="d-flex align-items-center justify-content-between mb-1.5">
-                            <span class="badge bg-light text-secondary border small text-truncate" style="max-width: 65px; font-size: 0.65rem;">
+                    <div class="card h-100 border border-light-subtle shadow-sm rounded-3 p-3 bg-white position-relative d-flex flex-column justify-content-between">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge bg-light text-secondary border px-2 py-1 rounded-2" style="font-size: 0.68rem; font-weight: 600;">
                                 <?= e($audit['satuan']); ?>
                             </span>
                             <?php if ($stok_val <= 0): ?>
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold" style="font-size: 0.6rem; padding: 2px 5px;">HABIS</span>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold" style="font-size: 0.64rem; padding: 3px 7px;">HABIS</span>
                             <?php elseif ($stok_val <= 5): ?>
-                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold" style="font-size: 0.6rem; padding: 2px 5px;">MENIPIS</span>
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold" style="font-size: 0.64rem; padding: 3px 7px;">MENIPIS</span>
                             <?php else: ?>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold" style="font-size: 0.6rem; padding: 2px 5px;">AMAN</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold" style="font-size: 0.64rem; padding: 3px 7px;">AMAN</span>
                             <?php endif; ?>
                         </div>
                         
-                        <h6 class="fw-bold text-dark mb-0 text-truncate" style="font-size: 0.8rem;" title="<?= e($audit['nama_barang']); ?>">
-                            <?= e($audit['nama_barang']); ?>
-                        </h6>
-                        <small class="text-muted d-block text-truncate mb-2" style="font-size: 0.7rem;" title="<?= e($audit['nama_jenis']); ?>">
-                            <?= e($audit['nama_jenis']); ?>
-                        </small>
+                        <div class="mb-2">
+                            <h6 class="fw-bold text-dark mb-1 text-truncate" style="font-size: 0.86rem; line-height: 1.25;" title="<?= e($audit['nama_barang']); ?>">
+                                <?= e($audit['nama_barang']); ?>
+                            </h6>
+                            <small class="text-muted d-block text-truncate" style="font-size: 0.72rem; line-height: 1.2;" title="<?= e($audit['nama_jenis']); ?>">
+                                <?= e($audit['nama_jenis']); ?>
+                            </small>
+                        </div>
 
-                        <div class="mt-auto pt-1.5 border-top d-flex align-items-center justify-content-between">
-                            <div class="small fw-bold text-success" style="font-size: 0.72rem;">
+                        <div class="pt-2 border-top d-flex align-items-center justify-content-between mt-auto">
+                            <div class="small fw-bold text-success" style="font-size: 0.76rem;">
                                 <?= formatRupiah($audit['harga']); ?>
                             </div>
-                            <div class="small fw-bold <?= $stok_val <= 5 ? 'text-danger' : 'text-dark'; ?>" style="font-size: 0.75rem;">
+                            <div class="small fw-bold <?= $stok_val <= 5 ? 'text-danger' : 'text-dark'; ?>" style="font-size: 0.8rem;">
                                 <?= format_stok($stok_val); ?>
                             </div>
                         </div>
@@ -260,21 +268,21 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // ────────────────────────────────────────────────
-    // Chart 1: Doughnut — Kategori Pengeluaran (Segmen Muncul Satu per Satu)
+    // Chart 1: Doughnut — Barang Paling Banyak Terjual
     // ────────────────────────────────────────────────
-    const catData   = <?= json_encode($cat_values); ?>;
-    const catLabels = <?= json_encode($cat_labels); ?>;
-    const catColors = ['#7A1E33','#C9973E','#1E8A5B','#1A2A4A','#58101F','#A5334C'];
-    let catCurrent  = catData.map(() => 0);
+    const soldData   = <?= json_encode($sold_values); ?>;
+    const soldLabels = <?= json_encode($sold_labels); ?>;
+    const soldColors = ['#7A1E33','#C9973E','#1E8A5B','#1A2A4A','#58101F','#A5334C'];
+    let soldCurrent  = soldData.map(() => 0);
 
-    const ctxCat = document.getElementById('chartKategori').getContext('2d');
-    const donutChart = new Chart(ctxCat, {
+    const ctxSold = document.getElementById('chartTerjual').getContext('2d');
+    const donutChart = new Chart(ctxSold, {
         type: 'doughnut',
         data: {
-            labels: catLabels,
+            labels: soldLabels,
             datasets: [{
-                data: [...catCurrent],
-                backgroundColor: catColors,
+                data: [...soldCurrent],
+                backgroundColor: soldColors,
                 borderWidth: 4,
                 borderColor: '#ffffff',
                 hoverOffset: 14,
@@ -298,17 +306,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 tooltip: {
                     callbacks: {
-                        label: (ctx) => '  ' + ctx.label + ': Rp ' + ctx.parsed.toLocaleString('id-ID')
+                        label: (ctx) => '  ' + ctx.label + ': ' + ctx.parsed.toLocaleString('id-ID') + ' Qty'
                     }
                 }
             }
         }
     });
 
-    catData.forEach((val, i) => {
+    soldData.forEach((val, i) => {
         setTimeout(() => {
-            catCurrent[i] = val;
-            donutChart.data.datasets[0].data = [...catCurrent];
+            soldCurrent[i] = val;
+            donutChart.data.datasets[0].data = [...soldCurrent];
             donutChart.update();
         }, 400 + i * 350);
     });
