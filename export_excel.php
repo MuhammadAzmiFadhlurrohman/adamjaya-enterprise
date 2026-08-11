@@ -65,19 +65,35 @@ $nama_bulan = [
 $bulan_teks = !empty($bulan) ? ($nama_bulan[str_pad($bulan, 2, '0', STR_PAD_LEFT)] ?? 'Bulan ' . $bulan) : 'Semua Bulan';
 $tahun_teks = !empty($tahun) ? $tahun : 'Semua Tahun';
 
-// Embed logo sebagai base64 agar tampil di Excel tanpa bergantung URL eksternal
+// Baca logo dari filesystem server dan encode ke base64 untuk MHTML
 $logo_path = __DIR__ . '/assets/adamjaya.png';
-$logo_base64 = '';
+$logo_cid  = 'logo_adamjaya@adamjaya.store';
+$logo_b64  = '';
+$has_logo  = false;
 if (file_exists($logo_path)) {
-    $logo_data = file_get_contents($logo_path);
-    $logo_base64 = 'data:image/png;base64,' . base64_encode($logo_data);
+    $logo_b64 = base64_encode(file_get_contents($logo_path));
+    $has_logo = true;
 }
 
-// Set Headers untuk Excel (.xls) Download dengan Formatted HTML
+// Boundary unik untuk MHTML
+$boundary = "----=_NextPart_" . md5(uniqid(rand(), true));
+
+// Set Headers untuk MHTML (.xls) Download — format yang mendukung embedded image
 $filename = "Laporan_Pembelian_AdamJaya_" . date('Ymd_His') . ".xls";
 header("Content-Type: application/vnd.ms-excel; charset=utf-8");
 header("Content-Disposition: attachment; filename=\"$filename\"");
 header("Cache-Control: max-age=0");
+
+// ---- Mulai output MHTML ----
+echo "MIME-Version: 1.0\r\n";
+echo "Content-Type: multipart/related; boundary=\"$boundary\"\r\n";
+echo "\r\n";
+
+// ---- PART 1: HTML ----
+echo "--$boundary\r\n";
+echo "Content-Type: text/html; charset=utf-8\r\n";
+echo "Content-Transfer-Encoding: quoted-printable\r\n";
+echo "\r\n";
 ?>
 <!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
@@ -110,16 +126,16 @@ header("Cache-Control: max-age=0");
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .text-bold { font-weight: bold; }
-        
+
         /* Status Badges */
         .status-lunas { background-color: #D1FAE5; color: #065F46; font-weight: bold; text-align: center; }
         .status-dp { background-color: #FEF3C7; color: #92400E; font-weight: bold; text-align: center; }
         .status-belum { background-color: #FEE2E2; color: #991B1B; font-weight: bold; text-align: center; }
-        
+
         .status-terkirim { background-color: #D1FAE5; color: #065F46; font-weight: bold; text-align: center; }
         .status-diproses { background-color: #E0E7FF; color: #3730A3; font-weight: bold; text-align: center; }
         .status-pending { background-color: #FEF3C7; color: #92400E; font-weight: bold; text-align: center; }
-        
+
         /* Total Row */
         tr.total-row td { background-color: #10B981; color: #FFFFFF; font-weight: bold; font-size: 11pt; border: 1px solid #059669; padding: 10px 8px; }
     </style>
@@ -128,10 +144,10 @@ header("Cache-Control: max-age=0");
     <table style="width: 100%;">
         <tr>
             <td width="65" style="vertical-align: middle; text-align: center;">
-                <?php if (!empty($logo_base64)): ?>
-                <img src="<?= $logo_base64; ?>" width="55" height="55" alt="Adam Jaya Logo" />
+                <?php if ($has_logo): ?>
+                <img src="cid:<?= $logo_cid; ?>" width="55" height="55" alt="Adam Jaya Logo" />
                 <?php else: ?>
-                <img src="assets/adamjaya.png" width="55" height="55" alt="Adam Jaya Logo" />
+                <img src="https://erpfinance.adamjaya.store/assets/adamjaya.png" width="55" height="55" alt="Adam Jaya Logo" />
                 <?php endif; ?>
             </td>
             <td colspan="8" style="vertical-align: middle; padding-left: 10px;">
@@ -158,7 +174,7 @@ header("Cache-Control: max-age=0");
             </tr>
         </thead>
         <tbody>
-            <?php 
+            <?php
             $no = 1;
             $grand_total_semua = 0;
             if (mysqli_num_rows($result) > 0):
@@ -166,7 +182,7 @@ header("Cache-Control: max-age=0");
                     $total_row = (float)$row['estimasi_dana'];
                     $grand_total_semua += $total_row;
                     $row_class = ($no % 2 === 0) ? 'even' : 'odd';
-                    
+
                     // Format Status Bayar Label & Style (Mendukung 'dibayar' dan 'lunas')
                     $st_bayar = strtolower($row['status_pembayaran'] ?? '');
                     $bayar_class = 'status-belum';
@@ -178,7 +194,7 @@ header("Cache-Control: max-age=0");
                         $bayar_class = 'status-dp';
                         $bayar_label = 'DP';
                     }
-                    
+
                     // Format Status Kirim Label & Style (Mendukung 'sudah_dikirim', 'dikirim', 'terkirim')
                     $st_kirim = strtolower($row['status_pengiriman'] ?? '');
                     $kirim_class = 'status-pending';
@@ -202,7 +218,7 @@ header("Cache-Control: max-age=0");
                     <td class="<?= $kirim_class; ?>"><?= e($kirim_label); ?></td>
                     <td class="text-right text-bold" style="mso-number-format:'\#\,\#\#0';"><?= number_format($total_row, 0, ',', '.'); ?></td>
                 </tr>
-            <?php 
+            <?php
                 endwhile;
             else:
             ?>
@@ -221,4 +237,18 @@ header("Cache-Control: max-age=0");
 </body>
 </html>
 <?php
+// ---- PART 2: Logo Image (MHTML attachment) ----
+if ($has_logo):
+    echo "\r\n--$boundary\r\n";
+    echo "Content-Type: image/png\r\n";
+    echo "Content-Transfer-Encoding: base64\r\n";
+    echo "Content-ID: <$logo_cid>\r\n";
+    echo "Content-Location: adamjaya.png\r\n";
+    echo "\r\n";
+    // Output base64 dengan line-wrap 76 karakter (standar MIME)
+    echo chunk_split($logo_b64, 76, "\r\n");
+endif;
+
+// ---- Tutup MHTML ----
+echo "\r\n--$boundary--\r\n";
 exit;
