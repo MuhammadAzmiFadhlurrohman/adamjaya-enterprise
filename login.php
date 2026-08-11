@@ -83,10 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="login-card">
+        <!-- Top Gradient Accent Line -->
+        <div class="login-card-top-accent"></div>
+
         <div class="text-center mb-4">
-            <img src="assets/adamjaya.png" alt="Adam Jaya Enterprise Logo" class="login-brand-logo mb-3" style="width: 82px !important; max-width: 82px !important; height: 82px !important; object-fit: contain !important; background: #ffffff !important; padding: 6px !important; border-radius: 50% !important; border: 2.5px solid var(--gold) !important; box-shadow: 0 8px 24px rgba(201, 151, 62, 0.35) !important;">
-            <h3 class="fw-extrabold text-wine mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.02em; font-size: 1.45rem;">ADAM JAYA</h3>
-            <div class="login-subtitle">ENTERPRISE SYSTEM</div>
+            <div class="login-brand-logo-container mb-3">
+                <img src="assets/adamjaya.png" alt="Adam Jaya Enterprise Logo" class="login-brand-logo">
+            </div>
+            <h3 class="fw-extrabold text-wine mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.03em; font-size: 1.55rem;">ADAM JAYA</h3>
+            <div class="login-subtitle">PROCUREMENT & OPERATIONAL SYSTEM</div>
         </div>
 
         <?php if (!empty($error)): ?>
@@ -98,34 +103,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form id="loginForm" action="login.php" method="POST">
             <?= csrf_field(); ?>
-            <div class="mb-3">
-                <label for="username" class="form-label text-muted small fw-bold" style="font-size:0.72rem; letter-spacing:0.05em;">USERNAME</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user text-wine"></i></span>
-                    <input type="text" name="username" id="username" class="form-control border-start-0 ps-1" placeholder="Masukkan username" required autofocus>
+            <div class="mb-3.5">
+                <label for="username" class="form-label text-muted small fw-bold mb-1.5" style="font-size:0.73rem; letter-spacing:0.06em;">USERNAME AKUN</label>
+                <div class="input-group login-input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-user-gear"></i></span>
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Masukkan username Anda" required autofocus autocomplete="username">
                 </div>
             </div>
 
             <div class="mb-4">
-                <label for="password" class="form-label text-muted small fw-bold" style="font-size:0.72rem; letter-spacing:0.05em;">PASSWORD</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-lock text-wine"></i></span>
-                    <input type="password" name="password" id="password" class="form-control border-start-0 border-end-0 ps-1" placeholder="Masukkan password" required>
-                    <button class="btn btn-light border border-start-0 text-muted" type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()">
+                <div class="d-flex justify-content-between align-items-center mb-1.5">
+                    <label for="password" class="form-label text-muted small fw-bold mb-0" style="font-size:0.73rem; letter-spacing:0.06em;">PASSWORD AKUN</label>
+                </div>
+                <div class="input-group login-input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-shield-halved"></i></span>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan password Anda" required autocomplete="current-password">
+                    <button class="btn btn-light bg-slate-50 border-0 text-muted px-3" type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()" title="Tampilkan/Sembunyikan Password">
                         <i class="fa-regular fa-eye" id="togglePasswordIcon"></i>
                     </button>
                 </div>
             </div>
 
-            <button type="submit" id="btnLoginSubmit" class="btn btn-wine-login w-100 py-3 rounded-3 fs-6">
-                <i class="fa-solid fa-right-to-bracket me-2"></i> Masuk ke Sistem
+            <button type="submit" id="btnLoginSubmit" class="btn btn-wine-login w-100 fs-6">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Masuk ke Portal Sistem
             </button>
         </form>
+
+        <div class="mt-4 pt-3 border-top text-center">
+            <div class="d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill bg-light border text-muted small" style="font-size: 0.72rem;">
+                <i class="fa-solid fa-lock text-gold"></i>
+                <span>256-Bit Encrypted Secure Enterprise Portal</span>
+            </div>
+        </div>
     </div>
 
     <!-- Footer Copyright -->
-    <div class="text-center mt-3 small text-white-50" style="font-size: 0.72rem; z-index: 2;">
-        &copy; <?= date('Y'); ?> Adam Jaya Enterprise &middot; Procurement & Operational Portal
+    <div class="text-center mt-3.5 small text-white-50" style="font-size: 0.74rem; z-index: 2; font-weight: 500;">
+        &copy; <?= date('Y'); ?> Adam Jaya Enterprise &middot; Operational Management v2.4
     </div>
 
     <script>
