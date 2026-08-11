@@ -282,14 +282,22 @@ function confirmDelete(event, url, message = "Data yang dihapus tidak dapat dike
    FEATURE 2: ANIMATED KPI COUNTER (COUNT UP ANIMATION)
    ======================================================== */
 function animateKPICounters() {
-  const targets = document.querySelectorAll(".stat-card-value, .badge-count, .kpi-number, [data-counter]");
+  const targets = document.querySelectorAll(".stat-value, .stat-card-value, .badge-count, .kpi-number, .kpi-val, [data-counter]");
   targets.forEach(el => {
     const text = el.innerText.trim();
     if (!text || el.dataset.animated) return;
 
+    // Separate numbers from suffix words (e.g. "12 Catatan" or "1.500 Total Stok" or "5 Pembeli")
     const isRupiah = text.includes("Rp");
+    
+    let suffix = "";
+    const matchSuffix = text.match(/([a-zA-Z\s]+)$/);
+    if (matchSuffix && !isRupiah && !text.includes("Rp")) {
+      suffix = " " + matchSuffix[1].trim();
+    }
+
     const targetVal = unformatRupiahJS(text);
-    if (!targetVal || isNaN(targetVal) || targetVal === 0) return;
+    if (targetVal === null || isNaN(targetVal) || targetVal === 0) return;
 
     el.dataset.animated = "true";
     const duration = 1200;
@@ -304,7 +312,7 @@ function animateKPICounters() {
       if (isRupiah) {
         el.innerText = formatRupiahJS(Math.round(current), 'Rp ');
       } else {
-        el.innerText = Math.round(current).toLocaleString('id-ID');
+        el.innerText = Math.round(current).toLocaleString('id-ID') + suffix;
       }
 
       if (progress < 1) {
@@ -313,7 +321,7 @@ function animateKPICounters() {
         if (isRupiah) {
           el.innerText = formatRupiahJS(targetVal, 'Rp ');
         } else {
-          el.innerText = targetVal.toLocaleString('id-ID');
+          el.innerText = targetVal.toLocaleString('id-ID') + suffix;
         }
       }
     }
@@ -330,11 +338,11 @@ function showToast(type, title, message, duration = 4000) {
   if (!container) return;
 
   const iconMap = {
-    success: "fa-solid fa-circle-check text-emerald-400",
-    error: "fa-solid fa-circle-xmark text-rose-400",
-    danger: "fa-solid fa-circle-xmark text-rose-400",
-    warning: "fa-solid fa-triangle-exclamation text-amber-400",
-    info: "fa-solid fa-circle-info text-sky-400"
+    success: "fa-solid fa-circle-check text-success",
+    error: "fa-solid fa-circle-xmark text-danger",
+    danger: "fa-solid fa-circle-xmark text-danger",
+    warning: "fa-solid fa-triangle-exclamation text-warning",
+    info: "fa-solid fa-circle-info text-info"
   };
 
   const iconClass = iconMap[type] || iconMap.info;
@@ -349,7 +357,7 @@ function showToast(type, title, message, duration = 4000) {
       </div>
       <button type="button" class="btn-close btn-close-white ms-2" style="font-size:0.7rem;" onclick="document.getElementById('${toastId}').remove()"></button>
     </div>
-    ${message ? `<div class="toast-body py-1 px-3 pt-0 text-white-50 small" style="font-size: 0.82rem;">${message}</div>` : ''}
+    ${message ? `<div class="toast-body py-1.5 px-3 pt-0 text-white-50 small" style="font-size: 0.84rem; line-height: 1.35;">${message}</div>` : ''}
     <div class="toast-progress-bar" id="${toastId}_progress"></div>
   </div>`;
 
@@ -357,8 +365,8 @@ function showToast(type, title, message, duration = 4000) {
 
   const progressElem = document.getElementById(`${toastId}_progress`);
   if (progressElem) {
-    progressElem.style.transitionDuration = `${duration}ms`;
-    setTimeout(() => { progressElem.style.width = "0%"; }, 20);
+    progressElem.style.transition = `width ${duration}ms linear`;
+    setTimeout(() => { progressElem.style.width = "0%"; }, 40);
   }
 
   setTimeout(() => {
@@ -378,20 +386,20 @@ function initNetworkAndLoaders() {
   const slowNetBanner = document.getElementById("slow-net-banner");
   let slowNetTimer = null;
 
-  function startProgress() {
+  window.startProgress = function() {
     if (!progressBar) return;
     progressBar.style.opacity = "1";
-    progressBar.style.width = "30%";
+    progressBar.style.width = "40%";
 
     clearTimeout(slowNetTimer);
     slowNetTimer = setTimeout(() => {
-      if (progressBar.style.width !== "100%" && progressBar.style.opacity !== "0" && slowNetBanner) {
+      if (progressBar && progressBar.style.width !== "100%" && progressBar.style.opacity !== "0" && slowNetBanner) {
         slowNetBanner.style.display = "block";
       }
-    }, 1800);
-  }
+    }, 1500);
+  };
 
-  function finishProgress() {
+  window.finishProgress = function() {
     if (!progressBar) return;
     progressBar.style.width = "100%";
     clearTimeout(slowNetTimer);
@@ -400,19 +408,36 @@ function initNetworkAndLoaders() {
       setTimeout(() => { progressBar.style.width = "0%"; }, 350);
       if (slowNetBanner) slowNetBanner.style.display = "none";
     }, 300);
+  };
+
+  // Intercept Fetch API requests to trigger top progress bar
+  const originalFetch = window.fetch;
+  if (originalFetch) {
+    window.fetch = function(...args) {
+      window.startProgress();
+      return originalFetch.apply(this, args)
+        .then(response => {
+          window.finishProgress();
+          return response;
+        })
+        .catch(error => {
+          window.finishProgress();
+          throw error;
+        });
+    };
   }
 
   // Detect link navigation
   document.addEventListener("click", function (e) {
     const target = e.target.closest("a");
     if (target && target.href && !target.href.startsWith("javascript:") && !target.href.includes("#") && target.target !== "_blank") {
-      startProgress();
+      window.startProgress();
     }
   });
 
   // Detect form submissions
   document.addEventListener("submit", function () {
-    startProgress();
+    window.startProgress();
   });
 
   // Network connection online/offline events
