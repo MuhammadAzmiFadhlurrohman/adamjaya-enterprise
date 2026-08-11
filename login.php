@@ -63,8 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Custom CSS dengan Cache Buster -->
-    <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/assets/css/style.css'); ?>">
+    <!-- Custom CSS dengan Cache Buster Real-time -->
+    <link rel="stylesheet" href="assets/css/style.css?v=<?= time(); ?>">
 </head>
 <body class="login-body">
 
@@ -86,11 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Top Gradient Accent Line -->
         <div class="login-card-top-accent"></div>
 
-        <div class="text-center mb-4">
-            <div class="login-brand-logo-container mb-3">
+        <div class="login-header-wrapper">
+            <div class="login-brand-logo-container">
                 <img src="assets/adamjaya.png" alt="Adam Jaya Enterprise Logo" class="login-brand-logo">
             </div>
-            <h3 class="fw-extrabold text-wine mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.03em; font-size: 1.55rem;">ADAM JAYA</h3>
+            <h3 class="login-title">ADAM JAYA</h3>
             <div class="login-subtitle">PROCUREMENT & OPERATIONAL SYSTEM</div>
         </div>
 
@@ -103,18 +103,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form id="loginForm" action="login.php" method="POST">
             <?= csrf_field(); ?>
-            <div class="mb-3.5">
-                <label for="username" class="form-label text-muted small fw-bold mb-1.5" style="font-size:0.73rem; letter-spacing:0.06em;">USERNAME AKUN</label>
+            <div class="login-field-group">
+                <label for="username" class="login-field-label">USERNAME AKUN</label>
                 <div class="input-group login-input-group">
                     <span class="input-group-text"><i class="fa-solid fa-user-gear"></i></span>
                     <input type="text" name="username" id="username" class="form-control" placeholder="Masukkan username Anda" required autofocus autocomplete="username">
                 </div>
             </div>
 
-            <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-1.5">
-                    <label for="password" class="form-label text-muted small fw-bold mb-0" style="font-size:0.73rem; letter-spacing:0.06em;">PASSWORD AKUN</label>
-                </div>
+            <div class="login-field-group">
+                <label for="password" class="login-field-label">PASSWORD AKUN</label>
                 <div class="input-group login-input-group">
                     <span class="input-group-text"><i class="fa-solid fa-shield-halved"></i></span>
                     <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan password Anda" required autocomplete="current-password">
@@ -129,8 +127,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
         </form>
 
-        <div class="mt-4 pt-3 border-top text-center">
-            <div class="d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill bg-light border text-muted small" style="font-size: 0.72rem;">
+        <div class="login-card-footer">
+            <div class="login-security-badge">
                 <i class="fa-solid fa-lock text-gold"></i>
                 <span>256-Bit Encrypted Secure Enterprise Portal</span>
             </div>
@@ -138,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Footer Copyright -->
-    <div class="text-center mt-3.5 small text-white-50" style="font-size: 0.74rem; z-index: 2; font-weight: 500;">
+    <div class="login-copyright-text">
         &copy; <?= date('Y'); ?> Adam Jaya Enterprise &middot; Operational Management v2.4
     </div>
 
