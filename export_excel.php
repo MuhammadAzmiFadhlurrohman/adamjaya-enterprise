@@ -65,35 +65,11 @@ $nama_bulan = [
 $bulan_teks = !empty($bulan) ? ($nama_bulan[str_pad($bulan, 2, '0', STR_PAD_LEFT)] ?? 'Bulan ' . $bulan) : 'Semua Bulan';
 $tahun_teks = !empty($tahun) ? $tahun : 'Semua Tahun';
 
-// Baca logo dari filesystem server dan encode ke base64 untuk MHTML
-$logo_path = __DIR__ . '/assets/adamjaya.png';
-$logo_cid  = 'logo_adamjaya@adamjaya.store';
-$logo_b64  = '';
-$has_logo  = false;
-if (file_exists($logo_path)) {
-    $logo_b64 = base64_encode(file_get_contents($logo_path));
-    $has_logo = true;
-}
-
-// Boundary unik untuk MHTML
-$boundary = "----=_NextPart_" . md5(uniqid(rand(), true));
-
-// Set Headers untuk MHTML (.xls) Download — format yang mendukung embedded image
+// Set Headers untuk Excel (.xls) Download dengan Formatted HTML
 $filename = "Laporan_Pembelian_AdamJaya_" . date('Ymd_His') . ".xls";
 header("Content-Type: application/vnd.ms-excel; charset=utf-8");
 header("Content-Disposition: attachment; filename=\"$filename\"");
 header("Cache-Control: max-age=0");
-
-// ---- Mulai output MHTML ----
-echo "MIME-Version: 1.0\r\n";
-echo "Content-Type: multipart/related; boundary=\"$boundary\"\r\n";
-echo "\r\n";
-
-// ---- PART 1: HTML ----
-echo "--$boundary\r\n";
-echo "Content-Type: text/html; charset=utf-8\r\n";
-echo "Content-Transfer-Encoding: quoted-printable\r\n";
-echo "\r\n";
 ?>
 <!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
@@ -143,14 +119,7 @@ echo "\r\n";
 <body>
     <table style="width: 100%;">
         <tr>
-            <td width="65" style="vertical-align: middle; text-align: center;">
-                <?php if ($has_logo): ?>
-                <img src="cid:<?= $logo_cid; ?>" width="55" height="55" alt="Adam Jaya Logo" />
-                <?php else: ?>
-                <img src="https://erpfinance.adamjaya.store/assets/adamjaya.png" width="55" height="55" alt="Adam Jaya Logo" />
-                <?php endif; ?>
-            </td>
-            <td colspan="8" style="vertical-align: middle; padding-left: 10px;">
+            <td colspan="9" style="vertical-align: middle; padding-bottom: 4px;">
                 <div class="company-title">ADAM JAYA ENTERPRISE</div>
                 <div class="report-subtitle">LAPORAN PEMBELIAN BARANG &middot; Periode: <?= e($bulan_teks); ?> <?= e($tahun_teks); ?></div>
                 <div class="filter-info">Diunduh pada: <?= date('d F Y, H:i:s'); ?> WIB &middot; Oleh: <?= e(ucwords((string)(current_user()['username'] ?? 'Admin'))); ?></div>
@@ -237,18 +206,4 @@ echo "\r\n";
 </body>
 </html>
 <?php
-// ---- PART 2: Logo Image (MHTML attachment) ----
-if ($has_logo):
-    echo "\r\n--$boundary\r\n";
-    echo "Content-Type: image/png\r\n";
-    echo "Content-Transfer-Encoding: base64\r\n";
-    echo "Content-ID: <$logo_cid>\r\n";
-    echo "Content-Location: adamjaya.png\r\n";
-    echo "\r\n";
-    // Output base64 dengan line-wrap 76 karakter (standar MIME)
-    echo chunk_split($logo_b64, 76, "\r\n");
-endif;
-
-// ---- Tutup MHTML ----
-echo "\r\n--$boundary--\r\n";
 exit;
