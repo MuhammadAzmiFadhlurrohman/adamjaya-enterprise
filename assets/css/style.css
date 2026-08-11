@@ -2006,16 +2006,15 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     bottom: 1.5rem;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.92);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    color: #f8fafc;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
     padding: 0.65rem 1.4rem;
     border-radius: 999px;
     font-size: 0.85rem;
     font-weight: 600;
     z-index: 10700;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     animation: slowNetBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
@@ -2030,13 +2029,12 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 .aj-toast-card {
     min-width: 300px;
     max-width: 380px;
-    background: rgba(15, 23, 42, 0.92) !important;
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 14px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
     overflow: hidden;
-    color: #ffffff !important;
+    color: #0f172a !important;
     animation: toastSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 

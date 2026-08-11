@@ -350,14 +350,14 @@ function showToast(type, title, message, duration = 4000) {
 
   const toastHtml = `
   <div id="${toastId}" class="toast show aj-toast-card toast-${type === 'danger' ? 'error' : type} mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header bg-transparent text-white border-0 py-2.5 px-3 d-flex align-items-center justify-content-between">
+    <div class="toast-header bg-white text-dark border-0 py-2.5 px-3 d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center gap-2">
         <i class="${iconClass} fs-5"></i>
-        <strong class="me-auto text-white fw-bold" style="font-size: 0.92rem;">${title}</strong>
+        <strong class="me-auto text-dark fw-bold" style="font-size: 0.92rem;">${title}</strong>
       </div>
-      <button type="button" class="btn-close btn-close-white ms-2" style="font-size:0.7rem;" onclick="document.getElementById('${toastId}').remove()"></button>
+      <button type="button" class="btn-close ms-2" style="font-size:0.7rem;" onclick="document.getElementById('${toastId}').remove()"></button>
     </div>
-    ${message ? `<div class="toast-body py-1.5 px-3 pt-0 text-white-50 small" style="font-size: 0.84rem; line-height: 1.35;">${message}</div>` : ''}
+    ${message ? `<div class="toast-body py-1.5 px-3 pt-0 text-muted small" style="font-size: 0.84rem; line-height: 1.35; color: #475569 !important;">${message}</div>` : ''}
     <div class="toast-progress-bar" id="${toastId}_progress"></div>
   </div>`;
 
