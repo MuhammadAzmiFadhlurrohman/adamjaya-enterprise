@@ -42,7 +42,8 @@ while ($d = mysqli_fetch_assoc($res_d)) {
 
 $struk_data = [
     'perusahaan' => 'ADAM JAYA ENTERPRISE',
-    'alamat' => 'Surakarta, Jawa Tengah',
+    'alamat' => 'Bandung, Jawa Barat',
+    'telepon' => '081234567890',
     'nota_id' => $p['custom_id'],
     'tanggal' => $p['created_at'],
     'admin' => $p['username'],

@@ -296,8 +296,8 @@ while ($row = mysqli_fetch_assoc($res_d)) {
                 <img src="assets/adamjaya.png" alt="Adam Jaya Logo" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
                 <div class="fw-bold text-uppercase" style="font-size: 1.1em; letter-spacing: 0.05em;">ADAM JAYA ENTERPRISE</div>
                 <div class="small">Procurement & Inventory System</div>
-                <div class="small text-muted">Surakarta, Jawa Tengah</div>
-                <div class="small text-muted">Telp: 0812-3456-7890</div>
+                <div class="small text-muted">Bandung, Jawa Barat</div>
+                <div class="small text-muted">Telp: 081234567890</div>
             </div>
 
             <div class="receipt-double-dashed"></div>
