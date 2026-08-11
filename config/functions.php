@@ -179,17 +179,21 @@ function get_flash() {
 function display_flash_msg() {
     $flash = get_flash();
     if ($flash) {
-        $icon = e($flash['type']);
+        $type = e($flash['type']);
         $title = addslashes($flash['title']);
         $text = addslashes($flash['message']);
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: '{$icon}',
-                    title: '{$title}',
-                    text: '{$text}',
-                    confirmButtonColor: '#7A1E33'
-                });
+                if (typeof showToast === 'function') {
+                    showToast('{$type}', '{$title}', '{$text}', 4000);
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: '{$type}',
+                        title: '{$title}',
+                        text: '{$text}',
+                        confirmButtonColor: '#7A1E33'
+                    });
+                }
             });
         </script>";
     }

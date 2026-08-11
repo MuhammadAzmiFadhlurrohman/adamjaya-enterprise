@@ -43,6 +43,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Auto Init Rupiah Masking
   initRupiahMasking();
+
+  // Feature 1: Init Dark/Light Theme Toggle
+  initThemeToggle();
+
+  // Feature 2: Init Animated KPI Counters
+  setTimeout(animateKPICounters, 100);
+
+  // Feature 4: Init Network Speed & Slow Network Indicator
+  initNetworkAndLoaders();
 });
 
 /**
@@ -269,5 +278,181 @@ function confirmDelete(event, url, message = "Data yang dihapus tidak dapat dike
     if (result.isConfirmed) {
       window.location.href = url;
     }
+  });
+}
+
+/* ========================================================
+   FEATURE 1: DARK MODE / LIGHT MODE TOGGLE HANDLER
+   ======================================================== */
+function initThemeToggle() {
+  const themeBtn = document.getElementById("theme-toggle-btn");
+  if (!themeBtn) return;
+
+  themeBtn.addEventListener("click", function () {
+    const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark" || document.documentElement.classList.contains("dark-mode");
+    const nextTheme = isDark ? "light" : "dark";
+
+    document.documentElement.setAttribute("data-bs-theme", nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark-mode");
+    } else {
+      document.documentElement.classList.remove("dark-mode");
+    }
+
+    localStorage.setItem("adamjaya_theme", nextTheme);
+    showToast("info", "Tema Diubah", `Mode ${nextTheme === 'dark' ? 'Gelap 🌙' : 'Terang ☀️'} telah diaktifkan.`, 2500);
+  });
+}
+
+/* ========================================================
+   FEATURE 2: ANIMATED KPI COUNTER (COUNT UP ANIMATION)
+   ======================================================== */
+function animateKPICounters() {
+  const targets = document.querySelectorAll(".stat-card-value, .badge-count, .kpi-number, [data-counter]");
+  targets.forEach(el => {
+    const text = el.innerText.trim();
+    if (!text || el.dataset.animated) return;
+
+    const isRupiah = text.includes("Rp");
+    const targetVal = unformatRupiahJS(text);
+    if (!targetVal || isNaN(targetVal) || targetVal === 0) return;
+
+    el.dataset.animated = "true";
+    const duration = 1200;
+    const startTime = performance.now();
+
+    function step(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      const current = targetVal * ease;
+
+      if (isRupiah) {
+        el.innerText = formatRupiahJS(Math.round(current), 'Rp ');
+      } else {
+        el.innerText = Math.round(current).toLocaleString('id-ID');
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        if (isRupiah) {
+          el.innerText = formatRupiahJS(targetVal, 'Rp ');
+        } else {
+          el.innerText = targetVal.toLocaleString('id-ID');
+        }
+      }
+    }
+
+    requestAnimationFrame(step);
+  });
+}
+
+/* ========================================================
+   FEATURE 7: FLOATING TOAST NOTIFICATION SYSTEM
+   ======================================================== */
+function showToast(type, title, message, duration = 4000) {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const iconMap = {
+    success: "fa-solid fa-circle-check text-emerald-400",
+    error: "fa-solid fa-circle-xmark text-rose-400",
+    danger: "fa-solid fa-circle-xmark text-rose-400",
+    warning: "fa-solid fa-triangle-exclamation text-amber-400",
+    info: "fa-solid fa-circle-info text-sky-400"
+  };
+
+  const iconClass = iconMap[type] || iconMap.info;
+  const toastId = "aj_toast_" + Date.now();
+
+  const toastHtml = `
+  <div id="${toastId}" class="toast show aj-toast-card toast-${type === 'danger' ? 'error' : type} mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-transparent text-white border-0 py-2.5 px-3 d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <i class="${iconClass} fs-5"></i>
+        <strong class="me-auto text-white fw-bold" style="font-size: 0.92rem;">${title}</strong>
+      </div>
+      <button type="button" class="btn-close btn-close-white ms-2" style="font-size:0.7rem;" onclick="document.getElementById('${toastId}').remove()"></button>
+    </div>
+    ${message ? `<div class="toast-body py-1 px-3 pt-0 text-white-50 small" style="font-size: 0.82rem;">${message}</div>` : ''}
+    <div class="toast-progress-bar" id="${toastId}_progress"></div>
+  </div>`;
+
+  container.insertAdjacentHTML("beforeend", toastHtml);
+
+  const progressElem = document.getElementById(`${toastId}_progress`);
+  if (progressElem) {
+    progressElem.style.transitionDuration = `${duration}ms`;
+    setTimeout(() => { progressElem.style.width = "0%"; }, 20);
+  }
+
+  setTimeout(() => {
+    const elem = document.getElementById(toastId);
+    if (elem) {
+      elem.style.opacity = "0";
+      setTimeout(() => elem.remove(), 300);
+    }
+  }, duration);
+}
+
+/* ========================================================
+   NETWORK SPEED & SLOW NETWORK INDICATOR LOGIC
+   ======================================================== */
+function initNetworkAndLoaders() {
+  const progressBar = document.getElementById("global-progress-bar");
+  const slowNetBanner = document.getElementById("slow-net-banner");
+  let slowNetTimer = null;
+
+  function startProgress() {
+    if (!progressBar) return;
+    progressBar.style.opacity = "1";
+    progressBar.style.width = "30%";
+
+    clearTimeout(slowNetTimer);
+    slowNetTimer = setTimeout(() => {
+      if (progressBar.style.width !== "100%" && progressBar.style.opacity !== "0" && slowNetBanner) {
+        slowNetBanner.style.display = "block";
+      }
+    }, 1800);
+  }
+
+  function finishProgress() {
+    if (!progressBar) return;
+    progressBar.style.width = "100%";
+    clearTimeout(slowNetTimer);
+    setTimeout(() => {
+      progressBar.style.opacity = "0";
+      setTimeout(() => { progressBar.style.width = "0%"; }, 350);
+      if (slowNetBanner) slowNetBanner.style.display = "none";
+    }, 300);
+  }
+
+  // Detect link navigation
+  document.addEventListener("click", function (e) {
+    const target = e.target.closest("a");
+    if (target && target.href && !target.href.startsWith("javascript:") && !target.href.includes("#") && target.target !== "_blank") {
+      startProgress();
+    }
+  });
+
+  // Detect form submissions
+  document.addEventListener("submit", function () {
+    startProgress();
+  });
+
+  // Network connection online/offline events
+  window.addEventListener("offline", function () {
+    if (slowNetBanner) {
+      const msgElem = document.getElementById("slow-net-msg");
+      if (msgElem) msgElem.innerText = "Koneksi terputus (Offline). Memeriksa jaringan...";
+      slowNetBanner.style.display = "block";
+    }
+    showToast("danger", "Koneksi Terputus", "Perangkat Anda sedang offline.", 4500);
+  });
+
+  window.addEventListener("online", function () {
+    if (slowNetBanner) slowNetBanner.style.display = "none";
+    showToast("success", "Koneksi Kembali", "Anda sudah terhubung kembali ke internet.", 3500);
   });
 }

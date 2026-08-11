@@ -11,6 +11,20 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adam Jaya Enterprise - Sistem Manajemen Operasional</title>
     
+    <!-- Instant Dark Mode Init Script (Prevent FOUC) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('adamjaya_theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+                document.documentElement.classList.add('dark-mode');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+                document.documentElement.classList.remove('dark-mode');
+            }
+        })();
+    </script>
+    
     <!-- Favicon / Logo Sidebar Tab Icon -->
     <link rel="icon" type="image/png" href="assets/adamjaya.png">
     <link rel="shortcut icon" type="image/png" href="assets/adamjaya.png">
@@ -25,6 +39,20 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
     <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css'); ?>">
 </head>
 <body>
+    <!-- Top Global Progress Bar (Animated Load Indicator) -->
+    <div id="global-progress-bar"></div>
+
+    <!-- Floating Toast Container -->
+    <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 10800;"></div>
+
+    <!-- Slow Network / Connection Status Banner -->
+    <div id="slow-net-banner" class="slow-net-banner" style="display: none;">
+        <div class="d-flex align-items-center gap-2">
+            <span class="spinner-border spinner-border-sm text-gold" role="status" aria-hidden="true"></span>
+            <span id="slow-net-msg">Koneksi internet lambat / kurang stabil. Memuat data...</span>
+        </div>
+    </div>
+
     <div class="d-flex">
         <!-- Sidebar Navigation -->
         <?php include_once __DIR__ . '/sidebar.php'; ?>
@@ -55,8 +83,14 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
                     </div>
                 </div>
                 
-                <!-- Right: Username (di Kiri Inisial), Avatar Initial Badge & Logout Button -->
-                <div class="d-flex align-items-center gap-3">
+                <!-- Right: Theme Switch, Username, Avatar Initial Badge & Logout Button -->
+                <div class="d-flex align-items-center gap-2.5">
+                    <!-- Dark Mode / Light Mode Toggle Button -->
+                    <button id="theme-toggle-btn" class="btn-theme-toggle" type="button" title="Ganti Mode Tampilan (Dark/Light)">
+                        <i class="fa-solid fa-moon theme-icon-dark"></i>
+                        <i class="fa-solid fa-sun theme-icon-light"></i>
+                    </button>
+
                     <div class="d-flex align-items-center gap-2">
                         <!-- Username & Role (Berada di KIRI Inisial Avatar) -->
                         <div class="text-end">
