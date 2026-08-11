@@ -40,6 +40,8 @@ while ($row = mysqli_fetch_assoc($res_d)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style id="printStyle">
         @page { size: 80mm auto; margin: 0mm; }
@@ -55,11 +57,11 @@ while ($row = mysqli_fetch_assoc($res_d)) {
         .no-print-toolbar {
             background: #ffffff;
             border-bottom: 1px solid #e2e8f0;
-            padding: 0.85rem 1rem;
+            padding: 0.75rem 1rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
 
         /* Container Struk Thermal */
@@ -121,6 +123,17 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             box-shadow: 0 2px 8px rgba(122, 30, 51, 0.3);
         }
 
+        .btn-wine-login {
+            background: linear-gradient(135deg, #7A1E33 0%, #4a0b18 100%);
+            border: 1px solid #58101F;
+            color: #ffffff;
+        }
+
+        .btn-wine-login:hover {
+            background: linear-gradient(135deg, #9b2c47 0%, #7A1E33 100%);
+            color: #ffffff;
+        }
+
         @media print {
             .no-print-toolbar {
                 display: none !important;
@@ -141,28 +154,43 @@ while ($row = mysqli_fetch_assoc($res_d)) {
 </head>
 <body>
 
-    <!-- Toolbar Pengaturan Cetak & Ukuran Kertas -->
-    <div class="no-print-toolbar text-center">
-        <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mb-2">
-            <span class="small fw-bold text-muted me-1"><i class="fa-solid fa-print me-1 text-primary"></i> PILIH UKURAN KERTAS:</span>
-            <button id="btn-58mm" onclick="setPaperSize('58mm')" class="btn btn-outline-secondary btn-paper-size btn-sm">
-                <i class="fa-solid fa-receipt me-1"></i> 58mm (POS Thermal Kecil)
-            </button>
-            <button id="btn-80mm" onclick="setPaperSize('80mm')" class="btn btn-outline-secondary btn-paper-size btn-sm active">
-                <i class="fa-solid fa-receipt me-1"></i> 80mm (POS Thermal Standar)
-            </button>
-            <button id="btn-A4" onclick="setPaperSize('A4')" class="btn btn-outline-secondary btn-paper-size btn-sm">
-                <i class="fa-solid fa-file-lines me-1"></i> Halaman A4 / PDF
-            </button>
-        </div>
+    <!-- Toolbar Pengaturan Cetak & Ukuran Kertas (Rata Kiri) -->
+    <div class="no-print-toolbar">
+        <div class="container-fluid px-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <!-- Left Side: Rata Kiri Paper Size Selection & Set Default Button -->
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="small fw-bold text-dark me-1"><i class="fa-solid fa-print me-1 text-danger"></i> PILIH UKURAN KERTAS:</span>
+                
+                <button id="btn-58mm" onclick="selectPaperSize('58mm')" class="btn btn-outline-secondary btn-paper-size btn-sm">
+                    <i class="fa-solid fa-receipt me-1"></i> 58mm (POS Thermal Kecil)
+                </button>
+                <button id="btn-80mm" onclick="selectPaperSize('80mm')" class="btn btn-outline-secondary btn-paper-size btn-sm">
+                    <i class="fa-solid fa-receipt me-1"></i> 80mm (POS Thermal Standar)
+                </button>
+                <button id="btn-A4" onclick="selectPaperSize('A4')" class="btn btn-outline-secondary btn-paper-size btn-sm">
+                    <i class="fa-solid fa-file-lines me-1"></i> Halaman A4 / PDF
+                </button>
 
-        <div class="d-flex justify-content-center gap-2">
-            <button onclick="window.print()" class="btn btn-primary btn-sm px-4 fw-bold rounded-pill">
-                <i class="fa-solid fa-print me-1"></i> CETAK STRUK SEKARANG
-            </button>
-            <button onclick="window.close()" class="btn btn-secondary btn-sm px-3 rounded-pill">
-                <i class="fa-solid fa-xmark me-1"></i> Tutup
-            </button>
+                <!-- Tombol Set Default -->
+                <button onclick="saveCurrentAsDefault()" class="btn btn-warning btn-sm fw-bold rounded-pill px-3 ms-md-1 shadow-sm" title="Simpan ukuran kertas saat ini sebagai default utama">
+                    <i class="fa-solid fa-star me-1 text-dark"></i> Set Sebagai Default
+                </button>
+                
+                <!-- Indikator Default -->
+                <span id="defaultBadge" class="badge bg-warning-subtle text-dark border border-warning rounded-pill px-2.5 py-1.5 ms-1" style="font-size: 0.72rem; display: none;">
+                    <i class="fa-solid fa-circle-check text-success me-1"></i> Default: <b id="defaultSizeText">80mm</b>
+                </span>
+            </div>
+
+            <!-- Right Side: Cetak Sekarang & Tutup -->
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <button onclick="window.print()" class="btn btn-wine-login btn-sm px-4 fw-bold rounded-pill shadow-sm">
+                    <i class="fa-solid fa-print me-1"></i> CETAK STRUK SEKARANG
+                </button>
+                <button onclick="window.close()" class="btn btn-secondary btn-sm px-3 rounded-pill">
+                    <i class="fa-solid fa-xmark me-1"></i> Tutup
+                </button>
+            </div>
         </div>
     </div>
 
@@ -254,7 +282,10 @@ while ($row = mysqli_fetch_assoc($res_d)) {
     </div>
 
     <script>
-    function setPaperSize(size) {
+    let currentPaperSize = '80mm';
+
+    function selectPaperSize(size) {
+        currentPaperSize = size;
         const card = document.getElementById('strukCard');
         const printStyle = document.getElementById('printStyle');
         
@@ -274,14 +305,43 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             printStyle.innerHTML = `@page { size: A4 portrait; margin: 10mm; } .struk-card { width: 100% !important; max-width: 750px !important; padding: 20px !important; font-size: 13px !important; }`;
         }
         
+        updateDefaultBadgeDisplay();
+    }
+
+    function saveCurrentAsDefault() {
         try {
-            localStorage.setItem('preferred_paper_size', size);
+            localStorage.setItem('adamjaya_default_paper_size', currentPaperSize);
+            updateDefaultBadgeDisplay();
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Default Berhasil Disimpan!',
+                    text: 'Ukuran kertas (' + currentPaperSize + ') dijadikan sebagai default utama pencetakan struk.',
+                    timer: 2500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                alert('Ukuran kertas (' + currentPaperSize + ') berhasil dijadikan default!');
+            }
         } catch(e){}
     }
 
+    function updateDefaultBadgeDisplay() {
+        const savedDefault = localStorage.getItem('adamjaya_default_paper_size') || '80mm';
+        const badge = document.getElementById('defaultBadge');
+        const text = document.getElementById('defaultSizeText');
+        if (badge && text) {
+            text.innerText = savedDefault;
+            badge.style.display = 'inline-flex';
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
-        const savedSize = localStorage.getItem('preferred_paper_size') || '80mm';
-        setPaperSize(savedSize);
+        const savedSize = localStorage.getItem('adamjaya_default_paper_size') || '80mm';
+        selectPaperSize(savedSize);
     });
     </script>
 </body>
