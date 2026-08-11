@@ -60,7 +60,7 @@ try {
 
                 // Log audit trail
                 $ket_revert = "Pengembalian stok dari pembatalan/penghapusan pengajuan #$custom_id";
-                $stmt_log_r = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan) VALUES (?, ?, ?, ?, ?, 'hapus', ?)");
+                $stmt_log_r = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan, tanggal) VALUES (?, ?, ?, ?, ?, 'hapus', ?, NOW())");
                 mysqli_stmt_bind_param($stmt_log_r, "iiddss", $jenis_id, $user_id, $qty, $stok_prev, $stok_reverted, $ket_revert);
                 mysqli_stmt_execute($stmt_log_r);
             }

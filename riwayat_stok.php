@@ -85,7 +85,7 @@ $total_logs = mysqli_num_rows($result);
                             </td>
                             <td><strong class="text-dark"><?= format_stok($r['stok_sesudah']); ?> <?= e($r['satuan']); ?></strong></td>
                             <td>
-                                <small class="text-muted d-block"><i class="fa-regular fa-clock me-1 text-gold"></i> <?= date('d M Y, H:i', strtotime($r['tanggal'])); ?></small>
+                                <small class="text-muted d-block"><i class="fa-regular fa-clock me-1 text-gold"></i> <?= format_tanggal_indo($r['tanggal']); ?></small>
                                 <small class="text-muted d-block"><?= e($r['keterangan'] ?: '-'); ?></small>
                             </td>
                         </tr>
@@ -168,7 +168,7 @@ $total_logs = mysqli_num_rows($result);
 
                 <!-- Footer Timestamp & Notes -->
                 <div class="d-flex justify-content-between align-items-center text-muted" style="font-size:0.72rem;">
-                    <span><i class="fa-regular fa-clock me-1 text-gold"></i> <?= date('d M Y, H:i', strtotime($r['tanggal'])); ?></span>
+                    <span><i class="fa-regular fa-clock me-1 text-gold"></i> <?= format_tanggal_indo($r['tanggal']); ?></span>
                     <?php if (!empty($r['keterangan'])): ?>
                         <span class="text-truncate ms-2" style="max-width:50%;" title="<?= e($r['keterangan']); ?>"><i class="fa-solid fa-info-circle me-1"></i> <?= e($r['keterangan']); ?></span>
                     <?php endif; ?>

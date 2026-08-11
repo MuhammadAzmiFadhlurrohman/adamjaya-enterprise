@@ -250,7 +250,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                             <td data-label="Pelanggan & Waktu">
                                 <strong class="text-dark d-block fs-6"><?= e($p['nama_pembeli'] ?: '-'); ?></strong>
                                 <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
-                                    <i class="fa-regular fa-clock me-1 text-gold"></i> <?= date('d M Y, H:i', strtotime($p['created_at'])); ?>
+                                    <i class="fa-regular fa-clock me-1 text-gold"></i> <?= format_tanggal_indo($p['created_at']); ?>
                                 </small>
                             </td>
                             <td data-label="Admin Input" class="text-nowrap">

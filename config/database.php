@@ -46,6 +46,11 @@ if (file_exists(__DIR__ . '/database.production.php')) {
     }
 
     mysqli_set_charset($conn, "utf8mb4");
-    date_default_timezone_set('Asia/Jakarta');
+}
+
+// Global Timezone Enforcement (WIB / Asia/Jakarta GMT+7)
+date_default_timezone_set('Asia/Jakarta');
+if (isset($conn) && $conn) {
+    mysqli_set_charset($conn, "utf8mb4");
     @mysqli_query($conn, "SET time_zone = '+07:00'");
 }

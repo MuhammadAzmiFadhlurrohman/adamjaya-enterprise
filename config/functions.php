@@ -56,6 +56,37 @@ function formatRupiah($val, $with_prefix = true) {
 }
 
 /**
+ * Format Tanggal & Jam Indonesia (WIB)
+ * Contoh: "11 Agu 2026, 12:43 WIB"
+ */
+function format_tanggal_indo($datetime, $include_time = true, $with_wib = true) {
+    if (empty($datetime) || $datetime === '0000-00-00 00:00:00') return '-';
+    
+    $timestamp = is_numeric($datetime) ? (int)$datetime : strtotime($datetime);
+    if (!$timestamp) return '-';
+
+    $bulan_indo = [
+        1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
+        7 => 'Jul', 8 => 'Agu', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+    ];
+
+    $hari = date('d', $timestamp);
+    $bulan = $bulan_indo[(int)date('m', $timestamp)] ?? date('M', $timestamp);
+    $tahun = date('Y', $timestamp);
+
+    $formatted = "$hari $bulan $tahun";
+    if ($include_time) {
+        $jam = date('H:i', $timestamp);
+        $formatted .= ", $jam";
+        if ($with_wib) {
+            $formatted .= " WIB";
+        }
+    }
+
+    return $formatted;
+}
+
+/**
  * Format Stok tanpa nol menggantung di belakang
  * Contoh: 25.0 -> 25 | 25.50 -> 25,5 | 25.75 -> 25,75
  */

@@ -35,7 +35,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $jenis_id = mysqli_insert_id($conn);
         
         // Log ke riwayat_stok
-        $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan) VALUES (?, ?, ?, 0.00, ?, 'tambah', 'Penambahan varian barang baru')");
+        $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan, tanggal) VALUES (?, ?, ?, 0.00, ?, 'tambah', 'Penambahan varian barang baru', NOW())");
         mysqli_stmt_bind_param($stmt_log, "iidd", $jenis_id, $user_id, $stok, $stok);
         mysqli_stmt_execute($stmt_log);
 
@@ -74,7 +74,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         // Log ke riwayat_stok jika stok berubah
         if ($perubahan != 0) {
             $ket = "Pembaruan data varian & penyesuaian stok";
-            $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan) VALUES (?, ?, ?, ?, ?, 'edit', ?)");
+            $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan, tanggal) VALUES (?, ?, ?, ?, ?, 'edit', ?, NOW())");
             mysqli_stmt_bind_param($stmt_log, "iiddss", $id, $user_id, $perubahan, $stok_sebelum, $stok_baru, $ket);
             mysqli_stmt_execute($stmt_log);
         }
@@ -101,7 +101,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $stok_sebelum = (float)$row_old['stok'];
         
         // Log hapus stok
-        $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan) VALUES (?, ?, ?, ?, 0.00, 'hapus', 'Penghapusan varian barang')");
+        $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_stok (jenis_id, user_id, perubahan, stok_sebelum, stok_sesudah, aksi, keterangan, tanggal) VALUES (?, ?, ?, ?, 0.00, 'hapus', 'Penghapusan varian barang', NOW())");
         $neg_stok = -$stok_sebelum;
         mysqli_stmt_bind_param($stmt_log, "iidd", $id, $user_id, $neg_stok, $stok_sebelum);
         mysqli_stmt_execute($stmt_log);
