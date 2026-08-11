@@ -47,6 +47,13 @@ $query_audit = "SELECT j.*, b.nama_barang
                 JOIN stok_barang b ON j.barang_id = b.id 
                 ORDER BY j.stok ASC LIMIT 10";
 $res_audit = mysqli_query($conn, $query_audit);
+
+$audit_items = [];
+if ($res_audit) {
+    while ($row = mysqli_fetch_assoc($res_audit)) {
+        $audit_items[] = $row;
+    }
+}
 ?>
 
 <!-- HEADER CURVED EXECUTIVE BANNER -->
@@ -154,7 +161,8 @@ $res_audit = mysqli_query($conn, $query_audit);
         <a href="stok_barang.php" class="btn btn-sm btn-outline-indigo">Lihat Seluruh Stok &rarr;</a>
     </div>
 
-    <div class="table-responsive">
+    <!-- DESKTOP VIEW (Table Format) -->
+    <div class="table-responsive d-none d-md-block">
         <table class="table align-middle">
             <thead>
                 <tr>
@@ -166,7 +174,7 @@ $res_audit = mysqli_query($conn, $query_audit);
                 </tr>
             </thead>
             <tbody>
-                <?php while ($audit = mysqli_fetch_assoc($res_audit)): 
+                <?php foreach ($audit_items as $audit): 
                     $stok_val = (float)$audit['stok'];
                 ?>
                     <tr>
@@ -191,9 +199,51 @@ $res_audit = mysqli_query($conn, $query_audit);
                             <?php endif; ?>
                         </td>
                     </tr>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+
+    <!-- MOBILE VIEW (2 Columns Grid / Dua Jajar Ke Bawah) -->
+    <div class="d-block d-md-none p-2">
+        <div class="row g-2">
+            <?php foreach ($audit_items as $audit): 
+                $stok_val = (float)$audit['stok'];
+            ?>
+                <div class="col-6">
+                    <div class="card h-100 border shadow-sm rounded-3 p-2.5 bg-white position-relative">
+                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                            <span class="badge bg-light text-secondary border small text-truncate" style="max-width: 65px; font-size: 0.65rem;">
+                                <?= e($audit['satuan']); ?>
+                            </span>
+                            <?php if ($stok_val <= 0): ?>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold" style="font-size: 0.6rem; padding: 2px 5px;">HABIS</span>
+                            <?php elseif ($stok_val <= 5): ?>
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold" style="font-size: 0.6rem; padding: 2px 5px;">MENIPIS</span>
+                            <?php else: ?>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold" style="font-size: 0.6rem; padding: 2px 5px;">AMAN</span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <h6 class="fw-bold text-dark mb-0 text-truncate" style="font-size: 0.8rem;" title="<?= e($audit['nama_barang']); ?>">
+                            <?= e($audit['nama_barang']); ?>
+                        </h6>
+                        <small class="text-muted d-block text-truncate mb-2" style="font-size: 0.7rem;" title="<?= e($audit['nama_jenis']); ?>">
+                            <?= e($audit['nama_jenis']); ?>
+                        </small>
+
+                        <div class="mt-auto pt-1.5 border-top d-flex align-items-center justify-content-between">
+                            <div class="small fw-bold text-success" style="font-size: 0.72rem;">
+                                <?= formatRupiah($audit['harga']); ?>
+                            </div>
+                            <div class="small fw-bold <?= $stok_val <= 5 ? 'text-danger' : 'text-dark'; ?>" style="font-size: 0.75rem;">
+                                <?= format_stok($stok_val); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
 </div>
 
