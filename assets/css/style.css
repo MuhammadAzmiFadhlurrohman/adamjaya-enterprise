@@ -2305,3 +2305,90 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
     background: linear-gradient(180deg, #d4a843 0%, #7a1e33 100%);
     border-radius: 10px;
 }
+
+/* ========================================================
+   SINGLE SCREEN NO-SCROLL LOGIN FOR MOBILE DEVICES
+   ======================================================== */
+@media (max-width: 576px), (max-height: 740px) {
+    body.login-body {
+        height: 100vh !important;
+        height: 100dvh !important;
+        max-height: 100vh !important;
+        min-height: 100vh !important;
+        overflow: hidden !important;
+        padding: 0.6rem 0.85rem !important;
+        justify-content: center !important;
+    }
+
+    body.login-body .login-card {
+        padding: 1.4rem 1.2rem 1.1rem !important;
+        border-radius: 20px !important;
+        max-width: 100% !important;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    body.login-body .login-brand-logo-container {
+        margin-bottom: 0.4rem !important;
+    }
+
+    body.login-body .login-brand-logo {
+        width: 60px !important;
+        max-width: 60px !important;
+        height: 60px !important;
+        padding: 4px !important;
+    }
+
+    body.login-body .login-card h3 {
+        font-size: 1.25rem !important;
+        margin-bottom: 0.15rem !important;
+    }
+
+    body.login-body .login-subtitle {
+        font-size: 0.64rem !important;
+        letter-spacing: 0.12em !important;
+    }
+
+    body.login-body .login-card .text-center.mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+
+    body.login-body .login-card .mb-3.5 {
+        margin-bottom: 0.65rem !important;
+    }
+
+    body.login-body .login-card .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+
+    body.login-body .login-input-group .form-control {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+        font-size: 0.85rem !important;
+    }
+
+    body.login-body .login-input-group .input-group-text {
+        padding-left: 0.75rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    body.login-body .btn-wine-login {
+        padding: 0.65rem 1.2rem !important;
+        font-size: 0.88rem !important;
+        border-radius: 12px !important;
+    }
+
+    body.login-body .login-card .mt-4.pt-3 {
+        margin-top: 0.6rem !important;
+        padding-top: 0.4rem !important;
+    }
+
+    body.login-body .login-card .rounded-pill {
+        padding: 0.25rem 0.75rem !important;
+        font-size: 0.65rem !important;
+    }
+
+    body.login-body .text-center.mt-3.5 {
+        margin-top: 0.4rem !important;
+        font-size: 0.68rem !important;
+    }
+}
