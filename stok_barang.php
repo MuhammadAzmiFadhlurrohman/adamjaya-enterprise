@@ -105,7 +105,7 @@ $total_induk = mysqli_num_rows($result);
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th width="70">ID</th>
+                    <th width="45">ID</th>
                     <th width="80">Gambar</th>
                     <th>Nama Barang Induk</th>
                     <th>Jumlah Varian</th>

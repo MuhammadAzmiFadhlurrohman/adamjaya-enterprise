@@ -92,7 +92,7 @@ if ($barang_id > 0) {
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th width="60">ID</th>
+                    <th width="45">ID</th>
                     <th>Barang Induk</th>
                     <th>Nama Varian / Spesifikasi</th>
                     <th>Stok Tersedia</th>

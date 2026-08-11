@@ -43,7 +43,7 @@ $total_logs = mysqli_num_rows($result);
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th width="70">ID Log</th>
+                    <th width="55">ID Log</th>
                     <th>User / Aktor</th>
                     <th>Barang & Varian</th>
                     <th>Aksi Log</th>

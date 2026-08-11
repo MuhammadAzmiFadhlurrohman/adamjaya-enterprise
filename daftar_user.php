@@ -36,7 +36,7 @@ $total_user = mysqli_num_rows($result);
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th width="70">ID</th>
+                    <th width="45">ID</th>
                     <th>Username Pengguna</th>
                     <th>Hak Akses / Role</th>
                     <th>No. Telepon</th>

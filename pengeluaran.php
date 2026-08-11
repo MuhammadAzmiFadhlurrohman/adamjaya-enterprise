@@ -142,7 +142,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th width="130">ID Nota Kas</th>
+                    <th width="85">ID Nota Kas</th>
                     <th>Tanggal & Petugas</th>
                     <th>Keterangan / Beban Kas</th>
                     <th>Total Item</th>

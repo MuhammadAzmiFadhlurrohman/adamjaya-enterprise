@@ -229,7 +229,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th width="100">ID Nota</th>
+                    <th width="75">ID Nota</th>
                     <th>Pelanggan & Tanggal Waktu</th>
                     <th>Admin</th>
                     <th class="text-nowrap">Estimasi Dana</th>

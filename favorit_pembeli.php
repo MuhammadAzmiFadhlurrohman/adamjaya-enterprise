@@ -36,7 +36,7 @@ $total_fav = mysqli_num_rows($result);
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th width="70">ID</th>
+                    <th width="45">ID</th>
                     <th>Nama Pembeli / Perusahaan</th>
                     <th>No. Telepon / WA</th>
                     <th>Alamat / Lokasi</th>
