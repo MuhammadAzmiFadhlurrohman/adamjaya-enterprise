@@ -52,21 +52,43 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             background-color: #f1f5f9;
             color: #0f172a;
             font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
         }
 
-        .no-print-toolbar {
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 0.75rem 1rem;
-            position: sticky;
+        /* Fixed Left Control Sidebar */
+        .print-sidebar {
+            width: 320px;
+            height: 100vh;
+            position: fixed;
             top: 0;
+            left: 0;
+            background: #ffffff;
+            border-right: 1px solid #cbd5e1;
+            padding: 1.5rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.06);
+            overflow-y: auto;
+            box-sizing: border-box;
         }
 
-        /* Container Struk Thermal */
+        /* Main Preview Container on the Right */
+        .print-preview-container {
+            margin-left: 320px;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            box-sizing: border-box;
+        }
+
+        /* Paper Size Presets Screen Preview */
         .struk-card {
-            margin: 1.5rem auto;
             background: #ffffff;
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
@@ -74,9 +96,9 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             border: 1px solid #cbd5e1;
             transition: all 0.3s ease;
             box-sizing: border-box;
+            margin: 0 auto;
         }
 
-        /* Paper Size Presets Screen Preview */
         .struk-card.size-58mm {
             width: 240px;
             font-size: 11px;
@@ -109,39 +131,66 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             margin: 0.6rem 0;
         }
 
-        .btn-paper-size {
-            font-size: 0.82rem;
+        .btn-paper-option {
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border: 1.5px solid #cbd5e1;
+            background: #f8fafc;
+            color: #334155;
             font-weight: 600;
-            border-radius: 20px;
-            padding: 0.35rem 0.9rem;
+            font-size: 0.86rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .btn-paper-size.active {
-            background-color: #7a1e33 !important;
-            border-color: #58101f !important;
+        .btn-paper-option:hover {
+            border-color: #7a1e33;
+            background: #fff5f7;
+            color: #7a1e33;
+        }
+
+        .btn-paper-option.active {
+            background: linear-gradient(135deg, #7A1E33 0%, #4a0b18 100%) !important;
+            border-color: #58101F !important;
             color: #ffffff !important;
-            box-shadow: 0 2px 8px rgba(122, 30, 51, 0.3);
+            box-shadow: 0 4px 12px rgba(122, 30, 51, 0.3);
         }
 
-        .btn-wine-login {
+        .btn-wine-print {
             background: linear-gradient(135deg, #7A1E33 0%, #4a0b18 100%);
             border: 1px solid #58101F;
             color: #ffffff;
+            font-weight: 700;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(122, 30, 51, 0.35);
+            transition: all 0.25s ease;
         }
 
-        .btn-wine-login:hover {
+        .btn-wine-print:hover {
             background: linear-gradient(135deg, #9b2c47 0%, #7A1E33 100%);
             color: #ffffff;
+            transform: translateY(-1px);
         }
 
         @media print {
-            .no-print-toolbar {
+            .print-sidebar {
                 display: none !important;
             }
             body {
                 background: #ffffff !important;
                 margin: 0 !important;
                 padding: 0 !important;
+            }
+            .print-preview-container {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                display: block !important;
             }
             .struk-card {
                 box-shadow: none !important;
@@ -150,134 +199,172 @@ while ($row = mysqli_fetch_assoc($res_d)) {
                 border-radius: 0 !important;
             }
         }
+
+        @media (max-width: 768px) {
+            .print-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #cbd5e1;
+            }
+            .print-preview-container {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Toolbar Pengaturan Cetak & Ukuran Kertas (Rata Kiri) -->
-    <div class="no-print-toolbar">
-        <div class="container-fluid px-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
-            <!-- Left Side: Rata Kiri Paper Size Selection & Set Default Button -->
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <span class="small fw-bold text-dark me-1"><i class="fa-solid fa-print me-1 text-danger"></i> PILIH UKURAN KERTAS:</span>
-                
-                <button id="btn-58mm" onclick="selectPaperSize('58mm')" class="btn btn-outline-secondary btn-paper-size btn-sm">
-                    <i class="fa-solid fa-receipt me-1"></i> 58mm (POS Thermal Kecil)
-                </button>
-                <button id="btn-80mm" onclick="selectPaperSize('80mm')" class="btn btn-outline-secondary btn-paper-size btn-sm">
-                    <i class="fa-solid fa-receipt me-1"></i> 80mm (POS Thermal Standar)
-                </button>
-                <button id="btn-A4" onclick="selectPaperSize('A4')" class="btn btn-outline-secondary btn-paper-size btn-sm">
-                    <i class="fa-solid fa-file-lines me-1"></i> Halaman A4 / PDF
-                </button>
+    <!-- Left Fixed Control Sidebar -->
+    <div class="print-sidebar">
+        <div>
+            <!-- Header Title -->
+            <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom">
+                <img src="assets/adamjaya.png" alt="Adam Jaya Logo" style="width: 34px; height: 34px; object-fit: contain;">
+                <div>
+                    <h6 class="fw-extrabold text-wine mb-0" style="letter-spacing: 0.03em; font-family: 'Plus Jakarta Sans', sans-serif;">ADAM JAYA</h6>
+                    <small class="text-muted fw-bold" style="font-size: 0.68rem; letter-spacing: 0.08em;">PENGATURAN CETAK</small>
+                </div>
+            </div>
 
-                <!-- Tombol Set Default -->
-                <button onclick="saveCurrentAsDefault()" class="btn btn-warning btn-sm fw-bold rounded-pill px-3 ms-md-1 shadow-sm" title="Simpan ukuran kertas saat ini sebagai default utama">
+            <!-- Paper Size Options -->
+            <div class="mb-4">
+                <label class="form-label text-muted small fw-bold mb-2" style="font-size: 0.72rem; letter-spacing: 0.06em;">
+                    <i class="fa-solid fa-receipt me-1 text-wine"></i> UKURAN KERTAS PRINTER
+                </label>
+                
+                <div class="d-flex flex-column gap-2">
+                    <button id="btn-58mm" onclick="selectPaperSize('58mm')" class="btn-paper-option">
+                        <span><i class="fa-solid fa-receipt me-2"></i> 58mm (POS Thermal)</span>
+                        <i class="fa-solid fa-check check-icon" style="display: none;"></i>
+                    </button>
+                    <button id="btn-80mm" onclick="selectPaperSize('80mm')" class="btn-paper-option">
+                        <span><i class="fa-solid fa-receipt me-2"></i> 80mm (POS Thermal)</span>
+                        <i class="fa-solid fa-check check-icon" style="display: none;"></i>
+                    </button>
+                    <button id="btn-A4" onclick="selectPaperSize('A4')" class="btn-paper-option">
+                        <span><i class="fa-solid fa-file-lines me-2"></i> Halaman A4 / PDF</span>
+                        <i class="fa-solid fa-check check-icon" style="display: none;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Set As Default Button Section -->
+            <div class="mb-4 p-3 bg-light rounded-3 border">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="small fw-bold text-dark" style="font-size: 0.76rem;">Default Pilihan:</span>
+                    <span id="defaultBadge" class="badge bg-warning text-dark border border-warning px-2 py-1" style="font-size: 0.7rem; display: none;">
+                        <i class="fa-solid fa-star me-1"></i> <b id="defaultSizeText">80mm</b>
+                    </span>
+                </div>
+                <button onclick="saveCurrentAsDefault()" class="btn btn-warning btn-sm w-100 fw-bold rounded-3 shadow-sm py-2" title="Jadikan ukuran saat ini sebagai default cetak selanjutnya">
                     <i class="fa-solid fa-star me-1 text-dark"></i> Set Sebagai Default
                 </button>
-                
-                <!-- Indikator Default -->
-                <span id="defaultBadge" class="badge bg-warning-subtle text-dark border border-warning rounded-pill px-2.5 py-1.5 ms-1" style="font-size: 0.72rem; display: none;">
-                    <i class="fa-solid fa-circle-check text-success me-1"></i> Default: <b id="defaultSizeText">80mm</b>
-                </span>
+                <small class="text-muted d-block text-center mt-2" style="font-size: 0.68rem; line-height: 1.3;">
+                    Pilihan default akan tersimpan otomatis untuk pencetakan struk selanjutnya.
+                </small>
             </div>
+        </div>
 
-            <!-- Right Side: Cetak Sekarang & Tutup -->
-            <div class="d-flex align-items-center gap-2 ms-auto">
-                <button onclick="window.print()" class="btn btn-wine-login btn-sm px-4 fw-bold rounded-pill shadow-sm">
-                    <i class="fa-solid fa-print me-1"></i> CETAK STRUK SEKARANG
-                </button>
-                <button onclick="window.close()" class="btn btn-secondary btn-sm px-3 rounded-pill">
-                    <i class="fa-solid fa-xmark me-1"></i> Tutup
-                </button>
-            </div>
+        <!-- Bottom Action Buttons -->
+        <div class="pt-3 border-top">
+            <button onclick="window.print()" class="btn btn-wine-print w-100 mb-2">
+                <i class="fa-solid fa-print me-1.5"></i> CETAK STRUK SEKARANG
+            </button>
+            <button onclick="window.close()" class="btn btn-light border text-muted w-100 btn-sm py-2 rounded-3">
+                <i class="fa-solid fa-xmark me-1"></i> Tutup Halaman
+            </button>
         </div>
     </div>
 
-    <!-- Container Struk Nota -->
-    <div id="strukCard" class="struk-card size-80mm">
-        <!-- Logo & Header Toko -->
-        <div class="text-center">
-            <img src="assets/adamjaya.png" alt="Adam Jaya Logo" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
-            <div class="fw-bold text-uppercase" style="font-size: 1.1em; letter-spacing: 0.05em;">ADAM JAYA ENTERPRISE</div>
-            <div class="small">Procurement & Inventory System</div>
-            <div class="small text-muted">Surakarta, Jawa Tengah</div>
-            <div class="small text-muted">Telp: 0812-3456-7890</div>
-        </div>
-
-        <div class="receipt-double-dashed"></div>
-
-        <!-- Info Transaksi -->
-        <div class="d-flex justify-content-between">
-            <span>NO NOTA :</span>
-            <span class="fw-bold"><?= e($p['custom_id']); ?></span>
-        </div>
-        <div class="d-flex justify-content-between">
-            <span>TANGGAL :</span>
-            <span><?= date('d/m/Y H:i', strtotime($p['created_at'])); ?></span>
-        </div>
-        <div class="d-flex justify-content-between">
-            <span>ADMIN   :</span>
-            <span><?= e($p['username']); ?></span>
-        </div>
-        <div class="d-flex justify-content-between">
-            <span>PELANGGAN:</span>
-            <span class="fw-bold"><?= e($p['nama_pembeli'] ?: '-'); ?></span>
-        </div>
-        <?php if (!empty($p['telepon_pembeli'])): ?>
-        <div class="d-flex justify-content-between">
-            <span>TELP HP :</span>
-            <span><?= e($p['telepon_pembeli']); ?></span>
-        </div>
-        <?php endif; ?>
-
-        <div class="receipt-dashed"></div>
-
-        <!-- Daftar Barang -->
-        <div class="mb-1">
-            <?php foreach ($items as $item): ?>
-                <div class="fw-bold text-uppercase"><?= e($item['nama_barang']); ?></div>
-                <?php if (!empty($item['nama_jenis']) && $item['nama_jenis'] !== '-'): ?>
-                    <div class="small text-muted ps-2" style="font-size: 0.9em;"><?= e($item['nama_jenis']); ?></div>
-                <?php endif; ?>
-                <div class="d-flex justify-content-between small">
-                    <span><?= number_format($item['jumlah'], 2, ',', '.'); ?> <?= e($item['satuan']); ?> x <?= formatRupiah($item['harga_satuan']); ?></span>
-                    <span class="fw-bold"><?= formatRupiah($item['subtotal']); ?></span>
-                </div>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="receipt-dashed"></div>
-
-        <!-- Total Pembayaran -->
-        <div class="d-flex justify-content-between fs-6 fw-bold">
-            <span>TOTAL :</span>
-            <span><?= formatRupiah($grand_total); ?></span>
-        </div>
-
-        <div class="d-flex justify-content-between small mt-1">
-            <span>STATUS BAYAR :</span>
-            <?php if ($p['status_pembayaran'] === 'dibayar'): ?>
-                <span class="badge bg-success">LUNAS</span>
-            <?php else: ?>
-                <span class="badge bg-danger">BELUM LUNAS</span>
-            <?php endif; ?>
-        </div>
-        <div class="d-flex justify-content-between small">
-            <span>STATUS KIRIM :</span>
-            <span class="fw-bold"><?= e(strtoupper($p['status_pengiriman'])); ?></span>
-        </div>
-
-        <div class="receipt-double-dashed"></div>
-
-        <!-- Footer Ucapan & QR Code -->
-        <div class="text-center my-2">
-            <div class="small fw-bold">TERIMA KASIH ATAS KUNJUNGAN ANDA</div>
-            <div class="small text-muted" style="font-size: 0.85em;">Barang yang sudah dibeli tidak dapat ditukar / dikembalikan.</div>
-            <div class="mt-2">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=<?= urlencode('ADAM-JAYA-' . $p['custom_id']); ?>" alt="QR Code Validasi" style="width: 75px; height: 75px; border: 1px solid #cbd5e1; padding: 2px; border-radius: 4px;">
+    <!-- Main Live Receipt Preview Area on the Right -->
+    <div class="print-preview-container">
+        <div id="strukCard" class="struk-card size-80mm">
+            <!-- Logo & Header Toko -->
+            <div class="text-center">
+                <img src="assets/adamjaya.png" alt="Adam Jaya Logo" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
+                <div class="fw-bold text-uppercase" style="font-size: 1.1em; letter-spacing: 0.05em;">ADAM JAYA ENTERPRISE</div>
+                <div class="small">Procurement & Inventory System</div>
+                <div class="small text-muted">Surakarta, Jawa Tengah</div>
+                <div class="small text-muted">Telp: 0812-3456-7890</div>
             </div>
-            <div class="small text-muted mt-1" style="font-size: 0.75em; letter-spacing: 0.05em;">VALIDATED DIGITAL RECEIPT</div>
+
+            <div class="receipt-double-dashed"></div>
+
+            <!-- Info Transaksi -->
+            <div class="d-flex justify-content-between">
+                <span>NO NOTA :</span>
+                <span class="fw-bold"><?= e($p['custom_id']); ?></span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>TANGGAL :</span>
+                <span><?= date('d/m/Y H:i', strtotime($p['created_at'])); ?></span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>ADMIN   :</span>
+                <span><?= e($p['username']); ?></span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>PELANGGAN:</span>
+                <span class="fw-bold"><?= e($p['nama_pembeli'] ?: '-'); ?></span>
+            </div>
+            <?php if (!empty($p['telepon_pembeli'])): ?>
+            <div class="d-flex justify-content-between">
+                <span>TELP HP :</span>
+                <span><?= e($p['telepon_pembeli']); ?></span>
+            </div>
+            <?php endif; ?>
+
+            <div class="receipt-dashed"></div>
+
+            <!-- Daftar Barang -->
+            <div class="mb-1">
+                <?php foreach ($items as $item): ?>
+                    <div class="fw-bold text-uppercase"><?= e($item['nama_barang']); ?></div>
+                    <?php if (!empty($item['nama_jenis']) && $item['nama_jenis'] !== '-'): ?>
+                        <div class="small text-muted ps-2" style="font-size: 0.9em;"><?= e($item['nama_jenis']); ?></div>
+                    <?php endif; ?>
+                    <div class="d-flex justify-content-between small">
+                        <span><?= number_format($item['jumlah'], 2, ',', '.'); ?> <?= e($item['satuan']); ?> x <?= formatRupiah($item['harga_satuan']); ?></span>
+                        <span class="fw-bold"><?= formatRupiah($item['subtotal']); ?></span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="receipt-dashed"></div>
+
+            <!-- Total Pembayaran -->
+            <div class="d-flex justify-content-between fs-6 fw-bold">
+                <span>TOTAL :</span>
+                <span><?= formatRupiah($grand_total); ?></span>
+            </div>
+
+            <div class="d-flex justify-content-between small mt-1">
+                <span>STATUS BAYAR :</span>
+                <?php if ($p['status_pembayaran'] === 'dibayar'): ?>
+                    <span class="badge bg-success">LUNAS</span>
+                <?php else: ?>
+                    <span class="badge bg-danger">BELUM LUNAS</span>
+                <?php endif; ?>
+            </div>
+            <div class="d-flex justify-content-between small">
+                <span>STATUS KIRIM :</span>
+                <span class="fw-bold"><?= e(strtoupper($p['status_pengiriman'])); ?></span>
+            </div>
+
+            <div class="receipt-double-dashed"></div>
+
+            <!-- Footer Ucapan & QR Code -->
+            <div class="text-center my-2">
+                <div class="small fw-bold">TERIMA KASIH ATAS KUNJUNGAN ANDA</div>
+                <div class="small text-muted" style="font-size: 0.85em;">Barang yang sudah dibeli tidak dapat ditukar / dikembalikan.</div>
+                <div class="mt-2">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=<?= urlencode('ADAM-JAYA-' . $p['custom_id']); ?>" alt="QR Code Validasi" style="width: 75px; height: 75px; border: 1px solid #cbd5e1; padding: 2px; border-radius: 4px;">
+                </div>
+                <div class="small text-muted mt-1" style="font-size: 0.75em; letter-spacing: 0.05em;">VALIDATED DIGITAL RECEIPT</div>
+            </div>
         </div>
     </div>
 
@@ -289,11 +376,18 @@ while ($row = mysqli_fetch_assoc($res_d)) {
         const card = document.getElementById('strukCard');
         const printStyle = document.getElementById('printStyle');
         
-        document.querySelectorAll('.btn-paper-size').forEach(btn => {
+        document.querySelectorAll('.btn-paper-option').forEach(btn => {
             btn.classList.remove('active');
+            const check = btn.querySelector('.check-icon');
+            if (check) check.style.display = 'none';
         });
+        
         const activeBtn = document.getElementById('btn-' + size);
-        if (activeBtn) activeBtn.classList.add('active');
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            const check = activeBtn.querySelector('.check-icon');
+            if (check) check.style.display = 'inline-block';
+        }
 
         card.className = 'struk-card size-' + size;
 
@@ -304,8 +398,6 @@ while ($row = mysqli_fetch_assoc($res_d)) {
         } else {
             printStyle.innerHTML = `@page { size: A4 portrait; margin: 10mm; } .struk-card { width: 100% !important; max-width: 750px !important; padding: 20px !important; font-size: 13px !important; }`;
         }
-        
-        updateDefaultBadgeDisplay();
     }
 
     function saveCurrentAsDefault() {
@@ -342,6 +434,7 @@ while ($row = mysqli_fetch_assoc($res_d)) {
     document.addEventListener("DOMContentLoaded", function() {
         const savedSize = localStorage.getItem('adamjaya_default_paper_size') || '80mm';
         selectPaperSize(savedSize);
+        updateDefaultBadgeDisplay();
     });
     </script>
 </body>
