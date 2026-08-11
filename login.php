@@ -68,6 +68,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="login-body">
 
+    <!-- Fullscreen Login Loading Overlay with Spinning Sidebar Logo -->
+    <div id="loginLoadingOverlay" class="login-loading-overlay" style="display: none;">
+        <div class="login-loading-content text-center">
+            <div class="login-spin-logo-wrapper">
+                <img src="assets/adamjaya.png" alt="Adam Jaya Logo" class="login-spin-logo-img">
+                <div class="login-spin-outer-ring"></div>
+            </div>
+            <h5 class="fw-bold text-white mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.04em;">ADAM JAYA ENTERPRISE</h5>
+            <p class="text-gold small mb-0 fw-semibold" style="letter-spacing: 0.02em;">
+                <i class="fa-solid fa-circle-notch fa-spin me-1"></i> Memproses Login & Memverifikasi Akun...
+            </p>
+        </div>
+    </div>
+
     <div class="login-card">
         <div class="text-center mb-4">
             <img src="assets/adamjaya.png" alt="Adam Jaya Enterprise Logo" class="login-brand-logo mb-3" style="width: 82px !important; max-width: 82px !important; height: 82px !important; object-fit: contain !important; background: #ffffff !important; padding: 6px !important; border-radius: 50% !important; border: 2.5px solid var(--gold) !important; box-shadow: 0 8px 24px rgba(201, 151, 62, 0.35) !important;">
@@ -82,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <form action="login.php" method="POST">
+        <form id="loginForm" action="login.php" method="POST">
             <?= csrf_field(); ?>
             <div class="mb-3">
                 <label for="username" class="form-label text-muted small fw-bold" style="font-size:0.72rem; letter-spacing:0.05em;">USERNAME</label>
@@ -103,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-wine-login w-100 py-3 rounded-3 fs-6">
+            <button type="submit" id="btnLoginSubmit" class="btn btn-wine-login w-100 py-3 rounded-3 fs-6">
                 <i class="fa-solid fa-right-to-bracket me-2"></i> Masuk ke Sistem
             </button>
         </form>
@@ -128,6 +142,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             icon.classList.add('fa-eye');
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("loginForm");
+        const overlay = document.getElementById("loginLoadingOverlay");
+        const btnSubmit = document.getElementById("btnLoginSubmit");
+
+        if (form) {
+            form.addEventListener("submit", function() {
+                if (overlay) overlay.style.display = "flex";
+                if (btnSubmit) {
+                    btnSubmit.disabled = true;
+                    btnSubmit.innerHTML = `<img src="assets/adamjaya.png" class="btn-spin-logo-sm me-2" alt="Logo"> Memproses Login...`;
+                }
+            });
+        }
+    });
     </script>
 
     <!-- Bootstrap Bundle JS -->
