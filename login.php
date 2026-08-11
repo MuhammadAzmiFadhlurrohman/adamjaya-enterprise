@@ -147,14 +147,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const form = document.getElementById("loginForm");
         const overlay = document.getElementById("loginLoadingOverlay");
         const btnSubmit = document.getElementById("btnLoginSubmit");
+        let isSubmitting = false;
 
         if (form) {
-            form.addEventListener("submit", function() {
+            form.addEventListener("submit", function(e) {
+                if (isSubmitting) return;
+                e.preventDefault();
+                isSubmitting = true;
+
                 if (overlay) overlay.style.display = "flex";
                 if (btnSubmit) {
                     btnSubmit.disabled = true;
                     btnSubmit.innerHTML = `<img src="assets/adamjaya.png" class="btn-spin-logo-sm me-2" alt="Logo"> Memproses Login...`;
                 }
+
+                setTimeout(function() {
+                    form.submit();
+                }, 3000); // 3 Detik Loading Animation untuk Login
             });
         }
     });

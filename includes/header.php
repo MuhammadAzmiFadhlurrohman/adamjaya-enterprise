@@ -31,6 +31,20 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
     <!-- Floating Toast Container -->
     <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 10800;"></div>
 
+    <!-- Global Page & CRUD Action Loader (1 Detik Spinning Sidebar Logo Overlay) -->
+    <div id="global-page-loader" class="login-loading-overlay" style="display: none;">
+        <div class="login-loading-content text-center">
+            <div class="login-spin-logo-wrapper">
+                <img src="assets/adamjaya.png" alt="Adam Jaya Logo" class="login-spin-logo-img">
+                <div class="login-spin-outer-ring"></div>
+            </div>
+            <h5 class="fw-bold text-white mb-1" style="font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.04em;">ADAM JAYA ENTERPRISE</h5>
+            <p id="global-loader-msg" class="text-gold small mb-0 fw-semibold" style="letter-spacing: 0.02em;">
+                <i class="fa-solid fa-circle-notch fa-spin me-1"></i> Memuat data...
+            </p>
+        </div>
+    </div>
+
     <!-- Slow Network / Connection Status Banner -->
     <div id="slow-net-banner" class="slow-net-banner" style="display: none;">
         <div class="d-flex align-items-center gap-2">

@@ -252,6 +252,26 @@ function initRupiahMasking() {
   });
 }
 
+/* ========================================================
+   GLOBAL 1-SECOND SPINNING LOGO LOADER FOR NAVIGATION & CRUD
+   ======================================================== */
+function showGlobalPageLoader(msg, callback, delayMs = 1000) {
+  const loader = document.getElementById("global-page-loader");
+  const msgElem = document.getElementById("global-loader-msg");
+  
+  if (msgElem && msg) {
+    msgElem.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin me-1"></i> ${msg}`;
+  }
+  
+  if (loader) {
+    loader.style.display = "flex";
+  }
+
+  if (typeof callback === "function") {
+    setTimeout(callback, delayMs);
+  }
+}
+
 /**
  * SweetAlert Confirm Delete Helper (Light Mode Styled)
  */
@@ -273,7 +293,9 @@ function confirmDelete(event, url, message = "Data yang dihapus tidak dapat dike
     }
   }).then((result) => {
     if (result.isConfirmed) {
-      window.location.href = url;
+      showGlobalPageLoader('Menghapus data...', function() {
+        window.location.href = url;
+      }, 1000);
     }
   });
 }
@@ -427,17 +449,41 @@ function initNetworkAndLoaders() {
     };
   }
 
-  // Detect link navigation
+  // Detect link navigation with 1-second spinning logo overlay
   document.addEventListener("click", function (e) {
     const target = e.target.closest("a");
     if (target && target.href && !target.href.startsWith("javascript:") && !target.href.includes("#") && target.target !== "_blank") {
+      const href = target.href;
+      if (target.hasAttribute("data-no-loader")) return;
+
+      e.preventDefault();
       window.startProgress();
+      showGlobalPageLoader("Memuat Halaman...", function() {
+        window.location.href = href;
+      }, 1000); // 1 Detik Loading Animation
     }
   });
 
-  // Detect form submissions
-  document.addEventListener("submit", function () {
-    window.startProgress();
+  // Detect form submissions with 1-second spinning logo overlay
+  document.addEventListener("submit", function (e) {
+    const form = e.target;
+    if (form && !form.dataset.submitting && !form.hasAttribute("data-no-loader")) {
+      e.preventDefault();
+      form.dataset.submitting = "true";
+      window.startProgress();
+
+      let msg = "Menyimpan & memproses data...";
+      const action = (form.getAttribute("action") || "").toLowerCase();
+      if (action.includes("hapus") || action.includes("delete")) {
+        msg = "Menghapus data...";
+      } else if (action.includes("edit") || action.includes("update") || action.includes("jenis")) {
+        msg = "Memperbarui data...";
+      }
+
+      showGlobalPageLoader(msg, function() {
+        form.submit();
+      }, 1000); // 1 Detik Loading Animation
+    }
   });
 
   // Network connection online/offline events
