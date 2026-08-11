@@ -417,15 +417,14 @@ while ($row = mysqli_fetch_assoc($res_d)) {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Default Berhasil Disimpan!',
-                    text: 'Ukuran kertas (' + currentPaperSize + ') dijadikan sebagai default utama pencetakan struk.',
-                    timer: 2500,
+                    title: 'Default ' + currentPaperSize + ' Disimpan',
+                    timer: 1800,
                     showConfirmButton: false,
                     toast: true,
                     position: 'top-end'
                 });
             } else {
-                alert('Ukuran kertas (' + currentPaperSize + ') berhasil dijadikan default!');
+                alert('Default ' + currentPaperSize + ' disimpan!');
             }
         } catch(e){}
     }
