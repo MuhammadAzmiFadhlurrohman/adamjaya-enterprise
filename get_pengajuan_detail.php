@@ -231,6 +231,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
                                 <td class="text-center text-muted"><?= $no_c++; ?></td>
                                 <td><?= format_tanggal_indo($c['created_at']); ?></td>
                                 <td><span class="fw-semibold text-dark"><?= e($c['username']); ?></span></td>
+                                <td class="text-end fw-bold text-success"><?= formatRupiah($c['nominal_bayar']); ?></td>
                                 <td>
                                     <?php 
                                     $metode_show = (!empty($c['metode_pembayaran']) && $c['metode_pembayaran'] !== '0') ? $c['metode_pembayaran'] : 'Cash';
