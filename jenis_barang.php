@@ -31,56 +31,95 @@ if ($barang_id > 0) {
 </datalist>
 
 <!-- HEADER CURVED EXECUTIVE BANNER -->
-<header class="page-header">
+<header class="page-header mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <span class="page-eyebrow"><i class="fa-solid fa-layer-group"></i> Katalog Varian &middot; Adam Jaya</span>
             <h1 class="page-title">Varian & Stok Detail</h1>
             <p class="page-subtitle mb-0">Manajemen varian spesifikasi, harga standar, stok persediaan, dan satuan.</p>
+        </div>
         <div class="header-action d-flex align-items-center gap-2">
             <a href="stok_barang.php" id="btnBackToStok" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold text-nowrap">
                 <i class="fa-solid fa-arrow-left me-1"></i> Kembali
             </a>
-            <?php if ($is_admin): ?>
-                <button class="btn btn-pengajuan-header text-nowrap" data-bs-toggle="modal" data-bs-target="#addJenisModal">
-                    <i class="fa-solid fa-plus-circle me-1"></i> Tambah Varian
-                </button>
-            <?php endif; ?>
         </div>
     </div>
 </header>
 
-<div class="glass-card p-3 p-md-4 mb-4">
-    <form method="GET" action="jenis_barang.php" class="row g-3 align-items-end">
-        <div class="col-12 col-md-5">
-            <label class="form-label text-muted small fw-semibold">FILTER BARANG INDUK</label>
-            <select name="barang_id" class="form-select" onchange="this.form.submit()">
-                <option value="0">-- Semuanya (Semua Barang Induk) --</option>
-                <?php 
-                mysqli_data_seek($res_induk, 0);
-                while ($b = mysqli_fetch_assoc($res_induk)): 
-                ?>
-                    <option value="<?= $b['id']; ?>" <?= ($barang_id == $b['id']) ? 'selected' : ''; ?>>
-                        <?= e($b['nama_barang']); ?>
-                    </option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-        <div class="col-12 col-md-5">
-            <label class="form-label text-muted small fw-semibold">CARI VARIAN / SPESIFIKASI</label>
-            <div class="position-relative">
+<?php if ($is_admin): ?>
+<!-- CARD FORM TAMBAH VARIAN BARU (INLINE AT TOP) -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+    <div class="card-header text-white py-3 px-3.5 d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #7A1E33 0%, #5A1224 100%);">
+        <i class="fa-solid fa-circle-plus fs-5 text-gold"></i>
+        <h6 class="mb-0 fw-bold text-white fs-6">Tambah Varian Baru</h6>
+    </div>
+    <div class="card-body p-3.5 bg-white">
+        <form action="proses_jenis_barang.php" method="POST">
+            <?= csrf_field(); ?>
+            <input type="hidden" name="action" value="create">
+            <input type="hidden" name="redirect_barang_id" value="<?= $barang_id; ?>">
+            
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Barang Induk *</label>
+                <select name="barang_id" class="form-select form-select-lg fs-6 fw-semibold" required>
+                    <option value="" disabled <?= ($barang_id <= 0) ? 'selected' : ''; ?>>-- Pilih Barang Induk --</option>
+                    <?php 
+                    mysqli_data_seek($res_induk, 0);
+                    while ($b = mysqli_fetch_assoc($res_induk)): 
+                    ?>
+                        <option value="<?= $b['id']; ?>" <?= ($barang_id == $b['id']) ? 'selected' : ''; ?>>
+                            <?= e($b['nama_barang']); ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Nama Varian / Spesifikasi *</label>
+                <input type="text" name="nama_jenis" class="form-control form-control-lg fs-6 fw-semibold" placeholder="Contoh: Besi Polos 10mm (12m)" required>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold">Stok Awal</label>
+                    <input type="number" step="0.01" name="stok" class="form-control form-control-lg fs-6 fw-semibold" value="0" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold">Satuan</label>
+                    <input type="text" name="satuan" class="form-control form-control-lg fs-6 fw-semibold" list="preset_satuan_list" placeholder="Contoh: unit, kg, meter" value="unit" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Harga Standar Satuan (Rp) *</label>
+                <input type="text" name="harga" class="form-control form-control-lg fs-6 fw-semibold rupiah-input" placeholder="Contoh: 1250000" onkeyup="formatRupiahInput(this)" required>
+            </div>
+
+            <button type="submit" class="btn text-white w-100 py-2.5 fw-bold rounded-3 shadow-sm fs-6" style="background: linear-gradient(135deg, #7A1E33 0%, #5A1224 100%); border: none;">
+                <i class="fa-solid fa-plus me-1"></i> Tambah Varian
+            </button>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- Realtime Search Bar Card -->
+<div class="filter-card mb-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 550px;">
+            <div class="position-relative w-100">
                 <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                <input type="text" id="searchVarianInput" class="form-control ps-5" placeholder="Ketik varian untuk mencari..." onkeyup="filterVarianLive(this.value)" autocomplete="off">
+                <input type="text" id="searchVarianInput" class="form-control ps-5 pe-4 rounded-pill" placeholder="Ketik varian untuk mencari..." onkeyup="filterVarianLive(this.value)" autocomplete="off">
             </div>
         </div>
-        <div class="col-12 col-md-2 d-flex gap-2">
-            <?php if ($barang_id > 0): ?>
-                <a href="jenis_barang.php" class="btn btn-secondary-custom w-100 text-nowrap py-2">
-                    <i class="fa-solid fa-rotate-left me-1"></i> Reset
+        <?php if ($barang_id > 0): ?>
+            <div>
+                <a href="jenis_barang.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-medium">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Barang
                 </a>
-            <?php endif; ?>
-        </div>
-    </form>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
 
 <!-- Desktop Table Container (>= 768px) -->
@@ -89,7 +128,7 @@ if ($barang_id > 0) {
         <h2><i class="fa-solid fa-layer-group me-2 text-wine"></i> Daftar Varian Barang & Spesifikasi</h2>
     </div>
     <div class="table-responsive">
-        <table class="table align-middle">
+        <table class="table align-middle mb-0">
             <thead>
                 <tr>
                     <th width="45">ID</th>
@@ -124,14 +163,14 @@ if ($barang_id > 0) {
                             <td><span class="text-muted fw-semibold"><?= e($j['satuan']); ?></span></td>
                             <td><span class="fw-bold text-success"><?= formatRupiah($j['harga']); ?></span></td>
                             <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
+                                <div class="action-btns justify-content-center">
                                     <?php if ($is_admin): ?>
-                                        <button class="btn btn-sm btn-outline-info" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
-                                            <i class="fa-solid fa-pen"></i>
+                                        <button type="button" class="action-btn btn-edit" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
+                                            <i class="fa-solid fa-pen"></i> Edit
                                         </button>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" 
+                                        <a href="#" class="action-btn btn-delete" 
                                            onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
-                                            <i class="fa-solid fa-trash"></i>
+                                            <i class="fa-solid fa-trash"></i> Hapus
                                         </a>
                                     <?php else: ?>
                                         <span class="text-muted small">Read-Only</span>
@@ -200,11 +239,11 @@ if ($barang_id > 0) {
 
                 <!-- Action Footer Buttons -->
                 <?php if ($is_admin): ?>
-                    <div class="d-flex justify-content-end gap-2 pt-1">
-                        <button class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 fw-semibold" style="font-size:0.78rem;" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
+                    <div class="action-btns justify-content-end pt-1">
+                        <button type="button" class="action-btn btn-edit" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
                             <i class="fa-solid fa-pen me-1"></i> Edit
                         </button>
-                        <a href="#" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold" style="font-size:0.78rem;" 
+                        <a href="#" class="action-btn btn-delete" 
                            onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
                             <i class="fa-solid fa-trash me-1"></i> Hapus
                         </a>
