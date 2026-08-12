@@ -529,9 +529,12 @@ function initNetworkAndLoaders() {
 function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
     if (typeof Swal === 'undefined') return;
 
-    // Nonaktifkan perangkap fokus Bootstrap agar input SweetAlert bebas diketik
-    if (window.bootstrap && bootstrap.Modal && bootstrap.Modal.prototype) {
-        bootstrap.Modal.prototype._enforceFocus = function() {};
+    const activeBsModal = document.getElementById('detailPengajuanModal');
+    if (activeBsModal) {
+        activeBsModal.removeAttribute('tabindex');
+    }
+    if (typeof $ !== 'undefined') {
+        $(document).off('focusin.bs.modal');
     }
 
     Swal.fire({
@@ -556,15 +559,23 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
         cancelButtonText: 'Batal',
         confirmButtonColor: '#7A1E33',
         didOpen: () => {
+            if (typeof $ !== 'undefined') {
+                $(document).off('focusin.bs.modal');
+            }
             const inputNominal = document.getElementById('swal_nominal_cicilan');
             if (inputNominal) {
                 setTimeout(() => {
                     inputNominal.focus();
-                }, 100);
+                }, 150);
                 inputNominal.addEventListener('keyup', function() {
                     let val = this.value.replace(/[^\d]/g, '');
                     this.value = val ? parseInt(val, 10).toLocaleString('id-ID') : '';
                 });
+            }
+        },
+        willClose: () => {
+            if (activeBsModal) {
+                activeBsModal.setAttribute('tabindex', '-1');
             }
         },
         preConfirm: () => {
