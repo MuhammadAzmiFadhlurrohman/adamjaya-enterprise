@@ -526,8 +526,12 @@ function initNetworkAndLoaders() {
 /* ========================================================
    GLOBAL HANDLER PEMBAYARAN CICILAN (ANGSURAN SUSULAN)
    ======================================================== */
-function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
+function submitTambahCicilan(pengajuanId, csrfToken, maxSisa, cicilanKe) {
     if (typeof Swal === 'undefined') return;
+
+    let defaultNum = parseInt(cicilanKe || 1, 10);
+    if (isNaN(defaultNum) || defaultNum < 1) defaultNum = 1;
+    let defaultCatatanStr = `Cicilan ke-${defaultNum}`;
 
     // Handler capture phase untuk menghentikan perangkap fokus Bootstrap 5.3
     const stopBootstrapFocusTrap = function(e) {
@@ -564,8 +568,8 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
                 </div>
             </div>
             <div class="text-start">
-                <label class="form-label small text-muted fw-bold mb-1">Catatan / Keterangan (Opsional):</label>
-                <input type="text" id="swal_catatan_cicilan" class="form-control" placeholder="Contoh: Cicilan ke-2 via transfer">
+                <label class="form-label small text-muted fw-bold mb-1">Catatan / Keterangan (Otomatis):</label>
+                <input type="text" id="swal_catatan_cicilan" class="form-control fw-bold" value="${defaultCatatanStr}" placeholder="Contoh: Cicilan ke-2 via transfer">
             </div>
         `,
         focusConfirm: false,
@@ -601,7 +605,7 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
             const inputNominal = document.getElementById('swal_nominal_cicilan');
             const inputCatatan = document.getElementById('swal_catatan_cicilan');
             const nominalStr = inputNominal ? inputNominal.value : '';
-            const catatanStr = inputCatatan ? inputCatatan.value : '';
+            const catatanStr = inputCatatan ? inputCatatan.value : defaultCatatanStr;
 
             let num = parseInt(nominalStr.replace(/[^\d]/g, ''), 10) || 0;
 
@@ -626,14 +630,18 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    window.needsPageReload = true;
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
                         text: data.message,
-                        timer: 2200,
+                        timer: 1800,
                         showConfirmButton: false
                     }).then(() => {
-                        location.reload();
+                        if (typeof viewDetailPengajuan === 'function') {
+                            viewDetailPengajuan(pengajuanId);
+                        }
                     });
                 } else {
                     Swal.fire({

@@ -191,8 +191,11 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
             </div>
         </div>
         <div>
-            <?php if ((float)$p['sisa_pembayaran'] > 0): ?>
-                <button type="button" class="btn btn-warning btn-sm fw-bold px-3 py-1.5 rounded-pill shadow-sm" onclick="submitTambahCicilan(<?= $p['id']; ?>, '<?= $csrf_token_val; ?>', <?= (float)$p['sisa_pembayaran']; ?>)">
+            <?php 
+            $next_cicilan_num = count($riwayat_cicilan) + 1;
+            if ((float)$p['sisa_pembayaran'] > 0): 
+            ?>
+                <button type="button" class="btn btn-warning btn-sm fw-bold px-3 py-1.5 rounded-pill shadow-sm" onclick="submitTambahCicilan(<?= $p['id']; ?>, '<?= $csrf_token_val; ?>', <?= (float)$p['sisa_pembayaran']; ?>, <?= $next_cicilan_num; ?>)">
                     <i class="fa-solid fa-plus-circle me-1"></i> + Catat Cicilan Baru
                 </button>
             <?php else: ?>
