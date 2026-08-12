@@ -80,11 +80,19 @@ try {
         $satuan = sanitize($_POST["satuan_$idx"] ?? 'pcs');
         $harga = unformatRupiah($_POST["harga_$idx"] ?? 0);
         $subtotal = $jumlah * $harga;
-        $grand_total += $subtotal;
 
         if ($is_custom) {
-            $nama_barang = sanitize($_POST["custom_nama_$idx"] ?? 'Custom Item');
+            $nama_barang = sanitize($_POST["custom_nama_$idx"] ?? '');
             $nama_jenis = sanitize($_POST["custom_jenis_$idx"] ?? '-');
+
+            if (empty($nama_barang)) {
+                if (count($item_indexes) > 1) {
+                    continue;
+                } else {
+                    $item_num = (int)$idx + 1;
+                    throw new Exception("Nama Barang Custom belum diisi pada Item #$item_num.");
+                }
+            }
 
             $items_to_insert[] = [
                 'is_custom' => 1,
@@ -95,6 +103,7 @@ try {
                 'satuan' => $satuan,
                 'harga_satuan' => $harga
             ];
+            $grand_total += $subtotal;
         } else {
             $barang_id = (int)($_POST["barang_id_$idx"] ?? 0);
             $jenis_id = (int)($_POST["jenis_id_$idx"] ?? 0);
@@ -125,9 +134,14 @@ try {
                 }
             }
 
+            // Jika baris ini benar-benar tidak memilih barang (barang_id = 0 & jenis_id = 0)
             if ($barang_id <= 0 || $jenis_id <= 0) {
-                $item_num = (int)$idx + 1;
-                throw new Exception("Barang atau varian jenis belum dipilih pada Item #$item_num. Silakan pilih varian barang terlebih dahulu.");
+                if (count($item_indexes) > 1) {
+                    continue; // Skip baris tak terisi ini jika ada baris item lainnya
+                } else {
+                    $item_num = (int)$idx + 1;
+                    throw new Exception("Barang atau varian jenis belum dipilih pada Item #$item_num. Silakan pilih varian barang terlebih dahulu.");
+                }
             }
 
             // Lock Tabel Record jenis_barang (SELECT FOR UPDATE)
@@ -173,7 +187,12 @@ try {
                 'satuan' => $satuan,
                 'harga_satuan' => $harga
             ];
+            $grand_total += $subtotal;
         }
+    }
+
+    if (empty($items_to_insert)) {
+        throw new Exception("Tidak ada item barang valid yang dipilih. Silakan pilih minimal 1 barang.");
     }
 
     // Process Upload File Bukti Pembayaran (Opsional)
