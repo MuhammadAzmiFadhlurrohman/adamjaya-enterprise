@@ -76,9 +76,12 @@ if (empty($catatan)) {
     $catatan = ($status_baru === 'dibayar') ? 'Pelunasan 100%' : 'Pembayaran Cicilan';
 }
 
+// Fix any legacy '0' values in riwayat_cicilan
+@mysqli_query($conn, "UPDATE riwayat_cicilan SET metode_pembayaran = 'Cash' WHERE metode_pembayaran = '0' OR metode_pembayaran IS NULL OR metode_pembayaran = ''");
+
 // Insert into riwayat_cicilan
 $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, metode_pembayaran, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, ?, ?)");
-mysqli_stmt_bind_param($stmt_log, "iisddds", $pengajuan_id, $user_id, $nominal_bayar, $metode_pembayaran, $sisa_sebelum, $sisa_sesudah, $catatan);
+mysqli_stmt_bind_param($stmt_log, "iidsdds", $pengajuan_id, $user_id, $nominal_bayar, $metode_pembayaran, $sisa_sebelum, $sisa_sesudah, $catatan);
 $saved_log = mysqli_stmt_execute($stmt_log);
 
 if (!$saved_log) {

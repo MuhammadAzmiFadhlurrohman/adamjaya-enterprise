@@ -570,11 +570,8 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa, cicilanKe) {
             <div class="text-start mb-3">
                 <label class="form-label small text-muted fw-bold mb-1">Metode Pembayaran:</label>
                 <select id="swal_metode_cicilan" class="form-select fw-semibold">
-                    <option value="Cash / Tunai" selected>Cash / Tunai</option>
-                    <option value="Transfer Bank">Transfer Bank</option>
-                    <option value="QRIS">QRIS</option>
-                    <option value="Giro / Cek">Giro / Cek</option>
-                    <option value="Lainnya">Lainnya</option>
+                    <option value="Cash" selected>Cash</option>
+                    <option value="Transfer">Transfer</option>
                 </select>
             </div>
             <div class="text-start">
@@ -616,7 +613,7 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa, cicilanKe) {
             const selectMetode = document.getElementById('swal_metode_cicilan');
             const inputCatatan = document.getElementById('swal_catatan_cicilan');
             const nominalStr = inputNominal ? inputNominal.value : '';
-            const metodeStr = selectMetode ? selectMetode.value : 'Cash / Tunai';
+            const metodeStr = selectMetode ? selectMetode.value : 'Cash';
             const catatanStr = inputCatatan ? inputCatatan.value : defaultCatatanStr;
 
             let num = parseInt(nominalStr.replace(/[^\d]/g, ''), 10) || 0;
