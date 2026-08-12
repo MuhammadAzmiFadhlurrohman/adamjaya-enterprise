@@ -41,9 +41,9 @@
 
 * { box-sizing: border-box; }
 
-/* Compact Base Scale (Equivalent to 90% Zoom without clipping) */
+/* Compact Base Scale (Matches Image 1 90% scale at 100% browser zoom without clipping) */
 html {
-  font-size: 12.2px;
+  font-size: 12.15px;
 }
 
 body {
