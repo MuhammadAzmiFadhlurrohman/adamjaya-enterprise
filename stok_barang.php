@@ -137,7 +137,7 @@ $total_induk = mysqli_num_rows($result);
                     <th width="80">GAMBAR</th>
                     <th>NAMA BARANG</th>
                     <th>JUMLAH JENIS</th>
-                    <th width="240" class="text-end">AKSI</th>
+                    <th width="280" class="text-end">AKSI</th>
                 </tr>
             </thead>
             <tbody>
@@ -167,18 +167,18 @@ $total_induk = mysqli_num_rows($result);
                                 <strong class="text-dark fs-6"><?= e($b['nama_barang']); ?></strong>
                             </td>
                             <td data-label="Jumlah Jenis">
-                                <span class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 rounded-pill fw-semibold" style="font-size:0.75rem;"><i class="fa-solid fa-layer-group me-1 text-gold"></i> <?= $b['total_varian']; ?> jenis</span>
+                                <span class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 rounded-2 fw-semibold" style="font-size:0.75rem;"><i class="fa-solid fa-layer-group me-1 text-gold"></i> <?= $b['total_varian']; ?> jenis</span>
                             </td>
-                            <td data-label="AKSI" class="text-end">
-                                <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
-                                    <a href="jenis_barang.php?barang_id=<?= $b['id']; ?>&search=<?= urlencode($search); ?>" class="btn btn-outline-primary btn-sm px-3.5 py-1.5 fw-semibold rounded-pill" title="Lihat Jenis Barang">
+                            <td data-label="AKSI" class="text-end text-nowrap">
+                                <div class="d-inline-flex align-items-center justify-content-end flex-nowrap gap-1.5" style="white-space: nowrap;">
+                                    <a href="jenis_barang.php?barang_id=<?= $b['id']; ?>&search=<?= urlencode($search); ?>" class="btn btn-outline-primary btn-sm px-2.5 py-1 fw-semibold rounded-2 text-nowrap" title="Lihat Jenis Barang">
                                         <i class="fa-solid fa-eye me-1"></i> Lihat Jenis
                                     </a>
                                     <?php if ($is_admin): ?>
-                                        <button type="button" class="btn btn-outline-warning btn-sm px-3.5 py-1.5 fw-semibold rounded-pill" onclick="editBarang(<?= htmlspecialchars(json_encode($b)); ?>)">
+                                        <button type="button" class="btn btn-outline-warning btn-sm px-2.5 py-1 fw-semibold rounded-2 text-nowrap" onclick="editBarang(<?= htmlspecialchars(json_encode($b)); ?>)">
                                             <i class="fa-solid fa-pen-to-square me-1"></i> Edit
                                         </button>
-                                        <a href="#" class="btn btn-outline-danger btn-sm px-3.5 py-1.5 fw-semibold rounded-pill" 
+                                        <a href="#" class="btn btn-outline-danger btn-sm px-2.5 py-1 fw-semibold rounded-2 text-nowrap" 
                                            onclick="confirmDelete(event, 'proses_stok_barang.php?action=delete&id=<?= $b['id']; ?>&csrf_token=<?= generate_csrf_token(); ?>&search=<?= urlencode($search); ?>')">
                                             <i class="fa-solid fa-trash me-1"></i> Hapus
                                         </a>
