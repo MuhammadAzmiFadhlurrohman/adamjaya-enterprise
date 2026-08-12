@@ -441,16 +441,24 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
     </div>
     
     <div class="p-3 bg-white">
-        <?php if ($p['status_pembayaran'] === 'belum_dibayar'): ?>
-            <!-- Warning Box -->
-            <div class="alert alert-warning border-warning-subtle text-dark-emphasis mb-3 d-flex align-items-center justify-content-center gap-2 py-2.5" style="background:#FFF9E6; border-radius:10px;">
-                <i class="fa-solid fa-triangle-exclamation text-warning fs-5"></i>
-                <span class="fw-semibold small">Pembayaran belum lunas. Pilih metode pembayaran di bawah ini.</span>
-            </div>
+        <?php if ((float)$p['sisa_pembayaran'] > 0 && $p['status_pembayaran'] !== 'dibayar'): ?>
+            <?php if ($p['status_pembayaran'] === 'cicilan'): ?>
+                <div class="alert alert-warning border-warning-subtle text-dark-emphasis mb-3 d-flex align-items-center justify-content-between gap-2 py-2.5" style="background:#FFF9E6; border-radius:10px;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-warning fs-5"></i>
+                        <span class="fw-semibold small">Status: <b>Dalam Masa Cicilan</b> (Sisa Piutang: <b class="text-danger"><?= formatRupiah($p['sisa_pembayaran']); ?></b>)</span>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="alert alert-danger border-danger-subtle text-dark-emphasis mb-3 d-flex align-items-center justify-content-center gap-2 py-2.5" style="background:#FDE8E8; border-radius:10px;">
+                    <i class="fa-solid fa-triangle-exclamation text-danger fs-5"></i>
+                    <span class="fw-semibold small">Pembayaran belum dibayar sama sekali.</span>
+                </div>
+            <?php endif; ?>
 
             <?php if ($is_admin_user): ?>
                 <div id="payment_main_buttons">
-                    <small class="text-muted d-block mb-2 fw-semibold" style="font-size:0.75rem;"><i class="fa-solid fa-credit-card me-1"></i> Pilih metode pembayaran</small>
+                    <small class="text-muted d-block mb-2 fw-semibold" style="font-size:0.75rem;"><i class="fa-solid fa-credit-card me-1"></i> Pelunasan Instan Sisa Tagihan (<?= formatRupiah($p['sisa_pembayaran']); ?>)</small>
                     <div class="row g-3">
                         <div class="col-6">
                             <button type="button" class="payment-card-btn" onclick="selectPaymentMethod('transfer')">
@@ -461,7 +469,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
                         <div class="col-6">
                             <button type="button" class="payment-card-btn" onclick="selectPaymentMethod('tunai')">
                                 <i class="fa-solid fa-money-bill-wave text-success fs-3 mb-2"></i>
-                                <span class="fw-bold text-dark d-block">Tunai</span>
+                                <span class="fw-bold text-dark d-block">Tunai / Cash</span>
                             </button>
                         </div>
                     </div>
@@ -482,7 +490,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
                         </div>
                         <div class="col-6 col-sm-4">
                             <button type="button" class="btn btn-success btn-sm w-100 fw-semibold py-1.5" onclick="processPaymentWithoutProof(<?= $p['id']; ?>, '<?= $csrf_token_val; ?>')">
-                                <i class="fa-solid fa-circle-check me-1"></i> Langsung Lunas
+                                <i class="fa-solid fa-circle-check me-1"></i> Pelunasan Instan
                             </button>
                         </div>
                         <div class="col-12 col-sm-4">
@@ -503,7 +511,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
                         <div class="input-group">
                             <input type="file" name="bukti_file" id="input_bukti_file" class="form-control form-control-sm" accept="image/*,.pdf" required>
                             <button type="submit" class="btn btn-primary btn-sm px-3">
-                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Unggah & Bayar
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Unggah & Pelunasan
                             </button>
                         </div>
                     </form>
