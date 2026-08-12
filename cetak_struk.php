@@ -344,18 +344,32 @@ while ($row = mysqli_fetch_assoc($res_d)) {
 
             <div class="receipt-dashed"></div>
 
-            <!-- Total Pembayaran -->
+            <!-- Total Pembayaran & Breakdown Cicilan -->
             <div class="d-flex justify-content-between fs-6 fw-bold">
-                <span>TOTAL :</span>
+                <span>TOTAL NOTA :</span>
                 <span><?= formatRupiah($grand_total); ?></span>
             </div>
 
+            <div class="d-flex justify-content-between small mt-1 text-success fw-bold">
+                <span>SUDAH DIBAYAR:</span>
+                <span><?= formatRupiah($p['jumlah_dibayar']); ?></span>
+            </div>
+
+            <?php if ((float)$p['sisa_pembayaran'] > 0): ?>
+            <div class="d-flex justify-content-between small text-danger fw-bold">
+                <span>SISA PIUTANG :</span>
+                <span><?= formatRupiah($p['sisa_pembayaran']); ?></span>
+            </div>
+            <?php endif; ?>
+
             <div class="d-flex justify-content-between small mt-1">
                 <span>STATUS BAYAR :</span>
-                <?php if ($p['status_pembayaran'] === 'dibayar'): ?>
+                <?php if ($p['status_pembayaran'] === 'dibayar' || (float)$p['sisa_pembayaran'] <= 0): ?>
                     <span class="badge bg-success">LUNAS</span>
+                <?php elseif ($p['status_pembayaran'] === 'cicilan'): ?>
+                    <span class="badge bg-warning text-dark">CICILAN / DP</span>
                 <?php else: ?>
-                    <span class="badge bg-danger">BELUM LUNAS</span>
+                    <span class="badge bg-danger">BELUM DIBAYAR</span>
                 <?php endif; ?>
             </div>
             <div class="d-flex justify-content-between small">

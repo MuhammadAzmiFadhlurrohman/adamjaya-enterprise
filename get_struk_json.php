@@ -53,6 +53,8 @@ $struk_data = [
     ],
     'status_pembayaran' => $p['status_pembayaran'],
     'status_pengiriman' => $p['status_pengiriman'],
+    'jumlah_dibayar' => (float)$p['jumlah_dibayar'],
+    'sisa_pembayaran' => (float)$p['sisa_pembayaran'],
     'items' => $items,
     'total_estimasi' => (float)$p['estimasi_dana'],
     'total_dihitung' => $total

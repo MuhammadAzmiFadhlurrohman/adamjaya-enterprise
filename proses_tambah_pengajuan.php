@@ -176,13 +176,43 @@ try {
         }
     }
 
-    // Insert Header Pengajuan dengan Custom ID, Status & Bukti Upload Opsional
-    $stmt_head = mysqli_prepare($conn, "INSERT INTO pengajuan (custom_id, user_id, jenis_pengajuan, status_pembayaran, status_pengiriman, bukti_transfer, bukti_tunai, bukti_pembelian, estimasi_dana, nama_pembeli, telepon_pembeli, created_at) VALUES (?, ?, 'stok', ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // Status Pembayaran & Perhitungan Cicilan
+    $status_pembayaran_post = sanitize($_POST['status_pembayaran'] ?? 'belum_dibayar');
+    $jumlah_dibayar_post = unformatRupiah($_POST['jumlah_dibayar'] ?? 0);
+
+    if ($status_pembayaran_post === 'dibayar') {
+        $status_pembayaran = 'dibayar';
+        $jumlah_dibayar = $grand_total;
+        $sisa_pembayaran = 0.00;
+    } else if ($status_pembayaran_post === 'cicilan') {
+        if ($jumlah_dibayar_post >= $grand_total) {
+            $status_pembayaran = 'dibayar';
+            $jumlah_dibayar = $grand_total;
+            $sisa_pembayaran = 0.00;
+        } else if ($jumlah_dibayar_post <= 0) {
+            $status_pembayaran = 'belum_dibayar';
+            $jumlah_dibayar = 0.00;
+            $sisa_pembayaran = $grand_total;
+        } else {
+            $status_pembayaran = 'cicilan';
+            $jumlah_dibayar = $jumlah_dibayar_post;
+            $sisa_pembayaran = $grand_total - $jumlah_dibayar_post;
+        }
+    } else {
+        $status_pembayaran = 'belum_dibayar';
+        $jumlah_dibayar = 0.00;
+        $sisa_pembayaran = $grand_total;
+    }
+
+    // Insert Header Pengajuan dengan Custom ID, Status, Jumlah Dibayar, Sisa & Bukti Upload
+    $stmt_head = mysqli_prepare($conn, "INSERT INTO pengajuan (custom_id, user_id, jenis_pengajuan, status_pembayaran, jumlah_dibayar, sisa_pembayaran, status_pengiriman, bukti_transfer, bukti_tunai, bukti_pembelian, estimasi_dana, nama_pembeli, telepon_pembeli, created_at) VALUES (?, ?, 'stok', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $estimasi_str = (string)$grand_total;
-    mysqli_stmt_bind_param($stmt_head, "sisssssssss", 
+    mysqli_stmt_bind_param($stmt_head, "sisddssssssss", 
         $custom_id, 
         $user_id, 
-        $status_pembayaran, 
+        $status_pembayaran,
+        $jumlah_dibayar,
+        $sisa_pembayaran,
         $status_pengiriman, 
         $bukti_transfer, 
         $bukti_tunai, 
@@ -197,6 +227,14 @@ try {
         throw new Exception("Gagal menyimpan header pengajuan (ID Nota mungkin sudah dipakai): " . mysqli_error($conn));
     }
     $pengajuan_id = mysqli_insert_id($conn);
+
+    // Record initial payment in riwayat_cicilan if paid > 0
+    if ($jumlah_dibayar > 0) {
+        $catatan_awal = ($status_pembayaran === 'dibayar') ? 'Pembayaran Lunas Awal' : 'Pembayaran DP / Uang Muka Awal';
+        $stmt_cicilan_awal = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_cicilan_awal, "iiddds", $pengajuan_id, $user_id, $jumlah_dibayar, $grand_total, $sisa_pembayaran, $catatan_awal);
+        mysqli_stmt_execute($stmt_cicilan_awal);
+    }
 
     // Insert Items Detail
     foreach ($items_to_insert as $item) {

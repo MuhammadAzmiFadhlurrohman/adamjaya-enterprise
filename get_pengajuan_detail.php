@@ -36,6 +36,16 @@ while ($row = mysqli_fetch_assoc($res_detail)) {
 
 $is_admin_user = is_admin();
 $csrf_token_val = generate_csrf_token();
+
+// Ambil Riwayat Cicilan untuk transaksi ini
+$stmt_cicilan = mysqli_prepare($conn, "SELECT rc.*, u.username FROM riwayat_cicilan rc JOIN users u ON rc.user_id = u.id WHERE rc.pengajuan_id = ? ORDER BY rc.id ASC");
+mysqli_stmt_bind_param($stmt_cicilan, "i", $id);
+mysqli_stmt_execute($stmt_cicilan);
+$res_cicilan = mysqli_stmt_get_result($stmt_cicilan);
+$riwayat_cicilan = [];
+while ($rc = mysqli_fetch_assoc($res_cicilan)) {
+    $riwayat_cicilan[] = $rc;
+}
 ?>
 
 <!-- 1. ROW TOP CARDS (Informasi Pengajuan & Informasi Pembeli/Keuangan) -->
@@ -115,12 +125,12 @@ $csrf_token_val = generate_csrf_token();
                     <div class="info-block d-flex align-items-start gap-2">
                         <div class="block-icon"><i class="fa-solid fa-money-bill-1"></i></div>
                         <div>
-                            <span class="label">TOTAL ESTIMASI</span>
+                            <span class="label">TOTAL ESTIMASI NOTA</span>
                             <span class="val text-wine fw-bold"><?= formatRupiah($p['estimasi_dana']); ?></span>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 mt-2">
+                <div class="col-6 mt-2">
                     <div class="info-block d-flex align-items-start gap-2">
                         <div class="block-icon"><i class="fa-solid fa-phone"></i></div>
                         <div>
@@ -129,7 +139,30 @@ $csrf_token_val = generate_csrf_token();
                         </div>
                     </div>
                 </div>
+                <div class="col-6 mt-2">
+                    <div class="info-block d-flex align-items-start gap-2">
+                        <div class="block-icon"><i class="fa-solid fa-wallet"></i></div>
+                        <div>
+                            <span class="label">STATUS BAYAR</span>
+                            <span class="val mt-1">
+                                <?= render_status_pembayaran_badge($p['status_pembayaran'], $p['jumlah_dibayar'], $p['sisa_pembayaran']); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+            <div class="border-top border-dashed my-2 pt-2 row g-2">
+                <div class="col-6">
+                    <small class="text-muted d-block" style="font-size:0.68rem; font-weight:600;">SUDAH DIBAYAR:</small>
+                    <span class="fw-bold text-success" style="font-size:0.92rem;"><?= formatRupiah($p['jumlah_dibayar']); ?></span>
+                </div>
+                <div class="col-6 text-end">
+                    <small class="text-muted d-block" style="font-size:0.68rem; font-weight:600;">SISA PIUTANG:</small>
+                    <span class="fw-bold text-danger" style="font-size:0.92rem;"><?= formatRupiah($p['sisa_pembayaran']); ?></span>
+                </div>
+            </div>
+
             <div class="border-top border-dashed my-2 pt-2">
                 <div class="info-block d-flex align-items-start gap-2">
                     <div class="block-icon"><i class="fa-regular fa-comment-dots"></i></div>
@@ -143,8 +176,69 @@ $csrf_token_val = generate_csrf_token();
     </div>
 </div>
 
-<!-- 2. UPDATE STATUS KIRIM ACTION CARD -->
+<!-- 2. ACTION CARDS (Catat Cicilan & Update Status Kirim) -->
 <?php if ($is_admin_user): ?>
+<div class="modal-subcard mb-3 p-3 bg-light rounded-3 border">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-coins text-warning fs-5"></i>
+            <div>
+                <strong class="text-dark d-block small">Kelola Pembayaran Cicilan</strong>
+                <small class="text-muted" style="font-size:0.72rem;">
+                    Dibayar: <b class="text-success"><?= formatRupiah($p['jumlah_dibayar']); ?></b> | 
+                    Sisa Piutang: <b class="text-danger"><?= formatRupiah($p['sisa_pembayaran']); ?></b>
+                </small>
+            </div>
+        </div>
+        <div>
+            <?php if ((float)$p['sisa_pembayaran'] > 0): ?>
+                <button type="button" class="btn btn-warning btn-sm fw-bold px-3 py-1.5 rounded-pill shadow-sm" onclick="submitTambahCicilan(<?= $p['id']; ?>, '<?= $csrf_token_val; ?>', <?= (float)$p['sisa_pembayaran']; ?>)">
+                    <i class="fa-solid fa-plus-circle me-1"></i> + Catat Cicilan Baru
+                </button>
+            <?php else: ?>
+                <span class="badge bg-success-subtle text-success border border-success px-3 py-1.5 rounded-pill fw-bold">
+                    <i class="fa-solid fa-check-circle me-1"></i> TELAH LUNAS 100%
+                </span>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Tabel Riwayat Pembayaran Cicilan jika ada -->
+    <?php if (count($riwayat_cicilan) > 0): ?>
+        <div class="mt-3 pt-2 border-top">
+            <small class="text-muted fw-bold text-uppercase d-block mb-1.5" style="font-size:0.68rem; letter-spacing:0.05em;">
+                <i class="fa-solid fa-clock-rotate-left me-1 text-wine"></i> Riwayat Pembayaran Cicilan:
+            </small>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 0.76rem;">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th width="30" class="text-center">#</th>
+                            <th>Tanggal & Jam</th>
+                            <th>Petugas</th>
+                            <th class="text-end">Nominal Dibayar</th>
+                            <th class="text-end">Sisa Piutang</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $no_c = 1; foreach ($riwayat_cicilan as $c): ?>
+                            <tr>
+                                <td class="text-center text-muted"><?= $no_c++; ?></td>
+                                <td><?= format_tanggal_indo($c['created_at']); ?></td>
+                                <td><span class="fw-semibold text-dark"><?= e($c['username']); ?></span></td>
+                                <td class="text-end fw-bold text-success"><?= formatRupiah($c['nominal_bayar']); ?></td>
+                                <td class="text-end text-danger fw-semibold"><?= formatRupiah($c['sisa_sesudah']); ?></td>
+                                <td class="text-muted"><?= e($c['catatan'] ?: '-'); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+
 <div class="modal-subcard mb-3 p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
     <div class="d-flex align-items-center gap-2">
         <i class="fa-solid fa-truck text-muted"></i>
@@ -508,3 +602,96 @@ $has_any_bukti = $bukti_tf_path || $bukti_tn_path || $bukti_pb_path;
     </div>
 </div>
 <?php endif; ?>
+
+<script>
+function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
+    if (typeof Swal === 'undefined') return;
+
+    Swal.fire({
+        title: 'Catat Pembayaran Cicilan',
+        html: `
+            <div class="text-start mb-3">
+                <label class="form-label small text-muted fw-bold mb-1">Nominal Pembayaran Cicilan (Rp):</label>
+                <input type="text" id="swal_nominal_cicilan" class="form-control form-control-lg fw-bold text-wine" placeholder="Contoh: 500000">
+                <div class="d-flex justify-content-between align-items-center mt-1 text-muted small" style="font-size:0.75rem;">
+                    <span>Sisa Piutang Tagihan:</span>
+                    <b class="text-danger">Rp ${maxSisa.toLocaleString('id-ID')}</b>
+                </div>
+            </div>
+            <div class="text-start">
+                <label class="form-label small text-muted fw-bold mb-1">Catatan / Keterangan (Opsional):</label>
+                <input type="text" id="swal_catatan_cicilan" class="form-control" placeholder="Contoh: Cicilan ke-2 via transfer">
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check me-1"></i> Simpan Pembayaran',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#7A1E33',
+        didOpen: () => {
+            const inputNominal = document.getElementById('swal_nominal_cicilan');
+            if (inputNominal) {
+                inputNominal.focus();
+                inputNominal.addEventListener('keyup', function() {
+                    let val = this.value.replace(/[^\d]/g, '');
+                    this.value = val ? parseInt(val, 10).toLocaleString('id-ID') : '';
+                });
+            }
+        },
+        preConfirm: () => {
+            const inputNominal = document.getElementById('swal_nominal_cicilan');
+            const inputCatatan = document.getElementById('swal_catatan_cicilan');
+            const nominalStr = inputNominal ? inputNominal.value : '';
+            const catatanStr = inputCatatan ? inputCatatan.value : '';
+
+            let num = parseInt(nominalStr.replace(/[^\d]/g, ''), 10) || 0;
+
+            if (!nominalStr || num <= 0) {
+                Swal.showValidationMessage('Masukkan nominal pembayaran cicilan yang valid (lebih dari Rp 0)!');
+                return false;
+            }
+            return { nominal: nominalStr, catatan: catatanStr };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('pengajuan_id', pengajuanId);
+            formData.append('nominal_bayar', result.value.nominal);
+            formData.append('catatan', result.value.catatan);
+            formData.append('csrf_token', csrfToken);
+
+            fetch('proses_tambah_cicilan.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        timer: 2200,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message
+                    });
+                }
+            })
+            .catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Sistem',
+                    text: 'Terjadi kesalahan koneksi saat menyimpan cicilan.'
+                });
+            });
+        }
+    });
+}
+</script>

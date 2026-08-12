@@ -262,3 +262,27 @@ function resolve_bukti_path($path) {
     }
     return null;
 }
+
+/**
+ * Render Status Pembayaran Badge (Lunas, Cicilan, Belum Dibayar)
+ */
+function render_status_pembayaran_badge($status, $jumlah_dibayar = 0, $sisa = 0) {
+    $st = strtolower((string)$status);
+    $jd = (float)$jumlah_dibayar;
+    $sp = (float)$sisa;
+
+    if ($st === 'dibayar' || $st === 'lunas' || ($sp <= 0 && $jd > 0)) {
+        return '<span class="badge bg-success-subtle text-success border border-success px-2.5 py-1 rounded-pill fw-bold" style="font-size: 0.76rem;">
+            <i class="fa-solid fa-circle-check me-1"></i> LUNAS
+        </span>';
+    } elseif ($st === 'cicilan' || ($jd > 0 && $sp > 0)) {
+        return '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-2.5 py-1 rounded-pill fw-bold" style="font-size: 0.76rem;">
+            <i class="fa-solid fa-clock-rotate-left me-1"></i> CICILAN / DP
+        </span>';
+    } else {
+        return '<span class="badge bg-danger-subtle text-danger border border-danger px-2.5 py-1 rounded-pill fw-bold" style="font-size: 0.76rem;">
+            <i class="fa-solid fa-circle-xmark me-1"></i> BELUM DIBAYAR
+        </span>';
+    }
+}
+

@@ -251,13 +251,50 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
         </div>
     </div>
 
-    <!-- SECTION 4: METODE PEMBAYARAN & UNGGAH BUKTI OPSIONAL -->
+    <!-- SECTION 4: METODE PEMBAYARAN & CICILAN / DP -->
     <div class="form-section-card mb-4">
         <div class="d-flex align-items-center gap-2 mb-1">
             <i class="fa-solid fa-credit-card text-wine fs-5"></i>
-            <h5 class="fw-bold text-wine mb-0">Metode Pembayaran</h5>
+            <h5 class="fw-bold text-wine mb-0">Status & Metode Pembayaran</h5>
         </div>
-        <small class="text-muted d-block mb-3">Klik pilihan metode pembayaran jika sudah lunas dibayar, atau biarkan kosong jika belum dibayar</small>
+        <small class="text-muted d-block mb-3">Tentukan status pelunasan transaksi dan metode pembayaran</small>
+
+        <!-- Status Pelunasan Option Cards -->
+        <label class="form-label text-muted small fw-semibold">Status Pelunasan Nota:</label>
+        <div class="row g-2 mb-3">
+            <div class="col-4">
+                <div class="status-pay-card text-center p-2.5 rounded-3 border bg-light text-dark cursor-pointer" id="card_status_belum" onclick="selectFormStatusBayar('belum_dibayar')">
+                    <i class="fa-solid fa-circle-xmark text-danger fs-4 mb-1"></i>
+                    <span class="fw-bold text-dark d-block small">Belum Dibayar</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="status-pay-card text-center p-2.5 rounded-3 border bg-light text-dark cursor-pointer" id="card_status_cicilan" onclick="selectFormStatusBayar('cicilan')">
+                    <i class="fa-solid fa-clock-rotate-left text-warning fs-4 mb-1"></i>
+                    <span class="fw-bold text-dark d-block small">Cicilan / DP</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="status-pay-card text-center p-2.5 rounded-3 border bg-light text-dark cursor-pointer" id="card_status_lunas" onclick="selectFormStatusBayar('dibayar')">
+                    <i class="fa-solid fa-circle-check text-success fs-4 mb-1"></i>
+                    <span class="fw-bold text-dark d-block small">LUNAS (100%)</span>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="status_pembayaran" id="input_status_pembayaran" value="belum_dibayar">
+
+        <!-- Input Nominal Uang Muka / DP (Tampil saat pilih Cicilan) -->
+        <div id="container_input_dp" class="p-3 rounded-3 border bg-warning-subtle border-warning mb-3 d-none">
+            <label for="jumlah_dibayar_input" class="form-label text-dark fw-bold small mb-1">
+                <i class="fa-solid fa-coins text-warning me-1"></i> Uang Muka (DP) / Nominal Dibayar Pertama (Rp)
+            </label>
+            <input type="text" name="jumlah_dibayar" id="jumlah_dibayar_input" class="form-control fw-bold" placeholder="Masukkan jumlah DP / bayar awal, misal: 500000" onkeyup="formatRupiahInput(this); calculateSisaPreview();">
+            <div class="d-flex justify-content-between align-items-center mt-2 text-dark small">
+                <span>Estimasi Sisa Piutang:</span>
+                <span class="fw-bold text-danger fs-6" id="previewSisaPiutang">Rp 0</span>
+            </div>
+        </div>
 
         <div class="row g-3 mb-3">
             <div class="col-6">
@@ -765,8 +802,71 @@ function removeRow(idx) {
     if (elem) {
         elem.remove();
         calculateGrandTotal();
+        calculateSisaPreview();
     }
 }
+
+function selectFormStatusBayar(status) {
+    const inputStatus = document.getElementById('input_status_pembayaran');
+    const containerDP = document.getElementById('container_input_dp');
+
+    if (inputStatus) inputStatus.value = status;
+
+    ['card_status_belum', 'card_status_cicilan', 'card_status_lunas'].forEach(id => {
+        const card = document.getElementById(id);
+        if (card) {
+            card.classList.remove('border-danger', 'bg-danger-subtle', 'border-warning', 'bg-warning-subtle', 'border-success', 'bg-success-subtle');
+            card.classList.add('bg-light');
+        }
+    });
+
+    if (status === 'cicilan') {
+        const cardCicilan = document.getElementById('card_status_cicilan');
+        if (cardCicilan) {
+            cardCicilan.classList.remove('bg-light');
+            cardCicilan.classList.add('border-warning', 'bg-warning-subtle');
+        }
+        if (containerDP) containerDP.classList.remove('d-none');
+    } else if (status === 'dibayar') {
+        const cardLunas = document.getElementById('card_status_lunas');
+        if (cardLunas) {
+            cardLunas.classList.remove('bg-light');
+            cardLunas.classList.add('border-success', 'bg-success-subtle');
+        }
+        if (containerDP) containerDP.classList.add('d-none');
+    } else {
+        const cardBelum = document.getElementById('card_status_belum');
+        if (cardBelum) {
+            cardBelum.classList.remove('bg-light');
+            cardBelum.classList.add('border-danger', 'bg-danger-subtle');
+        }
+        if (containerDP) containerDP.classList.add('d-none');
+    }
+
+    calculateSisaPreview();
+}
+
+function calculateSisaPreview() {
+    const inputStatus = document.getElementById('input_status_pembayaran');
+    const status = inputStatus ? inputStatus.value : 'belum_dibayar';
+    const dpInput = document.getElementById('jumlah_dibayar_input');
+    const previewSisa = document.getElementById('previewSisaPiutang');
+
+    let totalVal = 0;
+    document.querySelectorAll('[id^="subtotal_"]').forEach(input => {
+        totalVal += unformatRupiah(input.value);
+    });
+
+    if (status === 'cicilan') {
+        const dpVal = unformatRupiah(dpInput ? dpInput.value : 0);
+        const sisa = Math.max(0, totalVal - dpVal);
+        if (previewSisa) previewSisa.innerText = formatRupiah(sisa);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    selectFormStatusBayar('belum_dibayar');
+});
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
