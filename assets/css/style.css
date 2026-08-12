@@ -1793,24 +1793,36 @@ body.login-body {
         color: var(--wine);
     }
 
-    /* AKSI Row Mobile Layout Override - Spacious & Perfectly Aligned */
+    /* Mobile Status & AKSI Row Layout Override - No Label Text & Forced Always Sejajar */
+    .table:not(.modal-detail-table) td[data-label="Status"],
+    .table:not(.modal-detail-table) td[data-label="Status Bayar"],
     .table:not(.modal-detail-table) td[data-label="AKSI"],
     .table:not(.modal-detail-table) td[data-label="Aksi"],
     .table:not(.modal-detail-table) td[data-label="Aksi & Varian"] {
-        padding: 0.7rem 0.75rem !important;
+        padding: 0.65rem 0.75rem !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: space-between !important;
-        gap: 0.5rem !important;
+        justify-content: flex-end !important;
     }
+
+    .table:not(.modal-detail-table) td[data-label="Status"]::before,
+    .table:not(.modal-detail-table) td[data-label="Status Bayar"]::before,
+    .table:not(.modal-detail-table) td[data-label="Status Kirim"]::before,
     .table:not(.modal-detail-table) td[data-label="AKSI"]::before,
     .table:not(.modal-detail-table) td[data-label="Aksi"]::before,
     .table:not(.modal-detail-table) td[data-label="Aksi & Varian"]::before {
-        position: static !important;
-        width: auto !important;
-        padding-right: 0.4rem !important;
-        margin-right: auto !important;
-        flex-shrink: 0 !important;
+        display: none !important;
+        content: none !important;
+    }
+
+    .status-badge-group {
+        display: inline-flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 0.5rem !important;
+        white-space: nowrap !important;
     }
     .action-btns {
         display: inline-flex !important;

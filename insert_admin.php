@@ -233,7 +233,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <th>Pelanggan & Tanggal Waktu</th>
                     <th>Admin</th>
                     <th class="text-nowrap">Estimasi Dana</th>
-                    <th class="text-nowrap text-center">Status</th>
+                    <th class="text-nowrap">Status Bayar</th>
+                    <th class="text-nowrap">Status Kirim</th>
                     <th class="text-center text-nowrap" width="160">Aksi</th>
                 </tr>
             </thead>
@@ -260,15 +261,24 @@ while ($row = mysqli_fetch_assoc($result)) {
                             <td data-label="Estimasi Dana" class="text-nowrap">
                                 <strong class="text-success amount-cell fs-6"><?= formatRupiah($p['estimasi_dana']); ?></strong>
                             </td>
-                            <td data-label="Status" class="text-end text-md-center">
+                            <td data-label="Status Bayar" class="text-end text-md-start">
                                 <div class="status-badge-group">
                                     <?= render_status_pembayaran_badge($p['status_pembayaran'], $p['jumlah_dibayar'] ?? 0, $p['sisa_pembayaran'] ?? 0); ?>
-                                    <?php if ($p['status_pengiriman'] === 'sudah_dikirim'): ?>
-                                        <span class="badge-status info"><i class="fa-solid fa-truck-fast"></i> DIKIRIM</span>
-                                    <?php else: ?>
-                                        <span class="badge-status warning"><i class="fa-solid fa-box"></i> PENDING</span>
-                                    <?php endif; ?>
+                                    <span class="d-inline-block d-md-none">
+                                        <?php if ($p['status_pengiriman'] === 'sudah_dikirim'): ?>
+                                            <span class="badge-status info"><i class="fa-solid fa-truck-fast"></i> DIKIRIM</span>
+                                        <?php else: ?>
+                                            <span class="badge-status warning"><i class="fa-solid fa-box"></i> PENDING</span>
+                                        <?php endif; ?>
+                                    </span>
                                 </div>
+                            </td>
+                            <td data-label="Status Kirim" class="d-none d-md-table-cell">
+                                <?php if ($p['status_pengiriman'] === 'sudah_dikirim'): ?>
+                                    <span class="badge-status info"><i class="fa-solid fa-truck-fast"></i> DIKIRIM</span>
+                                <?php else: ?>
+                                    <span class="badge-status warning"><i class="fa-solid fa-box"></i> PENDING</span>
+                                <?php endif; ?>
                             </td>
                             <td data-label="Aksi" class="text-end">
                                 <div class="action-btns justify-content-end">
