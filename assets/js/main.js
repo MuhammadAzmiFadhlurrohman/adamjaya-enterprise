@@ -241,6 +241,13 @@ function unformatRupiahJS(rupiahStr) {
   return parseFloat(cleaned) || 0;
 }
 
+// Global Alias Compatibility
+window.unformatRupiah = unformatRupiahJS;
+window.unformatRupiahJS = unformatRupiahJS;
+if (typeof formatRupiahJS === 'function') {
+  window.formatRupiah = function(num) { return formatRupiahJS(num, 'Rp '); };
+}
+
 /**
  * Init Event Listener Rupiah Masking
  */
