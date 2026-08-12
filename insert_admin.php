@@ -260,8 +260,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                             <td data-label="Estimasi Dana" class="text-nowrap">
                                 <strong class="text-success amount-cell fs-6"><?= formatRupiah($p['estimasi_dana']); ?></strong>
                             </td>
-                            <td data-label="Status" class="text-center">
-                                <div class="d-inline-flex flex-wrap align-items-center justify-content-center gap-1.5">
+                            <td data-label="Status" class="text-end text-md-center">
+                                <div class="status-badge-group">
                                     <?= render_status_pembayaran_badge($p['status_pembayaran'], $p['jumlah_dibayar'] ?? 0, $p['sisa_pembayaran'] ?? 0); ?>
                                     <?php if ($p['status_pengiriman'] === 'sudah_dikirim'): ?>
                                         <span class="badge-status info"><i class="fa-solid fa-truck-fast"></i> DIKIRIM</span>

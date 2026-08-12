@@ -1008,6 +1008,20 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 .badge-status.danger { background: var(--danger-soft); color: var(--danger); border: 1px solid #FAD2CF; }
 .badge-status.info { background: #E8F0FE; color: #1A73E8; border: 1px solid #D2E3FC; }
 
+.status-badge-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px 8px !important;
+    margin: 2px 0;
+}
+@media (min-width: 768px) {
+    .status-badge-group {
+        justify-content: center;
+    }
+}
+
 /* ---------- SIDE-BY-SIDE ACTION BUTTONS (BERSEBELAHAN & RAPI) ---------- */
 .action-btns {
     display: inline-flex;
