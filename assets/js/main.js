@@ -567,6 +567,16 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa, cicilanKe) {
                     <b class="text-danger">Rp ${parseFloat(maxSisa || 0).toLocaleString('id-ID')}</b>
                 </div>
             </div>
+            <div class="text-start mb-3">
+                <label class="form-label small text-muted fw-bold mb-1">Metode Pembayaran:</label>
+                <select id="swal_metode_cicilan" class="form-select fw-semibold">
+                    <option value="Cash / Tunai" selected>Cash / Tunai</option>
+                    <option value="Transfer Bank">Transfer Bank</option>
+                    <option value="QRIS">QRIS</option>
+                    <option value="Giro / Cek">Giro / Cek</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            </div>
             <div class="text-start">
                 <label class="form-label small text-muted fw-bold mb-1">Catatan / Keterangan (Otomatis):</label>
                 <input type="text" id="swal_catatan_cicilan" class="form-control fw-bold" value="${defaultCatatanStr}" placeholder="Contoh: Cicilan ke-2 via transfer">
@@ -603,8 +613,10 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa, cicilanKe) {
         },
         preConfirm: () => {
             const inputNominal = document.getElementById('swal_nominal_cicilan');
+            const selectMetode = document.getElementById('swal_metode_cicilan');
             const inputCatatan = document.getElementById('swal_catatan_cicilan');
             const nominalStr = inputNominal ? inputNominal.value : '';
+            const metodeStr = selectMetode ? selectMetode.value : 'Cash / Tunai';
             const catatanStr = inputCatatan ? inputCatatan.value : defaultCatatanStr;
 
             let num = parseInt(nominalStr.replace(/[^\d]/g, ''), 10) || 0;
@@ -613,13 +625,14 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa, cicilanKe) {
                 Swal.showValidationMessage('Masukkan nominal pembayaran cicilan yang valid (lebih dari Rp 0)!');
                 return false;
             }
-            return { nominal: num, catatan: catatanStr };
+            return { nominal: num, metode: metodeStr, catatan: catatanStr };
         }
     }).then((result) => {
         if (result.isConfirmed) {
             const formData = new FormData();
             formData.append('pengajuan_id', pengajuanId);
             formData.append('nominal_bayar', result.value.nominal);
+            formData.append('metode_pembayaran', result.value.metode);
             formData.append('catatan', result.value.catatan);
             formData.append('csrf_token', csrfToken);
 

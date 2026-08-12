@@ -220,6 +220,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
                             <th>Tanggal & Jam</th>
                             <th>Petugas</th>
                             <th class="text-end">Nominal Dibayar</th>
+                            <th>Metode</th>
                             <th class="text-end">Sisa Piutang</th>
                             <th>Keterangan</th>
                         </tr>
@@ -231,6 +232,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
                                 <td><?= format_tanggal_indo($c['created_at']); ?></td>
                                 <td><span class="fw-semibold text-dark"><?= e($c['username']); ?></span></td>
                                 <td class="text-end fw-bold text-success"><?= formatRupiah($c['nominal_bayar']); ?></td>
+                                <td><span class="badge bg-light text-dark border" style="font-size:0.7rem;"><i class="fa-solid fa-wallet me-1 text-gold"></i><?= e($c['metode_pembayaran'] ?? 'Cash'); ?></span></td>
                                 <td class="text-end text-danger fw-semibold"><?= formatRupiah($c['sisa_sesudah']); ?></td>
                                 <td class="text-muted"><?= e($c['catatan'] ?: '-'); ?></td>
                             </tr>

@@ -17,9 +17,17 @@ if (!verify_csrf_token($csrf_token)) {
     exit;
 }
 
+// Auto migration: pastikan kolom metode_pembayaran ada pada tabel riwayat_cicilan
+$check_col = mysqli_query($conn, "SHOW COLUMNS FROM riwayat_cicilan LIKE 'metode_pembayaran'");
+if ($check_col && mysqli_num_rows($check_col) == 0) {
+    @mysqli_query($conn, "ALTER TABLE riwayat_cicilan ADD COLUMN metode_pembayaran VARCHAR(50) DEFAULT 'Cash' AFTER nominal_bayar");
+}
+
 $pengajuan_id = (int)($_POST['pengajuan_id'] ?? 0);
 $nominal_raw = $_POST['nominal_bayar'] ?? 0;
 $nominal_bayar = unformatRupiah($nominal_raw);
+$metode_pembayaran = sanitize($_POST['metode_pembayaran'] ?? 'Cash');
+if (empty($metode_pembayaran)) $metode_pembayaran = 'Cash';
 $catatan = trim(sanitize($_POST['catatan'] ?? ''));
 
 if ($pengajuan_id <= 0) {
@@ -69,8 +77,8 @@ if (empty($catatan)) {
 }
 
 // Insert into riwayat_cicilan
-$stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, ?)");
-mysqli_stmt_bind_param($stmt_log, "iiddds", $pengajuan_id, $user_id, $nominal_bayar, $sisa_sebelum, $sisa_sesudah, $catatan);
+$stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, metode_pembayaran, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, ?, ?)");
+mysqli_stmt_bind_param($stmt_log, "iisddds", $pengajuan_id, $user_id, $nominal_bayar, $metode_pembayaran, $sisa_sebelum, $sisa_sesudah, $catatan);
 $saved_log = mysqli_stmt_execute($stmt_log);
 
 if (!$saved_log) {
