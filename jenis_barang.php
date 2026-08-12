@@ -57,22 +57,8 @@ if ($barang_id > 0) {
         <form action="proses_jenis_barang.php" method="POST">
             <?= csrf_field(); ?>
             <input type="hidden" name="action" value="create">
+            <input type="hidden" name="barang_id" value="<?= $barang_id; ?>">
             <input type="hidden" name="redirect_barang_id" value="<?= $barang_id; ?>">
-            
-            <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">Barang Induk *</label>
-                <select name="barang_id" class="form-select form-select-lg fs-6 fw-semibold" required>
-                    <option value="" disabled <?= ($barang_id <= 0) ? 'selected' : ''; ?>>-- Pilih Barang Induk --</option>
-                    <?php 
-                    mysqli_data_seek($res_induk, 0);
-                    while ($b = mysqli_fetch_assoc($res_induk)): 
-                    ?>
-                        <option value="<?= $b['id']; ?>" <?= ($barang_id == $b['id']) ? 'selected' : ''; ?>>
-                            <?= e($b['nama_barang']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
 
             <div class="mb-3">
                 <label class="form-label text-muted small fw-bold">Nama Varian / Spesifikasi *</label>
@@ -85,8 +71,15 @@ if ($barang_id > 0) {
                     <input type="number" step="0.01" name="stok" class="form-control form-control-lg fs-6 fw-semibold" value="0" required>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold">Satuan</label>
-                    <input type="text" name="satuan" class="form-control form-control-lg fs-6 fw-semibold" list="preset_satuan_list" placeholder="Contoh: unit, kg, meter" value="unit" required>
+                    <label class="form-label text-muted small fw-bold">Satuan *</label>
+                    <select name="satuan" class="form-select form-select-lg fs-6 fw-semibold" required>
+                        <option value="unit" selected>unit</option>
+                        <option value="kg">kg</option>
+                        <option value="pack">pack</option>
+                        <option value="mm">mm</option>
+                        <option value="meter">meter</option>
+                        <option value="pcs">pcs</option>
+                    </select>
                 </div>
             </div>
 
@@ -327,26 +320,16 @@ if ($barang_id > 0) {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content glass-modal">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-pen-to-square me-2 text-info"></i> Edit Varian Barang</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-pen-to-square me-2 text-gold"></i> Edit Varian Barang</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form action="proses_jenis_barang.php" method="POST">
                 <?= csrf_field(); ?>
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" id="edit_j_id">
+                <input type="hidden" name="barang_id" id="edit_j_barang_id">
                 <input type="hidden" name="redirect_barang_id" value="<?= $barang_id; ?>">
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-semibold">BARANG INDUK</label>
-                        <select name="barang_id" id="edit_j_barang_id" class="form-select" required>
-                            <?php 
-                            mysqli_data_seek($res_induk, 0);
-                            while ($b = mysqli_fetch_assoc($res_induk)): 
-                            ?>
-                                <option value="<?= $b['id']; ?>"><?= e($b['nama_barang']); ?></option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-semibold">NAMA VARIAN / SPESIFIKASI</label>
                         <input type="text" name="nama_jenis" id="edit_j_nama" class="form-control" required>
