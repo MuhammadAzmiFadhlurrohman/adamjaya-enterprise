@@ -2499,3 +2499,22 @@ body.login-body {
         margin: 0 auto !important;
     }
 }
+
+/* Status & Payment Cards Styling */
+.status-pay-card,
+.payment-card-btn {
+    cursor: pointer !important;
+    user-select: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.status-pay-card *,
+.payment-card-btn * {
+    cursor: pointer !important;
+}
+
+.status-pay-card:hover,
+.payment-card-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}

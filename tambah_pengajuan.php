@@ -260,24 +260,24 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
         <small class="text-muted d-block mb-3">Tentukan status pelunasan transaksi dan metode pembayaran</small>
 
         <!-- Status Pelunasan Option Cards -->
-        <label class="form-label text-muted small fw-semibold">Status Pelunasan Nota:</label>
+        <label class="form-label text-muted small fw-semibold mb-2">Status Pelunasan Nota *</label>
         <div class="row g-2 mb-3">
             <div class="col-4">
-                <div class="status-pay-card text-center p-2.5 rounded-3 border bg-light text-dark cursor-pointer" id="card_status_belum" onclick="selectFormStatusBayar('belum_dibayar')">
-                    <i class="fa-solid fa-circle-xmark text-danger fs-4 mb-1"></i>
+                <div class="status-pay-card text-center p-3 rounded-3 border bg-light text-dark" id="card_status_belum" onclick="selectFormStatusBayar('belum_dibayar')">
+                    <i class="fa-solid fa-circle-xmark text-danger fs-3 mb-1.5 d-block"></i>
                     <span class="fw-bold text-dark d-block small">Belum Dibayar</span>
                 </div>
             </div>
             <div class="col-4">
-                <div class="status-pay-card text-center p-2.5 rounded-3 border bg-light text-dark cursor-pointer" id="card_status_cicilan" onclick="selectFormStatusBayar('cicilan')">
-                    <i class="fa-solid fa-clock-rotate-left text-warning fs-4 mb-1"></i>
+                <div class="status-pay-card text-center p-3 rounded-3 border bg-light text-dark" id="card_status_cicilan" onclick="selectFormStatusBayar('cicilan')">
+                    <i class="fa-solid fa-clock-rotate-left text-warning fs-3 mb-1.5 d-block"></i>
                     <span class="fw-bold text-dark d-block small">Cicilan / DP</span>
                 </div>
             </div>
             <div class="col-4">
-                <div class="status-pay-card text-center p-2.5 rounded-3 border bg-light text-dark cursor-pointer" id="card_status_lunas" onclick="selectFormStatusBayar('dibayar')">
-                    <i class="fa-solid fa-circle-check text-success fs-4 mb-1"></i>
-                    <span class="fw-bold text-dark d-block small">LUNAS (100%)</span>
+                <div class="status-pay-card text-center p-3 rounded-3 border bg-light text-dark" id="card_status_lunas" onclick="selectFormStatusBayar('dibayar')">
+                    <i class="fa-solid fa-circle-check text-success fs-3 mb-1.5 d-block"></i>
+                    <span class="fw-bold text-dark d-block small">Lunas</span>
                 </div>
             </div>
         </div>
@@ -296,33 +296,37 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
             </div>
         </div>
 
-        <div class="row g-3 mb-3">
-            <div class="col-6">
-                <div class="payment-card-btn text-center p-3.5 rounded-3 border" id="pay_card_transfer" onclick="selectFormPaymentMethod('transfer')">
-                    <i class="fa-solid fa-building-columns text-primary fs-2 mb-2"></i>
-                    <span class="fw-bold text-dark d-block fs-6">Transfer</span>
+        <!-- Section Metode Pembayaran (Hanya tampil jika Cicilan / Lunas) -->
+        <div id="section_metode_pembayaran" class="d-none border-top pt-3 mt-3">
+            <label class="form-label text-muted small fw-semibold mb-2">Pilih Metode Pembayaran *</label>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <div class="payment-card-btn text-center p-3.5 rounded-3 border bg-light" id="pay_card_transfer" onclick="selectFormPaymentMethod('transfer')">
+                        <i class="fa-solid fa-building-columns text-primary fs-2 mb-2"></i>
+                        <span class="fw-bold text-dark d-block fs-6">Transfer Bank</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="payment-card-btn text-center p-3.5 rounded-3 border bg-light" id="pay_card_tunai" onclick="selectFormPaymentMethod('tunai')">
+                        <i class="fa-solid fa-money-bill-wave text-success fs-2 mb-2"></i>
+                        <span class="fw-bold text-dark d-block fs-6">Tunai / Cash</span>
+                    </div>
                 </div>
             </div>
-            <div class="col-6">
-                <div class="payment-card-btn text-center p-3.5 rounded-3 border" id="pay_card_tunai" onclick="selectFormPaymentMethod('tunai')">
-                    <i class="fa-solid fa-money-bill-wave text-success fs-2 mb-2"></i>
-                    <span class="fw-bold text-dark d-block fs-6">Tunai</span>
-                </div>
-            </div>
-        </div>
 
-        <!-- Container Unggah Bukti Opsional (Tampil saat metode pembayaran di-klik) -->
-        <div id="bukti_upload_container" class="p-3 rounded-3 border bg-light d-none">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="fw-bold text-dark small" id="bukti_method_title">
-                    <i class="fa-solid fa-file-arrow-up text-wine me-1"></i> Unggah Bukti Pembayaran (Opsional)
-                </span>
-                <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:0.72rem;" onclick="deselectFormPaymentMethod()">
-                    <i class="fa-solid fa-xmark me-1"></i> Batalkan Pilih
-                </button>
+            <!-- Container Unggah Bukti Opsional -->
+            <div id="bukti_upload_container" class="p-3 rounded-3 border bg-light d-none">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-dark small" id="bukti_method_title">
+                        <i class="fa-solid fa-file-arrow-up text-wine me-1"></i> Unggah Bukti Pembayaran (Opsional)
+                    </span>
+                    <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:0.72rem;" onclick="deselectFormPaymentMethod()">
+                        <i class="fa-solid fa-xmark me-1"></i> Batalkan Pilih
+                    </button>
+                </div>
+                <input type="file" name="bukti_file" id="bukti_file_input" class="form-control form-control-sm" accept="image/*,.pdf">
+                <small class="text-muted d-block mt-1" style="font-size:0.72rem;">* Bukti pembayaran opsional (boleh dikosongkan jika belum ada berkas foto/pdf)</small>
             </div>
-            <input type="file" name="bukti_file" id="bukti_file_input" class="form-control form-control-sm" accept="image/*,.pdf">
-            <small class="text-muted d-block mt-1" style="font-size:0.72rem;">* Bukti pembayaran opsional (boleh dikosongkan jika belum ada berkas foto/pdf)</small>
         </div>
     </div>
 
@@ -809,6 +813,7 @@ function removeRow(idx) {
 function selectFormStatusBayar(status) {
     const inputStatus = document.getElementById('input_status_pembayaran');
     const containerDP = document.getElementById('container_input_dp');
+    const sectionMetode = document.getElementById('section_metode_pembayaran');
 
     if (inputStatus) inputStatus.value = status;
 
@@ -827,6 +832,7 @@ function selectFormStatusBayar(status) {
             cardCicilan.classList.add('border-warning', 'bg-warning-subtle');
         }
         if (containerDP) containerDP.classList.remove('d-none');
+        if (sectionMetode) sectionMetode.classList.remove('d-none');
     } else if (status === 'dibayar') {
         const cardLunas = document.getElementById('card_status_lunas');
         if (cardLunas) {
@@ -834,6 +840,7 @@ function selectFormStatusBayar(status) {
             cardLunas.classList.add('border-success', 'bg-success-subtle');
         }
         if (containerDP) containerDP.classList.add('d-none');
+        if (sectionMetode) sectionMetode.classList.remove('d-none');
     } else {
         const cardBelum = document.getElementById('card_status_belum');
         if (cardBelum) {
@@ -841,6 +848,8 @@ function selectFormStatusBayar(status) {
             cardBelum.classList.add('border-danger', 'bg-danger-subtle');
         }
         if (containerDP) containerDP.classList.add('d-none');
+        if (sectionMetode) sectionMetode.classList.add('d-none');
+        deselectFormPaymentMethod();
     }
 
     calculateSisaPreview();
