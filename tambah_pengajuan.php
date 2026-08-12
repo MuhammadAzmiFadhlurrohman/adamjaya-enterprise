@@ -596,31 +596,56 @@ function onSelectItemFromSearch(event, barangId, namaBarang, jenisId, namaJenis,
     }
     
     hideSearchDropdown();
-    document.getElementById("search_item_input").value = "";
+    const searchInput = document.getElementById("search_item_input");
+    if (searchInput) searchInput.value = "";
 
     const row0Barang = document.getElementById("barang_id_0");
-    if (row0Barang && (!row0Barang.value || row0Barang.value == 0)) {
-        populateRowWithData(0, barangId, jenisId, namaJenis, satuan, harga, stok);
+    const row0Jenis = document.getElementById("jenis_id_0");
+    if (row0Barang && (!row0Barang.value || row0Barang.value == 0) && (!row0Jenis || !row0Jenis.value)) {
+        populateRowWithData(0, barangId, namaBarang, jenisId, namaJenis, satuan, harga, stok);
     } else {
         const newIdx = addItemRow();
-        populateRowWithData(newIdx, barangId, jenisId, namaJenis, satuan, harga, stok);
+        populateRowWithData(newIdx, barangId, namaBarang, jenisId, namaJenis, satuan, harga, stok);
     }
 }
 
-function populateRowWithData(idx, barangId, jenisId, namaJenis, satuan, harga, stok) {
+function populateRowWithData(idx, barangId, namaBarang, jenisId, namaJenis, satuan, harga, stok) {
     const barangSelect = document.getElementById(`barang_id_${idx}`);
     if (barangSelect) {
+        let exists = false;
+        for (let i = 0; i < barangSelect.options.length; i++) {
+            if (barangSelect.options[i].value == barangId) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists && barangId) {
+            const opt = document.createElement('option');
+            opt.value = barangId;
+            opt.text = namaBarang || `Barang #${barangId}`;
+            barangSelect.appendChild(opt);
+        }
         barangSelect.value = barangId;
     }
 
     const stokFmt = formatStokJS(stok);
     const selectJenis = document.getElementById(`jenis_id_${idx}`);
-    selectJenis.innerHTML = `<option value="${jenisId}" data-stok="${stok}" data-satuan="${satuan}" data-harga="${harga}" selected>${namaJenis} (Stok: ${stokFmt} ${satuan})</option>`;
+    if (selectJenis) {
+        selectJenis.innerHTML = `<option value="${jenisId}" data-stok="${stok}" data-satuan="${satuan}" data-harga="${harga}" selected>${namaJenis} (Stok: ${stokFmt} ${satuan})</option>`;
+        selectJenis.value = jenisId;
+    }
     
-    document.getElementById(`satuan_${idx}`).value = satuan;
-    document.getElementById(`harga_${idx}`).value = formatRupiahJS(harga, 'Rp ');
-    document.getElementById(`stok_label_${idx}`).innerHTML = `<i class="fa-solid fa-boxes-stacked me-1"></i> Stok tersedia: <strong>${stokFmt} ${satuan}</strong>`;
-    document.getElementById(`harga_label_${idx}`).innerHTML = `<i class="fa-solid fa-tag me-1"></i> Harga standar: <strong>${formatRupiahJS(harga, 'Rp ')}</strong>`;
+    const elemSatuan = document.getElementById(`satuan_${idx}`);
+    if (elemSatuan) elemSatuan.value = satuan;
+
+    const elemHarga = document.getElementById(`harga_${idx}`);
+    if (elemHarga) elemHarga.value = formatRupiahJS(harga, 'Rp ');
+
+    const elemStokLabel = document.getElementById(`stok_label_${idx}`);
+    if (elemStokLabel) elemStokLabel.innerHTML = `<i class="fa-solid fa-boxes-stacked me-1"></i> Stok tersedia: <strong>${stokFmt} ${satuan}</strong>`;
+
+    const elemHargaLabel = document.getElementById(`harga_label_${idx}`);
+    if (elemHargaLabel) elemHargaLabel.innerHTML = `<i class="fa-solid fa-tag me-1"></i> Harga standar: <strong>${formatRupiahJS(harga, 'Rp ')}</strong>`;
     
     calculateRow(idx);
 }

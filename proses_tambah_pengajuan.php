@@ -99,7 +99,20 @@ try {
             $barang_id = (int)($_POST["barang_id_$idx"] ?? 0);
             $jenis_id = (int)($_POST["jenis_id_$idx"] ?? 0);
 
-            // Auto-fallback: Jika barang_id dipilih tetapi jenis_id belum terpilih, ambil varian pertama barang tersebut
+            // Auto-fallback 1: Jika jenis_id terisi tapi barang_id <= 0 (misal dari pencarian instan), cari barang_id dari tabel jenis_barang
+            if ($jenis_id > 0 && $barang_id <= 0) {
+                $stmt_b = mysqli_prepare($conn, "SELECT barang_id FROM jenis_barang WHERE id = ?");
+                if ($stmt_b) {
+                    mysqli_stmt_bind_param($stmt_b, "i", $jenis_id);
+                    mysqli_stmt_execute($stmt_b);
+                    $res_b = mysqli_stmt_get_result($stmt_b);
+                    if ($row_b = mysqli_fetch_assoc($res_b)) {
+                        $barang_id = (int)$row_b['barang_id'];
+                    }
+                }
+            }
+
+            // Auto-fallback 2: Jika barang_id terisi tapi jenis_id <= 0, cari varian pertama barang tersebut
             if ($barang_id > 0 && $jenis_id <= 0) {
                 $stmt_fb = mysqli_prepare($conn, "SELECT id FROM jenis_barang WHERE barang_id = ? ORDER BY id ASC LIMIT 1");
                 if ($stmt_fb) {
