@@ -365,9 +365,20 @@ function formatRupiah(num) {
     if (typeof formatRupiahJS === 'function') return formatRupiahJS(num, 'Rp ');
     return 'Rp ' + (num || 0).toLocaleString('id-ID');
 }
+function formatRupiahInput(input) {
+    if (!input) return;
+    let val = input.value;
+    if (typeof formatRupiahJS === 'function') {
+        input.value = formatRupiahJS(val, 'Rp ');
+    } else {
+        let clean = val.toString().replace(/[^\d]/g, '');
+        input.value = clean ? 'Rp ' + parseInt(clean, 10).toLocaleString('id-ID') : '';
+    }
+}
 window.unformatRupiah = unformatRupiah;
 window.unformatRupiahJS = unformatRupiah;
 window.formatRupiah = formatRupiah;
+window.formatRupiahInput = formatRupiahInput;
 
 let rowIndexCounter = 1;
 const barangIndukList = <?= json_encode($barang_induk_list); ?>;

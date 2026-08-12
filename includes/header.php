@@ -38,9 +38,20 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
             if (typeof formatRupiahJS === 'function') return formatRupiahJS(num, 'Rp ');
             return 'Rp ' + (num || 0).toLocaleString('id-ID');
         }
+        function formatRupiahInput(input) {
+            if (!input) return;
+            let val = input.value;
+            if (typeof formatRupiahJS === 'function') {
+                input.value = formatRupiahJS(val, 'Rp ');
+            } else {
+                let clean = val.toString().replace(/[^\d]/g, '');
+                input.value = clean ? 'Rp ' + parseInt(clean, 10).toLocaleString('id-ID') : '';
+            }
+        }
         window.unformatRupiah = unformatRupiah;
         window.unformatRupiahJS = unformatRupiah;
         window.formatRupiah = formatRupiah;
+        window.formatRupiahInput = formatRupiahInput;
     </script>
 </head>
 <body>

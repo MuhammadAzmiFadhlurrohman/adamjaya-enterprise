@@ -241,9 +241,21 @@ function unformatRupiahJS(rupiahStr) {
   return parseFloat(cleaned) || 0;
 }
 
+function formatRupiahInput(input) {
+  if (!input) return;
+  let val = input.value;
+  if (typeof formatRupiahJS === 'function') {
+    input.value = formatRupiahJS(val, 'Rp ');
+  } else {
+    let clean = val.toString().replace(/[^\d]/g, '');
+    input.value = clean ? 'Rp ' + parseInt(clean, 10).toLocaleString('id-ID') : '';
+  }
+}
+
 // Global Alias Compatibility
 window.unformatRupiah = unformatRupiahJS;
 window.unformatRupiahJS = unformatRupiahJS;
+window.formatRupiahInput = formatRupiahInput;
 if (typeof formatRupiahJS === 'function') {
   window.formatRupiah = function(num) { return formatRupiahJS(num, 'Rp '); };
 }
