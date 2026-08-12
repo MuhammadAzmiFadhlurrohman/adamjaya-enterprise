@@ -39,7 +39,7 @@ $custom_jam = sanitize($_POST['custom_jam'] ?? date('H:i'));
 $created_at = "$custom_tanggal $custom_jam:00";
 
 $status_pembayaran = sanitize($_POST['status_pembayaran'] ?? 'belum_dibayar');
-if (!in_array($status_pembayaran, ['belum_dibayar', 'dibayar'])) {
+if (!in_array($status_pembayaran, ['belum_dibayar', 'dibayar', 'cicilan'])) {
     $status_pembayaran = 'belum_dibayar';
 }
 
@@ -277,8 +277,9 @@ try {
     // Record initial payment in riwayat_cicilan if paid > 0
     if ($jumlah_dibayar > 0) {
         $catatan_awal = ($status_pembayaran === 'dibayar') ? 'Pembayaran Lunas Awal' : 'Pembayaran DP / Uang Muka Awal';
-        $stmt_cicilan_awal = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt_cicilan_awal, "iiddds", $pengajuan_id, $user_id, $jumlah_dibayar, $grand_total, $sisa_pembayaran, $catatan_awal);
+        $metode_val = ($metode_pembayaran === 'transfer') ? 'Transfer' : 'Cash';
+        $stmt_cicilan_awal = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, metode_pembayaran, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_cicilan_awal, "iidsdds", $pengajuan_id, $user_id, $jumlah_dibayar, $metode_val, $grand_total, $sisa_pembayaran, $catatan_awal);
         mysqli_stmt_execute($stmt_cicilan_awal);
     }
 
