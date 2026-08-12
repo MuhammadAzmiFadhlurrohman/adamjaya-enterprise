@@ -96,25 +96,6 @@ if ($barang_id > 0) {
 </div>
 <?php endif; ?>
 
-<!-- Realtime Search Bar Card -->
-<div class="filter-card mb-4">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 550px;">
-            <div class="position-relative w-100">
-                <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                <input type="text" id="searchVarianInput" class="form-control ps-5 pe-4 rounded-pill" placeholder="Ketik varian untuk mencari..." onkeyup="filterVarianLive(this.value)" autocomplete="off">
-            </div>
-        </div>
-        <?php if ($barang_id > 0): ?>
-            <div>
-                <a href="jenis_barang.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-medium">
-                    <i class="fa-solid fa-rotate-left me-1"></i> Tampilkan Semua Barang
-                </a>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
-
 <!-- Desktop Table Container (>= 768px) -->
 <div class="table-container d-none d-md-block">
     <div class="table-container-header">
@@ -130,7 +111,7 @@ if ($barang_id > 0) {
                     <th>Stok Tersedia</th>
                     <th>Satuan</th>
                     <th>Harga Satuan</th>
-                    <th width="150" class="text-center">Aksi</th>
+                    <th width="150" class="text-end">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -155,14 +136,14 @@ if ($barang_id > 0) {
                             </td>
                             <td><span class="text-muted fw-semibold"><?= e($j['satuan']); ?></span></td>
                             <td><span class="fw-bold text-success"><?= formatRupiah($j['harga']); ?></span></td>
-                            <td class="text-center">
-                                <div class="action-btns justify-content-center">
+                            <td class="text-end">
+                                <div class="action-btns justify-content-end">
                                     <?php if ($is_admin): ?>
                                         <button type="button" class="action-btn btn-edit" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
                                             <i class="fa-solid fa-pen"></i> Edit
                                         </button>
                                         <a href="#" class="action-btn btn-delete" 
-                                           onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
+                                           onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&redirect_barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
                                             <i class="fa-solid fa-trash"></i> Hapus
                                         </a>
                                     <?php else: ?>
@@ -232,12 +213,12 @@ if ($barang_id > 0) {
 
                 <!-- Action Footer Buttons -->
                 <?php if ($is_admin): ?>
-                    <div class="action-btns justify-content-center pt-1">
+                    <div class="action-btns ms-auto justify-content-end pt-1">
                         <button type="button" class="action-btn btn-edit" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
                             <i class="fa-solid fa-pen me-1"></i> Edit
                         </button>
                         <a href="#" class="action-btn btn-delete" 
-                           onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
+                           onclick="confirmDelete(event, 'proses_jenis_barang.php?action=delete&id=<?= $j['id']; ?>&redirect_barang_id=<?= $barang_id; ?>&csrf_token=<?= generate_csrf_token(); ?>')">
                             <i class="fa-solid fa-trash me-1"></i> Hapus
                         </a>
                     </div>
