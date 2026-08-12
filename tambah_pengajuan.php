@@ -861,15 +861,27 @@ function calculateSisaPreview() {
     const dpInput = document.getElementById('jumlah_dibayar_input');
     const previewSisa = document.getElementById('previewSisaPiutang');
 
+    const parseRupiahVal = (str) => {
+        if (typeof unformatRupiahJS === 'function') return unformatRupiahJS(str);
+        if (!str) return 0;
+        let num = parseInt(str.toString().replace(/[^\d]/g, ''), 10);
+        return isNaN(num) ? 0 : num;
+    };
+
+    const formatRupiahVal = (num) => {
+        if (typeof formatRupiahJS === 'function') return formatRupiahJS(num, 'Rp ');
+        return 'Rp ' + (num || 0).toLocaleString('id-ID');
+    };
+
     let totalVal = 0;
     document.querySelectorAll('[id^="subtotal_"]').forEach(input => {
-        totalVal += unformatRupiah(input.value);
+        totalVal += parseRupiahVal(input.value);
     });
 
     if (status === 'cicilan') {
-        const dpVal = unformatRupiah(dpInput ? dpInput.value : 0);
+        const dpVal = parseRupiahVal(dpInput ? dpInput.value : 0);
         const sisa = Math.max(0, totalVal - dpVal);
-        if (previewSisa) previewSisa.innerText = formatRupiah(sisa);
+        if (previewSisa) previewSisa.innerText = formatRupiahVal(sisa);
     }
 }
 
