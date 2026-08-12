@@ -41,11 +41,10 @@
 
 * { box-sizing: border-box; }
 
-/* Compact Base Scale - Exact 90% UI Scale at 100% Browser Zoom */
+/* Compact Executive Layout System */
 html {
-  font-size: 13.5px;
+  font-size: 12.8px;
   overflow-x: hidden;
-  width: 100%;
 }
 
 body {
@@ -53,10 +52,7 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     margin: 0;
     padding: 0;
-    width: 111.111111%;
-    min-height: 111.111111vh;
-    transform: scale(0.9);
-    transform-origin: 0 0;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     color: var(--ink);
@@ -71,8 +67,8 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 
 /* Sidebar Styling (Fixed Left Navigation) */
 #sidebar-wrapper {
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
   width: var(--sidebar-width);
   position: fixed;
   top: 0;
@@ -398,10 +394,10 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 
 /* Topbar Header Bar */
 .top-navbar {
-  height: 56px;
+  height: 50px;
   background: linear-gradient(135deg, var(--wine-dark) 0%, var(--wine) 60%, var(--wine-dark) 100%);
-  padding: 0 1.25rem;
-  margin-bottom: 1.25rem;
+  padding: 0 1.1rem;
+  margin-bottom: 1rem;
   border-radius: 12px;
   border-bottom: 2.5px solid var(--gold) !important;
   box-shadow: 0 4px 18px rgba(88, 16, 31, 0.35);
@@ -506,7 +502,7 @@ h1, h2, h3, h4, h5, h6, .page-title, .modal-title {
 .page-header {
     position: relative;
     color: #ffffff;
-    padding: 1.6rem 1.75rem 2.75rem;
+    padding: 1.25rem 1.5rem 2.25rem;
     margin-bottom: 0.65rem;
     border-radius: var(--radius);
     background:
