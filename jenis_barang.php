@@ -65,12 +65,12 @@ if ($barang_id > 0) {
                 <input type="text" name="nama_jenis" class="form-control form-control-lg fs-6 fw-semibold" placeholder="Contoh: Besi Polos 10mm (12m)" required>
             </div>
 
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
+            <div class="row g-2 g-md-3 mb-3">
+                <div class="col-6">
                     <label class="form-label text-muted small fw-bold">Stok Awal</label>
                     <input type="number" step="0.01" name="stok" class="form-control form-control-lg fs-6 fw-semibold" value="0" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-6">
                     <label class="form-label text-muted small fw-bold">Satuan *</label>
                     <select name="satuan" class="form-select form-select-lg fs-6 fw-semibold" required>
                         <option value="unit" selected>unit</option>
@@ -315,12 +315,12 @@ if ($barang_id > 0) {
                         <label class="form-label text-muted small fw-semibold">NAMA VARIAN / SPESIFIKASI</label>
                         <input type="text" name="nama_jenis" id="edit_j_nama" class="form-control" required>
                     </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
+                    <div class="row g-2 g-md-3">
+                        <div class="col-6">
                             <label class="form-label text-muted small fw-semibold">STOK TERSEDIA</label>
                             <input type="number" step="0.01" name="stok" id="edit_j_stok" class="form-control" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label text-muted small fw-semibold">SATUAN</label>
                             <select name="satuan" id="edit_j_satuan" class="form-select" required>
                                 <option value="unit">unit</option>
