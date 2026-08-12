@@ -516,7 +516,104 @@ function initNetworkAndLoaders() {
   });
 
   window.addEventListener("online", function () {
-    if (slowNetBanner) slowNetBanner.style.display = "none";
+    if (slowNetBanner) {
+      slowNetBanner.style.display = "none";
+    }
     showToast("success", "Koneksi Kembali", "Anda sudah terhubung kembali ke internet.", 3500);
   });
 }
+
+/* ========================================================
+   GLOBAL HANDLER PEMBAYARAN CICILAN (ANGSURAN SUSULAN)
+   ======================================================== */
+function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
+    if (typeof Swal === 'undefined') return;
+
+    Swal.fire({
+        title: 'Catat Pembayaran Cicilan',
+        html: `
+            <div class="text-start mb-3">
+                <label class="form-label small text-muted fw-bold mb-1">Nominal Pembayaran Cicilan (Rp):</label>
+                <input type="text" id="swal_nominal_cicilan" class="form-control form-control-lg fw-bold text-wine" placeholder="Contoh: 500000">
+                <div class="d-flex justify-content-between align-items-center mt-1 text-muted small" style="font-size:0.75rem;">
+                    <span>Sisa Piutang Tagihan:</span>
+                    <b class="text-danger">Rp ${parseFloat(maxSisa || 0).toLocaleString('id-ID')}</b>
+                </div>
+            </div>
+            <div class="text-start">
+                <label class="form-label small text-muted fw-bold mb-1">Catatan / Keterangan (Opsional):</label>
+                <input type="text" id="swal_catatan_cicilan" class="form-control" placeholder="Contoh: Cicilan ke-2 via transfer">
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check me-1"></i> Simpan Pembayaran',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#7A1E33',
+        didOpen: () => {
+            const inputNominal = document.getElementById('swal_nominal_cicilan');
+            if (inputNominal) {
+                inputNominal.focus();
+                inputNominal.addEventListener('keyup', function() {
+                    let val = this.value.replace(/[^\d]/g, '');
+                    this.value = val ? parseInt(val, 10).toLocaleString('id-ID') : '';
+                });
+            }
+        },
+        preConfirm: () => {
+            const inputNominal = document.getElementById('swal_nominal_cicilan');
+            const inputCatatan = document.getElementById('swal_catatan_cicilan');
+            const nominalStr = inputNominal ? inputNominal.value : '';
+            const catatanStr = inputCatatan ? inputCatatan.value : '';
+
+            let num = parseInt(nominalStr.replace(/[^\d]/g, ''), 10) || 0;
+
+            if (!nominalStr || num <= 0) {
+                Swal.showValidationMessage('Masukkan nominal pembayaran cicilan yang valid (lebih dari Rp 0)!');
+                return false;
+            }
+            return { nominal: nominalStr, catatan: catatanStr };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('pengajuan_id', pengajuanId);
+            formData.append('nominal_bayar', result.value.nominal);
+            formData.append('catatan', result.value.catatan);
+            formData.append('csrf_token', csrfToken);
+
+            fetch('proses_tambah_cicilan.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        timer: 2200,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message
+                    });
+                }
+            })
+            .catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Sistem',
+                    text: 'Terjadi kesalahan koneksi saat menyimpan cicilan.'
+                });
+            });
+        }
+    });
+}
+window.submitTambahCicilan = submitTambahCicilan;
