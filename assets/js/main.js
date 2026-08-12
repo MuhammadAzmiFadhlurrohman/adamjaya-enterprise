@@ -217,7 +217,14 @@ function submitKwitansiModal(e, id) {
  */
 function formatRupiahJS(angka, prefix = 'Rp ') {
   if (angka === null || angka === undefined || angka === '') return '';
-  let number_string = angka.toString().replace(/[^,\d]/g, ''),
+  let strVal = angka.toString().trim();
+  if (strVal.includes('.')) {
+    let parts = strVal.split('.');
+    if (parts[1] === '0' || parts[1] === '00' || parts[1] === '000') {
+      strVal = parts[0];
+    }
+  }
+  let number_string = strVal.replace(/[^,\d]/g, ''),
     split = number_string.split(','),
     sisa = split[0].length % 3,
     rupiah = split[0].substr(0, sisa),

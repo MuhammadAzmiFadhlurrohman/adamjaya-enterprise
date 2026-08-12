@@ -26,6 +26,29 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
     
     <!-- Global JavaScript Helper Functions (Pre-loaded in Head) -->
     <script>
+        function formatRupiahJS(angka, prefix = 'Rp ') {
+            if (angka === null || angka === undefined || angka === '') return '';
+            let strVal = angka.toString().trim();
+            if (strVal.includes('.')) {
+                let parts = strVal.split('.');
+                if (parts[1] === '0' || parts[1] === '00' || parts[1] === '000') {
+                    strVal = parts[0];
+                }
+            }
+            let number_string = strVal.replace(/[^,\d]/g, ''),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+            return prefix ? (rupiah ? 'Rp ' + rupiah : '') : rupiah;
+        }
         function unformatRupiah(str) {
             if (!str) return 0;
             let cleaned = str.toString().replace(/[^0-9,-]/g, '').replace(',', '.');
@@ -35,8 +58,7 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
             return unformatRupiah(str);
         }
         function formatRupiah(num) {
-            if (typeof formatRupiahJS === 'function') return formatRupiahJS(num, 'Rp ');
-            return 'Rp ' + (num || 0).toLocaleString('id-ID');
+            return formatRupiahJS(num, 'Rp ');
         }
         function formatRupiahInput(input) {
             if (!input) return;

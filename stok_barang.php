@@ -170,7 +170,7 @@ $total_induk = mysqli_num_rows($result);
                                 <span class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 rounded-2 fw-semibold" style="font-size:0.75rem;"><i class="fa-solid fa-layer-group me-1 text-gold"></i> <?= $b['total_varian']; ?> jenis</span>
                             </td>
                             <td data-label="AKSI" class="text-end text-nowrap">
-                                <div class="d-inline-flex align-items-center justify-content-end flex-nowrap gap-1.5" style="white-space: nowrap;">
+                                <div class="d-inline-flex align-items-center justify-content-end flex-nowrap gap-2" style="gap: 8px; white-space: nowrap;">
                                     <a href="jenis_barang.php?barang_id=<?= $b['id']; ?>&search=<?= urlencode($search); ?>" class="btn btn-outline-primary btn-sm px-2.5 py-1 fw-semibold rounded-2 text-nowrap" title="Lihat Jenis Barang">
                                         <i class="fa-solid fa-eye me-1"></i> Lihat Jenis
                                     </a>
