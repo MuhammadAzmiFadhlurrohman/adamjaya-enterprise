@@ -33,10 +33,24 @@ if (!$p) {
 }
 
 if ($action === 'bayar_tanpa_bukti') {
-    $stmt_u = mysqli_prepare($conn, "UPDATE pengajuan SET status_pembayaran = 'dibayar' WHERE id = ?");
-    mysqli_stmt_bind_param($stmt_u, "i", $id);
+    $metode_raw = sanitize($_POST['metode'] ?? 'Cash');
+    $metode_val = (strtolower($metode_raw) === 'transfer') ? 'Transfer' : 'Cash';
+    
+    $grand_total = (float)$p['estimasi_dana'];
+    $sisa_sebelum = (float)$p['sisa_pembayaran'];
+    $user_id = $_SESSION['user_id'] ?? 1;
+
+    $stmt_u = mysqli_prepare($conn, "UPDATE pengajuan SET status_pembayaran = 'dibayar', jumlah_dibayar = ?, sisa_pembayaran = 0.00 WHERE id = ?");
+    mysqli_stmt_bind_param($stmt_u, "di", $grand_total, $id);
     if (mysqli_stmt_execute($stmt_u)) {
-        echo json_encode(['success' => true, 'message' => 'Status pembayaran berhasil diubah menjadi LUNAS DIBAYAR (Tanpa Bukti).']);
+        if ($sisa_sebelum > 0) {
+            $catatan_pelunasan = 'Pelunasan Instan Sisa Tagihan (Lunas 100%)';
+            $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, metode_pembayaran, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, 0.00, ?)");
+            mysqli_stmt_bind_param($stmt_log, "iidsds", $id, $user_id, $sisa_sebelum, $metode_val, $sisa_sebelum, $catatan_pelunasan);
+            mysqli_stmt_execute($stmt_log);
+        }
+
+        echo json_encode(['success' => true, 'message' => 'Pelunasan Instan berhasil! Sisa piutang kini Rp 0 dan transaksi LUNAS 100%.']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Gagal mengubah status pembayaran.']);
     }
@@ -44,7 +58,9 @@ if ($action === 'bayar_tanpa_bukti') {
 }
 
 if ($action === 'bayar_dengan_bukti') {
-    $metode = sanitize($_POST['metode'] ?? 'transfer'); // 'transfer' or 'tunai'
+    $metode = sanitize($_POST['metode'] ?? 'transfer');
+    $metode_val = (strtolower($metode) === 'transfer') ? 'Transfer' : 'Cash';
+
     if (!isset($_FILES['bukti_file']) || $_FILES['bukti_file']['error'] !== UPLOAD_ERR_OK) {
         echo json_encode(['success' => false, 'message' => 'Silakan pilih berkas bukti terlebih dahulu.']);
         exit;
@@ -64,15 +80,27 @@ if ($action === 'bayar_dengan_bukti') {
 
     if (move_uploaded_file($_FILES['bukti_file']['tmp_name'], $upload_dir . $new_name)) {
         $path = 'uploads/bukti/' . $new_name;
+        $grand_total = (float)$p['estimasi_dana'];
+        $sisa_sebelum = (float)$p['sisa_pembayaran'];
+        $user_id = $_SESSION['user_id'] ?? 1;
+
         if ($metode === 'tunai') {
-            $stmt_u = mysqli_prepare($conn, "UPDATE pengajuan SET status_pembayaran = 'dibayar', bukti_tunai = ? WHERE id = ?");
+            $stmt_u = mysqli_prepare($conn, "UPDATE pengajuan SET status_pembayaran = 'dibayar', jumlah_dibayar = ?, sisa_pembayaran = 0.00, bukti_tunai = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt_u, "dsi", $grand_total, $path, $id);
         } else {
-            $stmt_u = mysqli_prepare($conn, "UPDATE pengajuan SET status_pembayaran = 'dibayar', bukti_transfer = ? WHERE id = ?");
+            $stmt_u = mysqli_prepare($conn, "UPDATE pengajuan SET status_pembayaran = 'dibayar', jumlah_dibayar = ?, sisa_pembayaran = 0.00, bukti_transfer = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt_u, "dsi", $grand_total, $path, $id);
         }
-        mysqli_stmt_bind_param($stmt_u, "si", $path, $id);
         mysqli_stmt_execute($stmt_u);
 
-        echo json_encode(['success' => true, 'message' => 'Bukti pembayaran berhasil diunggah dan status diubah menjadi LUNAS DIBAYAR.']);
+        if ($sisa_sebelum > 0) {
+            $catatan_pelunasan = 'Pelunasan Instan dengan Unggah Bukti (Lunas 100%)';
+            $stmt_log = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, metode_pembayaran, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, 0.00, ?)");
+            mysqli_stmt_bind_param($stmt_log, "iidsds", $id, $user_id, $sisa_sebelum, $metode_val, $sisa_sebelum, $catatan_pelunasan);
+            mysqli_stmt_execute($stmt_log);
+        }
+
+        echo json_encode(['success' => true, 'message' => 'Bukti pembayaran berhasil diunggah! Sisa piutang kini Rp 0 dan transaksi LUNAS 100%.']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Gagal menyimpan berkas ke server.']);
     }
