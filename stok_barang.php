@@ -42,22 +42,47 @@ $total_induk = mysqli_num_rows($result);
 ?>
 
 <!-- HEADER CURVED EXECUTIVE BANNER -->
-<header class="page-header">
+<header class="page-header mb-4">
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
             <span class="page-eyebrow"><i class="fa-solid fa-boxes-stacked"></i> Master Persediaan &middot; Adam Jaya</span>
             <h1 class="page-title">Master Barang Induk</h1>
             <p class="page-subtitle">Kelola kelompok barang utama yang memiliki berbagai varian & spesifikasi persediaan.</p>
         </div>
-        <div class="header-action">
-            <?php if ($is_admin): ?>
-                <button class="btn-pengajuan-header" data-bs-toggle="modal" data-bs-target="#addBarangModal">
-                    <i class="fa-solid fa-plus-circle"></i> Tambah Barang Induk
-                </button>
-            <?php endif; ?>
-        </div>
     </div>
 </header>
+
+<?php if ($is_admin): ?>
+<!-- CARD FORM TAMBAH BARANG BARU (INLINE AT TOP) -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+    <div class="card-header text-white py-3 px-3.5 d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #7A1E33 0%, #5A1224 100%);">
+        <i class="fa-solid fa-circle-plus fs-5 text-gold"></i>
+        <h6 class="mb-0 fw-bold text-white fs-6">Tambah Barang Baru</h6>
+    </div>
+    <div class="card-body p-3.5 bg-white">
+        <form action="proses_stok_barang.php" method="POST" enctype="multipart/form-data">
+            <?= csrf_field(); ?>
+            <input type="hidden" name="action" value="create">
+            <input type="hidden" name="search" value="<?= e($search); ?>">
+            
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Nama Barang</label>
+                <input type="text" name="nama_barang" class="form-control form-control-lg fs-6 fw-semibold" placeholder="Contoh: Tangok" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Gambar Barang (Opsional)</label>
+                <input type="file" name="gambar" class="form-control" accept="image/*">
+                <small class="text-muted d-block mt-1" style="font-size:0.75rem;">JPG, PNG, GIF (max 10MB)</small>
+            </div>
+
+            <button type="submit" class="btn text-white w-100 py-2.5 fw-bold rounded-3 shadow-sm fs-6" style="background: linear-gradient(135deg, #7A1E33 0%, #5A1224 100%); border: none;">
+                <i class="fa-solid fa-plus me-1"></i> Tambah Barang
+            </button>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Filter & Realtime Search Bar Card -->
 <div class="filter-card mb-4">
@@ -69,7 +94,7 @@ $total_induk = mysqli_num_rows($result);
                        name="search" 
                        id="searchInputBarang" 
                        class="form-control ps-5 pe-4 rounded-pill" 
-                       placeholder="Cari barang induk atau varian (ketik langsung)..." 
+                       placeholder="Cari barang..." 
                        value="<?= e($search); ?>"
                        onkeyup="filterTableLive(this.value)"
                        autocomplete="off">
@@ -79,7 +104,7 @@ $total_induk = mysqli_num_rows($result);
                     </a>
                 <?php endif; ?>
             </div>
-            <button type="submit" class="btn btn-wine px-4 rounded-pill fw-semibold text-nowrap">
+            <button type="submit" class="btn btn-wine px-4 rounded-pill fw-semibold text-nowrap" style="background: linear-gradient(135deg, #7A1E33 0%, #5A1224 100%); border: none; color: white;">
                 <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
             </button>
         </div>
@@ -96,67 +121,66 @@ $total_induk = mysqli_num_rows($result);
 
 <!-- Table Container -->
 <div class="table-container">
-    <div class="table-container-header">
-        <h2><i class="fa-solid fa-box-archive me-2 text-wine"></i> Daftar Kelompok Barang Induk</h2>
-        <span class="badge-count"><?= $total_induk; ?> Barang Induk</span>
+    <div class="table-container-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-list text-wine fs-5"></i>
+            <h2 class="mb-0 fw-bold fs-5 text-dark">Daftar Barang</h2>
+        </div>
+        <span class="badge bg-warning-subtle text-dark border border-warning px-3 py-1.5 rounded-pill fw-bold" style="font-size:0.78rem;"><?= $total_induk; ?> barang</span>
     </div>
 
     <div class="table-responsive">
-        <table class="table align-middle">
+        <table class="table align-middle mb-0">
             <thead>
                 <tr>
-                    <th width="45">ID</th>
-                    <th width="80">Gambar</th>
-                    <th>Nama Barang Induk</th>
-                    <th>Jumlah Varian</th>
-                    <th>Total Ketersediaan Stok</th>
-                    <th width="180" class="text-end">Aksi & Varian</th>
+                    <th width="45">NO</th>
+                    <th width="80">GAMBAR</th>
+                    <th>NAMA BARANG</th>
+                    <th>JUMLAH JENIS</th>
+                    <th width="240" class="text-end">AKSI</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ($total_induk > 0): ?>
-                    <?php while ($b = mysqli_fetch_assoc($result)): ?>
+                    <?php $no_b = 1; while ($b = mysqli_fetch_assoc($result)): ?>
                         <tr id="row-barang-<?= $b['id']; ?>">
-                            <td data-label="ID">
-                                <span class="id-chip">#<?= $b['id']; ?></span>
+                            <td data-label="NO">
+                                <span class="fw-semibold text-muted"><?= $no_b++; ?></span>
                             </td>
                             <td data-label="Gambar">
                                 <?php if (!empty($b['gambar']) && file_exists(__DIR__ . '/' . $b['gambar'])): ?>
                                     <img src="<?= e($b['gambar']); ?>" 
                                          alt="<?= e($b['nama_barang']); ?>" 
                                          class="rounded border shadow-sm" 
-                                         style="width: 44px; height: 44px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" 
+                                         style="width: 46px; height: 46px; object-fit: cover; cursor: pointer; transition: transform 0.2s;" 
                                          onmouseover="this.style.transform='scale(1.1)'" 
                                          onmouseout="this.style.transform='scale(1)'" 
                                          onclick="previewImage('<?= e($b['gambar']); ?>', '<?= e(addslashes($b['nama_barang'])); ?>')"
                                          title="Klik untuk memperbesar gambar">
                                 <?php else: ?>
-                                    <div class="bg-light text-muted border rounded d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                    <div class="bg-light text-muted border rounded d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
                                         <i class="fa-solid fa-image fs-5 text-gold"></i>
                                     </div>
                                 <?php endif; ?>
                             </td>
-                            <td data-label="Nama Barang Induk">
+                            <td data-label="Nama Barang">
                                 <strong class="text-dark fs-6"><?= e($b['nama_barang']); ?></strong>
                             </td>
-                            <td data-label="Jumlah Varian">
-                                <span class="badge-status info"><i class="fa-solid fa-layer-group"></i> <?= $b['total_varian']; ?> Varian</span>
+                            <td data-label="Jumlah Jenis">
+                                <span class="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 rounded-pill fw-semibold" style="font-size:0.75rem;"><i class="fa-solid fa-layer-group me-1 text-gold"></i> <?= $b['total_varian']; ?> jenis</span>
                             </td>
-                            <td data-label="Total Ketersediaan Stok">
-                                <strong class="text-success fs-6"><?= format_stok($b['total_stok_varian']); ?></strong>
-                            </td>
-                            <td data-label="Aksi & Varian" class="text-end">
-                                <div class="action-btns justify-content-end">
-                                    <a href="jenis_barang.php?barang_id=<?= $b['id']; ?>&search=<?= urlencode($search); ?>" class="action-btn btn-edit" title="Lihat/Kelola Varian">
-                                        <i class="fa-solid fa-layer-group"></i> Varian
+                            <td data-label="AKSI" class="text-end">
+                                <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
+                                    <a href="jenis_barang.php?barang_id=<?= $b['id']; ?>&search=<?= urlencode($search); ?>" class="btn btn-outline-primary btn-sm px-3.5 py-1.5 fw-semibold rounded-pill" title="Lihat Jenis Barang">
+                                        <i class="fa-solid fa-eye me-1"></i> Lihat Jenis
                                     </a>
                                     <?php if ($is_admin): ?>
-                                        <button class="action-btn btn-detail" onclick="editBarang(<?= htmlspecialchars(json_encode($b)); ?>)">
-                                            <i class="fa-solid fa-pen"></i> Edit
+                                        <button type="button" class="btn btn-outline-warning btn-sm px-3.5 py-1.5 fw-semibold rounded-pill" onclick="editBarang(<?= htmlspecialchars(json_encode($b)); ?>)">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit
                                         </button>
-                                        <a href="#" class="action-btn btn-delete" 
+                                        <a href="#" class="btn btn-outline-danger btn-sm px-3.5 py-1.5 fw-semibold rounded-pill" 
                                            onclick="confirmDelete(event, 'proses_stok_barang.php?action=delete&id=<?= $b['id']; ?>&csrf_token=<?= generate_csrf_token(); ?>&search=<?= urlencode($search); ?>')">
-                                            <i class="fa-solid fa-trash"></i> Hapus
+                                            <i class="fa-solid fa-trash me-1"></i> Hapus
                                         </a>
                                     <?php endif; ?>
                                 </div>
@@ -165,11 +189,11 @@ $total_induk = mysqli_num_rows($result);
                     <?php endwhile; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="6">
-                            <div class="no-data">
-                                <i class="fa-solid fa-box-open"></i>
-                                <h5>Belum Ada Barang Induk</h5>
-                                <p class="text-muted">Silakan klik tombol Tambah Barang Induk untuk mendaftarkan produk baru.</p>
+                        <td colspan="5">
+                            <div class="no-data py-4 text-center">
+                                <i class="fa-solid fa-box-open fs-1 text-muted mb-2"></i>
+                                <h5 class="fw-bold text-dark">Belum Ada Barang</h5>
+                                <p class="text-muted small mb-0">Silakan gunakan form Tambah Barang Baru di atas untuk mendaftarkan barang.</p>
                             </div>
                         </td>
                     </tr>
