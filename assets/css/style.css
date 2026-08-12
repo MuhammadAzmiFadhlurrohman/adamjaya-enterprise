@@ -1795,14 +1795,20 @@ body.login-body {
 
     /* Mobile Status & AKSI Row Layout Override - No Label Text & Forced Always Sejajar */
     .table:not(.modal-detail-table) td[data-label="Status"],
-    .table:not(.modal-detail-table) td[data-label="Status Bayar"],
+    .table:not(.modal-detail-table) td[data-label="Status Bayar"] {
+        padding: 0.65rem 0.75rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+    }
+
     .table:not(.modal-detail-table) td[data-label="AKSI"],
     .table:not(.modal-detail-table) td[data-label="Aksi"],
     .table:not(.modal-detail-table) td[data-label="Aksi & Varian"] {
         padding: 0.65rem 0.75rem !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: flex-end !important;
+        justify-content: center !important;
     }
 
     .table:not(.modal-detail-table) td[data-label="Status"]::before,
@@ -1828,10 +1834,12 @@ body.login-body {
         display: inline-flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        justify-content: flex-end !important;
+        justify-content: center !important;
         align-items: center !important;
         gap: 0.5rem !important;
         white-space: nowrap !important;
+        width: 100% !important;
+        margin: 0 auto !important;
     }
     .action-btn, .action-btns .btn {
         padding: 0.42rem 0.95rem !important;

@@ -232,7 +232,7 @@ if ($barang_id > 0) {
 
                 <!-- Action Footer Buttons -->
                 <?php if ($is_admin): ?>
-                    <div class="action-btns justify-content-end pt-1">
+                    <div class="action-btns justify-content-center pt-1">
                         <button type="button" class="action-btn btn-edit" onclick="editJenis(<?= htmlspecialchars(json_encode($j)); ?>)">
                             <i class="fa-solid fa-pen me-1"></i> Edit
                         </button>
