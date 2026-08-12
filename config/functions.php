@@ -162,18 +162,19 @@ function parseJumlah($val) {
  */
 function unformatRupiah($str) {
     if (empty($str) && $str !== '0' && $str !== 0) return 0.0;
-    if (is_numeric($str)) return (float)$str;
+    if (is_int($str) || is_float($str)) return (float)$str;
 
+    $str = (string)$str;
     // Hapus Rp, spasi, dan huruf
-    $cleaned = preg_replace('/[^\d,.-]/', '', (string)$str);
+    $cleaned = preg_replace('/[^\d,.-]/', '', $str);
     if (empty($cleaned)) return 0.0;
 
-    // Jika ada koma, titik adalah pemisah ribuan dan koma desimal
+    // Jika ada koma, titik adalah pemisah ribuan dan koma desimal (misal "55.000,50")
     if (strpos($cleaned, ',') !== false) {
         $cleaned = str_replace('.', '', $cleaned);
         $cleaned = str_replace(',', '.', $cleaned);
     } else {
-        // Dalam string formatted Rupiah (misal "145.000" atau "8.500.000"), titik adalah pemisah ribuan
+        // Dalam string formatted Rupiah (misal "500.000" atau "1.450.000"), titik adalah pemisah ribuan
         $cleaned = str_replace('.', '', $cleaned);
     }
     return (float)$cleaned;

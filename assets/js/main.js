@@ -609,7 +609,7 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
                 Swal.showValidationMessage('Masukkan nominal pembayaran cicilan yang valid (lebih dari Rp 0)!');
                 return false;
             }
-            return { nominal: nominalStr, catatan: catatanStr };
+            return { nominal: num, catatan: catatanStr };
         }
     }).then((result) => {
         if (result.isConfirmed) {
