@@ -23,6 +23,25 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- Custom Design Tokens -->
     <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css'); ?>">
+    
+    <!-- Global JavaScript Helper Functions (Pre-loaded in Head) -->
+    <script>
+        function unformatRupiah(str) {
+            if (!str) return 0;
+            let cleaned = str.toString().replace(/[^0-9,-]/g, '').replace(',', '.');
+            return parseFloat(cleaned) || 0;
+        }
+        function unformatRupiahJS(str) {
+            return unformatRupiah(str);
+        }
+        function formatRupiah(num) {
+            if (typeof formatRupiahJS === 'function') return formatRupiahJS(num, 'Rp ');
+            return 'Rp ' + (num || 0).toLocaleString('id-ID');
+        }
+        window.unformatRupiah = unformatRupiah;
+        window.unformatRupiahJS = unformatRupiah;
+        window.formatRupiah = formatRupiah;
+    </script>
 </head>
 <body>
     <!-- Top Global Progress Bar (Animated Load Indicator) -->
