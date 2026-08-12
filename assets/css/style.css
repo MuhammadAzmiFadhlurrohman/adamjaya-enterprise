@@ -41,8 +41,9 @@
 
 * { box-sizing: border-box; }
 
-/* Compact Desktop Base Scale */
+/* Compact 90% Application Scale */
 html {
+  zoom: 90%;
   font-size: 13.5px;
 }
 
