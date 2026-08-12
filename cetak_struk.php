@@ -352,13 +352,13 @@ while ($row = mysqli_fetch_assoc($res_d)) {
 
             <div class="d-flex justify-content-between small mt-1 text-success fw-bold">
                 <span>SUDAH DIBAYAR:</span>
-                <span><?= formatRupiah($p['jumlah_dibayar']); ?></span>
+                <span><?= formatRupiah($p['jumlah_dibayar'] ?? 0); ?></span>
             </div>
 
-            <?php if ((float)$p['sisa_pembayaran'] > 0): ?>
+            <?php if ((float)($p['sisa_pembayaran'] ?? 0) > 0): ?>
             <div class="d-flex justify-content-between small text-danger fw-bold">
                 <span>SISA PIUTANG :</span>
-                <span><?= formatRupiah($p['sisa_pembayaran']); ?></span>
+                <span><?= formatRupiah($p['sisa_pembayaran'] ?? 0); ?></span>
             </div>
             <?php endif; ?>
 

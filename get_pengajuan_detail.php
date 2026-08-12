@@ -145,7 +145,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
                         <div>
                             <span class="label">STATUS BAYAR</span>
                             <span class="val mt-1">
-                                <?= render_status_pembayaran_badge($p['status_pembayaran'], $p['jumlah_dibayar'], $p['sisa_pembayaran']); ?>
+                                <?= render_status_pembayaran_badge($p['status_pembayaran'], $p['jumlah_dibayar'] ?? 0, $p['sisa_pembayaran'] ?? 0); ?>
                             </span>
                         </div>
                     </div>
@@ -155,11 +155,11 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
             <div class="border-top border-dashed my-2 pt-2 row g-2">
                 <div class="col-6">
                     <small class="text-muted d-block" style="font-size:0.68rem; font-weight:600;">SUDAH DIBAYAR:</small>
-                    <span class="fw-bold text-success" style="font-size:0.92rem;"><?= formatRupiah($p['jumlah_dibayar']); ?></span>
+                    <span class="fw-bold text-success" style="font-size:0.92rem;"><?= formatRupiah($p['jumlah_dibayar'] ?? 0); ?></span>
                 </div>
                 <div class="col-6 text-end">
                     <small class="text-muted d-block" style="font-size:0.68rem; font-weight:600;">SISA PIUTANG:</small>
-                    <span class="fw-bold text-danger" style="font-size:0.92rem;"><?= formatRupiah($p['sisa_pembayaran']); ?></span>
+                    <span class="fw-bold text-danger" style="font-size:0.92rem;"><?= formatRupiah($p['sisa_pembayaran'] ?? 0); ?></span>
                 </div>
             </div>
 

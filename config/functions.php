@@ -21,7 +21,7 @@ function e($str) {
 }
 
 /**
- * Auto Migration Helper: Pastikan Tabel riwayat_stok ada di Database
+ * Auto Migration Helper: Pastikan Tabel riwayat_stok & cicilan ada di Database
  */
 function ensure_riwayat_stok_table_exists($conn) {
     static $checked = false;
@@ -43,7 +43,53 @@ function ensure_riwayat_stok_table_exists($conn) {
     
     // Auto self-heal outlier swapped QTY & Price records (e.g. QTY 15,000,000 vs Price 1.00)
     @mysqli_query($conn, "UPDATE pengajuan_detail SET harga_satuan = jumlah, jumlah = 1 WHERE jumlah >= 1000000 AND harga_satuan <= 10");
+
+    // Auto-migrate cicilan schema (columns & table) for live database
+    ensure_cicilan_schema_exists($conn);
+
     $checked = true;
+}
+
+/**
+ * Auto Migration Helper: Pastikan Kolom & Tabel Cicilan ada di Database Live Hostinger
+ */
+function ensure_cicilan_schema_exists($conn) {
+    static $checked_cicilan = false;
+    if ($checked_cicilan || !$conn) return;
+
+    // 1. Modify status_pembayaran column to support 'cicilan'
+    @mysqli_query($conn, "ALTER TABLE pengajuan MODIFY COLUMN status_pembayaran VARCHAR(50) NOT NULL DEFAULT 'belum_dibayar'");
+
+    // 2. Add jumlah_dibayar column if missing
+    $check_jd = @mysqli_query($conn, "SHOW COLUMNS FROM pengajuan LIKE 'jumlah_dibayar'");
+    if ($check_jd && mysqli_num_rows($check_jd) == 0) {
+        @mysqli_query($conn, "ALTER TABLE pengajuan ADD COLUMN jumlah_dibayar DECIMAL(15,2) NOT NULL DEFAULT 0.00 AFTER status_pembayaran");
+        @mysqli_query($conn, "UPDATE pengajuan SET jumlah_dibayar = estimasi_dana WHERE status_pembayaran = 'dibayar'");
+    }
+
+    // 3. Add sisa_pembayaran column if missing
+    $check_sp = @mysqli_query($conn, "SHOW COLUMNS FROM pengajuan LIKE 'sisa_pembayaran'");
+    if ($check_sp && mysqli_num_rows($check_sp) == 0) {
+        @mysqli_query($conn, "ALTER TABLE pengajuan ADD COLUMN sisa_pembayaran DECIMAL(15,2) NOT NULL DEFAULT 0.00 AFTER jumlah_dibayar");
+        @mysqli_query($conn, "UPDATE pengajuan SET sisa_pembayaran = estimasi_dana - jumlah_dibayar");
+    }
+
+    // 4. Create riwayat_cicilan table if missing
+    @mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `riwayat_cicilan` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `pengajuan_id` int(11) NOT NULL,
+        `user_id` int(11) NOT NULL,
+        `nominal_bayar` decimal(15,2) NOT NULL DEFAULT 0.00,
+        `sisa_sebelum` decimal(15,2) NOT NULL DEFAULT 0.00,
+        `sisa_sesudah` decimal(15,2) NOT NULL DEFAULT 0.00,
+        `catatan` varchar(255) DEFAULT NULL,
+        `created_at` datetime DEFAULT current_timestamp(),
+        PRIMARY KEY (`id`),
+        KEY `pengajuan_id` (`pengajuan_id`),
+        KEY `user_id` (`user_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+
+    $checked_cicilan = true;
 }
 
 /**

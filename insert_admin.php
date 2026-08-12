@@ -262,7 +262,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                 <strong class="text-success amount-cell fs-6"><?= formatRupiah($p['estimasi_dana']); ?></strong>
                             </td>
                             <td data-label="Status Bayar">
-                                <?= render_status_pembayaran_badge($p['status_pembayaran'], $p['jumlah_dibayar'], $p['sisa_pembayaran']); ?>
+                                <?= render_status_pembayaran_badge($p['status_pembayaran'], $p['jumlah_dibayar'] ?? 0, $p['sisa_pembayaran'] ?? 0); ?>
                             </td>
                             <td data-label="Status Kirim">
                                 <?php if ($p['status_pengiriman'] === 'sudah_dikirim'): ?>

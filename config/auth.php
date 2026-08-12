@@ -10,6 +10,11 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/functions.php';
 
+// Auto self-heal & migrate cicilan database schema on all requests
+if (isset($conn) && $conn) {
+    ensure_cicilan_schema_exists($conn);
+}
+
 /**
  * Cek apakah user sudah login
  */
