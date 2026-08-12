@@ -527,10 +527,14 @@ function initNetworkAndLoaders() {
    GLOBAL HANDLER PEMBAYARAN CICILAN (ANGSURAN SUSULAN)
    ======================================================== */
 function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
-    if (typeof Swal === 'undefined') return;
+    const modalElem = document.getElementById('detailPengajuanModal');
+    if (modalElem) {
+        modalElem.removeAttribute('tabindex');
+    }
 
     Swal.fire({
         title: 'Catat Pembayaran Cicilan',
+        target: modalElem || document.body,
         html: `
             <div class="text-start mb-3">
                 <label class="form-label small text-muted fw-bold mb-1">Nominal Pembayaran Cicilan (Rp):</label>
@@ -553,11 +557,18 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
         didOpen: () => {
             const inputNominal = document.getElementById('swal_nominal_cicilan');
             if (inputNominal) {
-                inputNominal.focus();
+                setTimeout(() => {
+                    inputNominal.focus();
+                }, 100);
                 inputNominal.addEventListener('keyup', function() {
                     let val = this.value.replace(/[^\d]/g, '');
                     this.value = val ? parseInt(val, 10).toLocaleString('id-ID') : '';
                 });
+            }
+        },
+        willClose: () => {
+            if (modalElem) {
+                modalElem.setAttribute('tabindex', '-1');
             }
         },
         preConfirm: () => {
