@@ -99,8 +99,22 @@ try {
             $barang_id = (int)($_POST["barang_id_$idx"] ?? 0);
             $jenis_id = (int)($_POST["jenis_id_$idx"] ?? 0);
 
+            // Auto-fallback: Jika barang_id dipilih tetapi jenis_id belum terpilih, ambil varian pertama barang tersebut
+            if ($barang_id > 0 && $jenis_id <= 0) {
+                $stmt_fb = mysqli_prepare($conn, "SELECT id FROM jenis_barang WHERE barang_id = ? ORDER BY id ASC LIMIT 1");
+                if ($stmt_fb) {
+                    mysqli_stmt_bind_param($stmt_fb, "i", $barang_id);
+                    mysqli_stmt_execute($stmt_fb);
+                    $res_fb = mysqli_stmt_get_result($stmt_fb);
+                    if ($row_fb = mysqli_fetch_assoc($res_fb)) {
+                        $jenis_id = (int)$row_fb['id'];
+                    }
+                }
+            }
+
             if ($barang_id <= 0 || $jenis_id <= 0) {
-                throw new Exception("Barang induk atau varian belum dipilih pada salah satu item.");
+                $item_num = (int)$idx + 1;
+                throw new Exception("Barang atau varian jenis belum dipilih pada Item #$item_num. Silakan pilih varian barang terlebih dahulu.");
             }
 
             // Lock Tabel Record jenis_barang (SELECT FOR UPDATE)

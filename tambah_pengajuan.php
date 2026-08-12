@@ -649,11 +649,24 @@ function loadVarianOptions(idx) {
         .then(res => res.json())
         .then(data => {
             let html = '<option value="">-- Pilih Jenis --</option>';
-            data.forEach(j => {
-                const stokFmt = formatStokJS(j.stok);
-                html += `<option value="${j.id}" data-stok="${j.stok}" data-satuan="${j.satuan}" data-harga="${j.harga}">${j.nama_jenis} (Stok: ${stokFmt} ${j.satuan})</option>`;
-            });
-            selectJenis.innerHTML = html;
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(j => {
+                    const stokFmt = formatStokJS(j.stok);
+                    html += `<option value="${j.id}" data-stok="${j.stok}" data-satuan="${j.satuan}" data-harga="${j.harga}">${j.nama_jenis} (Stok: ${stokFmt} ${j.satuan})</option>`;
+                });
+                selectJenis.innerHTML = html;
+
+                // Auto-select jika varian hanya ada 1
+                if (data.length === 1) {
+                    selectJenis.selectedIndex = 1;
+                    onVarianSelected(idx);
+                }
+            } else {
+                selectJenis.innerHTML = '<option value="">-- Tidak ada varian --</option>';
+            }
+        })
+        .catch(err => {
+            selectJenis.innerHTML = '<option value="">-- Gagal memuat jenis --</option>';
         });
 }
 
