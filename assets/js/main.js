@@ -529,9 +529,24 @@ function initNetworkAndLoaders() {
 function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
     if (typeof Swal === 'undefined') return;
 
+    // Handler capture phase untuk menghentikan perangkap fokus Bootstrap 5.3
+    const stopBootstrapFocusTrap = function(e) {
+        if (e.target && (e.target.id === 'swal_nominal_cicilan' || e.target.id === 'swal_catatan_cicilan' || (e.target.closest && e.target.closest('.swal2-container')))) {
+            e.stopPropagation();
+        }
+    };
+    document.addEventListener('focusin', stopBootstrapFocusTrap, true);
+
     const activeBsModal = document.getElementById('detailPengajuanModal');
+    let bsModalInstance = null;
     if (activeBsModal) {
         activeBsModal.removeAttribute('tabindex');
+        if (window.bootstrap && bootstrap.Modal) {
+            bsModalInstance = bootstrap.Modal.getInstance(activeBsModal);
+            if (bsModalInstance && bsModalInstance._focustrap && typeof bsModalInstance._focustrap.deactivate === 'function') {
+                bsModalInstance._focustrap.deactivate();
+            }
+        }
     }
     if (typeof $ !== 'undefined') {
         $(document).off('focusin.bs.modal');
@@ -566,7 +581,7 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
             if (inputNominal) {
                 setTimeout(() => {
                     inputNominal.focus();
-                }, 150);
+                }, 100);
                 inputNominal.addEventListener('keyup', function() {
                     let val = this.value.replace(/[^\d]/g, '');
                     this.value = val ? parseInt(val, 10).toLocaleString('id-ID') : '';
@@ -574,8 +589,12 @@ function submitTambahCicilan(pengajuanId, csrfToken, maxSisa) {
             }
         },
         willClose: () => {
+            document.removeEventListener('focusin', stopBootstrapFocusTrap, true);
             if (activeBsModal) {
                 activeBsModal.setAttribute('tabindex', '-1');
+            }
+            if (bsModalInstance && bsModalInstance._focustrap && typeof bsModalInstance._focustrap.activate === 'function') {
+                bsModalInstance._focustrap.activate();
             }
         },
         preConfirm: () => {
