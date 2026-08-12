@@ -1755,7 +1755,7 @@ body.login-body {
     .table:not(.modal-detail-table) tr.status-belum { border-left-color: var(--danger) !important; }
 
     .table:not(.modal-detail-table) td {
-        padding: 0.55rem 0.35rem;
+        padding: 0.65rem 0.75rem;
         text-align: right;
         padding-left: 44%;
         position: relative;
@@ -1768,8 +1768,8 @@ body.login-body {
     .table:not(.modal-detail-table) td::before {
         content: attr(data-label);
         position: absolute;
-        left: 0.35rem;
-        width: calc(44% - 0.5rem);
+        left: 0.75rem;
+        width: calc(44% - 0.75rem);
         padding-right: 0.4rem;
         font-weight: 700;
         font-size: 0.72rem;
@@ -1779,33 +1779,41 @@ body.login-body {
         color: var(--wine);
     }
 
-    /* AKSI Row Mobile Layout Override - No Overflow */
+    /* AKSI Row Mobile Layout Override - Spacious & Perfectly Aligned */
     .table:not(.modal-detail-table) td[data-label="AKSI"],
     .table:not(.modal-detail-table) td[data-label="Aksi"],
     .table:not(.modal-detail-table) td[data-label="Aksi & Varian"] {
-        padding-left: 0.35rem !important;
+        padding: 0.7rem 0.75rem !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
+        gap: 0.5rem !important;
     }
     .table:not(.modal-detail-table) td[data-label="AKSI"]::before,
     .table:not(.modal-detail-table) td[data-label="Aksi"]::before,
     .table:not(.modal-detail-table) td[data-label="Aksi & Varian"]::before {
         position: static !important;
         width: auto !important;
-        padding-right: 0.35rem !important;
+        padding-right: 0.4rem !important;
         margin-right: auto !important;
+        flex-shrink: 0 !important;
     }
     .action-btns {
-        justify-content: flex-end !important;
+        display: inline-flex !important;
+        flex-direction: row !important;
         flex-wrap: nowrap !important;
-        gap: 0.4rem !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        white-space: nowrap !important;
     }
     .action-btn, .action-btns .btn {
-        padding: 0.38rem 0.75rem !important;
-        font-size: 0.76rem !important;
-        min-height: 32px !important;
+        padding: 0.42rem 0.95rem !important;
+        font-size: 0.8rem !important;
+        min-height: 35px !important;
         white-space: nowrap !important;
+        border-radius: 9px !important;
+        flex-shrink: 0 !important;
     }
 
     /* Modal Detail Table Clean Mobile Override */
