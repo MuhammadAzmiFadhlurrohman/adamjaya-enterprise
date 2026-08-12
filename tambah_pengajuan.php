@@ -352,18 +352,22 @@ $default_custom_id = generate_pengajuan_custom_id($conn);
 </form>
 
 <script>
-// Global Rupiah Helper Functions (Guaranteed Available)
-window.unformatRupiah = window.unformatRupiah || function(str) {
+// Standalone Named Functions (Hoisted globally)
+function unformatRupiah(str) {
     if (!str) return 0;
     let cleaned = str.toString().replace(/[^0-9,-]/g, '').replace(',', '.');
     return parseFloat(cleaned) || 0;
-};
-window.unformatRupiahJS = window.unformatRupiah;
-
-window.formatRupiah = window.formatRupiah || function(num) {
+}
+function unformatRupiahJS(str) {
+    return unformatRupiah(str);
+}
+function formatRupiah(num) {
     if (typeof formatRupiahJS === 'function') return formatRupiahJS(num, 'Rp ');
     return 'Rp ' + (num || 0).toLocaleString('id-ID');
-};
+}
+window.unformatRupiah = unformatRupiah;
+window.unformatRupiahJS = unformatRupiah;
+window.formatRupiah = formatRupiah;
 
 let rowIndexCounter = 1;
 const barangIndukList = <?= json_encode($barang_induk_list); ?>;
