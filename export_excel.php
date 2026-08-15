@@ -45,7 +45,7 @@ if (!empty($search)) {
 }
 
 $where_sql = implode(" AND ", $where_clauses);
-$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY p.id DESC";
+$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY p.created_at DESC, p.id DESC";
 $stmt = mysqli_prepare($conn, $query);
 
 if (!empty($types)) {

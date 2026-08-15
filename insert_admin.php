@@ -49,8 +49,8 @@ if (!empty($search)) {
 
 $where_sql = implode(" AND ", $where_clauses);
 
-// Query Data Pengajuan
-$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY p.id DESC";
+// Query Data Pengajuan (Urutkan tanggal & jam terbaru ke terlama)
+$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY p.created_at DESC, p.id DESC";
 $stmt = mysqli_prepare($conn, $query);
 
 if (!empty($types)) {
