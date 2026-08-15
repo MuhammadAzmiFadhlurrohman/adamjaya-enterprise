@@ -10,6 +10,7 @@ $tahun = sanitize($_GET['tahun'] ?? date('Y'));
 $status_pembayaran = sanitize($_GET['status_pembayaran'] ?? '');
 $status_pengiriman = sanitize($_GET['status_pengiriman'] ?? '');
 $search = sanitize($_GET['search'] ?? '');
+$sort = sanitize($_GET['sort'] ?? 'datetime_desc');
 
 $where_clauses = ["1=1"];
 $params = [];
@@ -49,8 +50,25 @@ if (!empty($search)) {
 
 $where_sql = implode(" AND ", $where_clauses);
 
-// Query Data Pengajuan (Urutkan tanggal & jam terbaru ke terlama)
-$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY p.created_at DESC, p.id DESC";
+// Dynamic Sorting (Default: Tanggal & Jam Terbaru)
+$order_by = "p.created_at DESC, p.id DESC";
+if ($sort === 'datetime_asc') {
+    $order_by = "p.created_at ASC, p.id ASC";
+} elseif ($sort === 'id_desc') {
+    $order_by = "CAST(p.custom_id AS UNSIGNED) DESC, p.id DESC";
+} elseif ($sort === 'id_asc') {
+    $order_by = "CAST(p.custom_id AS UNSIGNED) ASC, p.id ASC";
+} elseif ($sort === 'nominal_desc') {
+    $order_by = "CAST(p.estimasi_dana AS DECIMAL(15,2)) DESC, p.created_at DESC";
+} elseif ($sort === 'nominal_asc') {
+    $order_by = "CAST(p.estimasi_dana AS DECIMAL(15,2)) ASC, p.created_at DESC";
+} else {
+    $sort = 'datetime_desc';
+    $order_by = "p.created_at DESC, p.id DESC";
+}
+
+// Query Data Pengajuan (Urutkan tanggal & jam secara presisi)
+$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY $order_by";
 $stmt = mysqli_prepare($conn, $query);
 
 if (!empty($types)) {
@@ -89,7 +107,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             <p class="page-subtitle mb-0">Pantau, verifikasi, dan kelola seluruh pengajuan pembelian dari satu tempat.</p>
         </div>
         <div class="header-action">
-            <a href="export_excel.php?<?= http_build_query(['bulan' => $bulan, 'tahun' => $tahun, 'status_pembayaran' => $status_pembayaran, 'status_pengiriman' => $status_pengiriman, 'search' => $search]); ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
+            <a href="export_excel.php?<?= http_build_query(['bulan' => $bulan, 'tahun' => $tahun, 'status_pembayaran' => $status_pembayaran, 'status_pengiriman' => $status_pengiriman, 'search' => $search, 'sort' => $sort]); ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Ekspor Excel
             </a>
             <?php if ($is_admin): ?>
@@ -194,6 +212,18 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <option value="">Semua Status</option>
                     <option value="belum_dikirim" <?= ($status_pengiriman === 'belum_dikirim') ? 'selected' : ''; ?>>Belum Dikirim</option>
                     <option value="sudah_dikirim" <?= ($status_pengiriman === 'sudah_dikirim') ? 'selected' : ''; ?>>Sudah Dikirim</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>URUTKAN</label>
+                <select name="sort" class="form-select">
+                    <option value="datetime_desc" <?= ($sort === 'datetime_desc') ? 'selected' : ''; ?>>🕒 Tanggal & Jam (Terbaru)</option>
+                    <option value="datetime_asc" <?= ($sort === 'datetime_asc') ? 'selected' : ''; ?>>🕒 Tanggal & Jam (Terlama)</option>
+                    <option value="id_desc" <?= ($sort === 'id_desc') ? 'selected' : ''; ?>># ID Nota (Tertinggi)</option>
+                    <option value="id_asc" <?= ($sort === 'id_asc') ? 'selected' : ''; ?>># ID Nota (Terkecil)</option>
+                    <option value="nominal_desc" <?= ($sort === 'nominal_desc') ? 'selected' : ''; ?>>💰 Nominal (Tertinggi)</option>
+                    <option value="nominal_asc" <?= ($sort === 'nominal_asc') ? 'selected' : ''; ?>>💰 Nominal (Terendah)</option>
                 </select>
             </div>
 

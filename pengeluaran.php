@@ -32,7 +32,7 @@ $query = "SELECT h.*, u.username, COUNT(d.id) as total_items
           LEFT JOIN pengeluaran_detail d ON h.id = d.pengeluaran_id 
           WHERE $where_sql 
           GROUP BY h.id 
-          ORDER BY h.tanggal DESC, h.id DESC";
+          ORDER BY h.tanggal DESC, h.created_at DESC, h.id DESC";
 
 $stmt = mysqli_prepare($conn, $query);
 if (!empty($types)) {

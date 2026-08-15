@@ -7,6 +7,7 @@ $tahun = sanitize($_GET['tahun'] ?? date('Y'));
 $status_pembayaran = sanitize($_GET['status_pembayaran'] ?? '');
 $status_pengiriman = sanitize($_GET['status_pengiriman'] ?? '');
 $search = sanitize($_GET['search'] ?? '');
+$sort = sanitize($_GET['sort'] ?? 'datetime_desc');
 
 $where_clauses = ["1=1"];
 $params = [];
@@ -45,7 +46,25 @@ if (!empty($search)) {
 }
 
 $where_sql = implode(" AND ", $where_clauses);
-$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY p.created_at DESC, p.id DESC";
+
+// Dynamic Sorting (Default: Tanggal & Jam Terbaru)
+$order_by = "p.created_at DESC, p.id DESC";
+if ($sort === 'datetime_asc') {
+    $order_by = "p.created_at ASC, p.id ASC";
+} elseif ($sort === 'id_desc') {
+    $order_by = "CAST(p.custom_id AS UNSIGNED) DESC, p.id DESC";
+} elseif ($sort === 'id_asc') {
+    $order_by = "CAST(p.custom_id AS UNSIGNED) ASC, p.id ASC";
+} elseif ($sort === 'nominal_desc') {
+    $order_by = "CAST(p.estimasi_dana AS DECIMAL(15,2)) DESC, p.created_at DESC";
+} elseif ($sort === 'nominal_asc') {
+    $order_by = "CAST(p.estimasi_dana AS DECIMAL(15,2)) ASC, p.created_at DESC";
+} else {
+    $sort = 'datetime_desc';
+    $order_by = "p.created_at DESC, p.id DESC";
+}
+
+$query = "SELECT p.*, u.username FROM pengajuan p JOIN users u ON p.user_id = u.id WHERE $where_sql ORDER BY $order_by";
 $stmt = mysqli_prepare($conn, $query);
 
 if (!empty($types)) {
