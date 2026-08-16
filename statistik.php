@@ -103,10 +103,9 @@ while ($s = mysqli_fetch_assoc($res_top_stock)) {
     $top_stock_list[] = $s;
     if (count($stock_labels_short) < 5) {
         $full = $s['nama_barang'] . (!empty($s['nama_jenis']) && $s['nama_jenis'] !== '-' ? ' ('.$s['nama_jenis'].')' : '');
-        $full_clean = preg_replace('/^Item:\s*/i', '', $full);
-        $short = (mb_strlen($full_clean) > 20) ? mb_substr($full_clean, 0, 18) . '...' : $full_clean;
+        $short = (mb_strlen($full) > 20) ? mb_substr($full, 0, 18) . '...' : $full;
         $stock_labels_short[] = $short;
-        $stock_labels_full[] = $full_clean;
+        $stock_labels_full[] = $full;
         $stock_values[] = (float)$s['total_qty'];
     }
 }

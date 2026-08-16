@@ -44,10 +44,100 @@ function ensure_riwayat_stok_table_exists($conn) {
     // Auto self-heal outlier swapped QTY & Price records (e.g. QTY 15,000,000 vs Price 1.00)
     @mysqli_query($conn, "UPDATE pengajuan_detail SET harga_satuan = jumlah, jumlah = 1 WHERE jumlah >= 1000000 AND harga_satuan <= 10");
 
+    // Auto self-heal legacy 'Item:' entries to their real product names
+    ensure_clean_legacy_item_names($conn);
+
     // Auto-migrate cicilan schema (columns & table) for live database
     ensure_cicilan_schema_exists($conn);
 
     $checked = true;
+}
+
+/**
+ * Auto Self-Heal Helper: Perbaiki data legacy nama barang 'Item: ...' dan hapus dummy 0-priced header
+ */
+function ensure_clean_legacy_item_names($conn) {
+    static $checked_items = false;
+    if ($checked_items || !$conn) return;
+    $checked_items = true;
+
+    // Fast check if any legacy Item: records exist
+    $check = @mysqli_query($conn, "SELECT id FROM pengajuan_detail WHERE nama_barang LIKE 'Item:%' LIMIT 1");
+    if (!$check || mysqli_num_rows($check) === 0) {
+        return;
+    }
+
+    $res = @mysqli_query($conn, "SELECT * FROM pengajuan_detail ORDER BY pengajuan_id ASC, id ASC");
+    if (!$res) return;
+
+    $all = [];
+    while ($r = mysqli_fetch_assoc($res)) {
+        $all[$r['pengajuan_id']][] = $r;
+    }
+
+    foreach ($all as $pid => $items) {
+        $last_real_name = null;
+        $last_real_jenis = null;
+
+        for ($i = 0; $i < count($items); $i++) {
+            $curr = $items[$i];
+
+            if (stripos($curr['nama_barang'], 'Item:') === 0) {
+                $real_name = null;
+                $real_jenis = null;
+
+                for ($j = $i - 1; $j >= 0; $j--) {
+                    if (stripos($items[$j]['nama_barang'], 'Item:') !== 0) {
+                        $raw = $items[$j]['nama_barang'];
+                        if (strpos($raw, ' - ') !== false) {
+                            $parts = explode(' - ', $raw, 2);
+                            $real_name = trim($parts[0]);
+                            $real_jenis = trim($parts[1]);
+                        } else {
+                            $real_name = trim($raw);
+                            $real_jenis = trim($items[$j]['nama_jenis']);
+                        }
+                        break;
+                    }
+                }
+
+                if (!$real_name && $last_real_name) {
+                    $real_name = $last_real_name;
+                    $real_jenis = $last_real_jenis;
+                }
+
+                $item_detail = trim(preg_replace('/^Item:\s*/i', '', $curr['nama_barang']));
+                $item_detail = rtrim($item_detail, ')');
+
+                $combined_jenis = $real_jenis;
+                if (!empty($item_detail) && !empty($combined_jenis)) {
+                    $combined_jenis = $combined_jenis . ' (' . $item_detail . ')';
+                } elseif (!empty($item_detail)) {
+                    $combined_jenis = $item_detail;
+                }
+
+                $final_name = $real_name ?: $curr['nama_barang'];
+                $final_jenis = $combined_jenis ?: $curr['nama_jenis'];
+
+                $stmt_up = @mysqli_prepare($conn, "UPDATE pengajuan_detail SET nama_barang = ?, nama_jenis = ? WHERE id = ?");
+                if ($stmt_up) {
+                    mysqli_stmt_bind_param($stmt_up, "ssi", $final_name, $final_jenis, $curr['id']);
+                    mysqli_stmt_execute($stmt_up);
+                }
+            } else {
+                $last_real_name = $curr['nama_barang'];
+                $last_real_jenis = $curr['nama_jenis'];
+
+                if ((float)$curr['harga_satuan'] == 0 && isset($items[$i + 1]) && stripos($items[$i + 1]['nama_barang'], 'Item:') === 0) {
+                    $stmt_del = @mysqli_prepare($conn, "DELETE FROM pengajuan_detail WHERE id = ?");
+                    if ($stmt_del) {
+                        mysqli_stmt_bind_param($stmt_del, "i", $curr['id']);
+                        mysqli_stmt_execute($stmt_del);
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
