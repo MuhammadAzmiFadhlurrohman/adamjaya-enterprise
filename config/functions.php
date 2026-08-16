@@ -62,7 +62,7 @@ function ensure_clean_legacy_item_names($conn) {
     $checked_items = true;
 
     // Fast check if any legacy Item: records exist
-    $check = @mysqli_query($conn, "SELECT id FROM pengajuan_detail WHERE nama_barang LIKE 'Item:%' LIMIT 1");
+    $check = @mysqli_query($conn, "SELECT id FROM pengajuan_detail WHERE LOWER(TRIM(nama_barang)) LIKE 'item:%' LIMIT 1");
     if (!$check || mysqli_num_rows($check) === 0) {
         return;
     }

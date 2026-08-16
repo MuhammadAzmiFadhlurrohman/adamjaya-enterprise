@@ -10,9 +10,11 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/functions.php';
 
-// Auto self-heal & migrate cicilan database schema on all requests
+// Auto self-heal & migrate database schema on all requests
 if (isset($conn) && $conn) {
     ensure_cicilan_schema_exists($conn);
+    ensure_clean_legacy_item_names($conn);
+    ensure_riwayat_stok_table_exists($conn);
 }
 
 /**
