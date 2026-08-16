@@ -105,108 +105,89 @@ while ($row = mysqli_fetch_assoc($res)) {
 
 <!-- HEADER CURVED EXECUTIVE BANNER -->
 <header class="page-header">
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-            <span class="page-eyebrow"><i class="fa-solid fa-boxes-packing"></i> Laporan Manajemen Stok & Penjualan &middot; Adam Jaya</span>
+            <span class="page-eyebrow d-none d-md-block"><i class="fa-solid fa-boxes-packing"></i> Laporan Manajemen Stok & Penjualan &middot; Adam Jaya</span>
             <h1 class="page-title">Laporan & Analisis Penjualan Barang</h1>
-            <p class="page-subtitle">Rincian performa penjualan setiap produk, frekuensi pembelian (berapa kali terjual), total kuantitas, dan akumulasi omzet.</p>
+            <p class="page-subtitle mb-0">Rincian performa penjualan setiap produk, frekuensi pembelian, volume kuantitas, dan akumulasi omzet.</p>
         </div>
-        <div class="header-action d-flex align-items-center gap-2 flex-wrap">
+        <div class="header-action">
             <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold shadow-sm" onclick="window.print()">
                 <i class="fa-solid fa-print me-1"></i> Cetak Laporan
             </button>
-            <button type="button" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="exportToCSV()">
-                <i class="fa-solid fa-file-excel me-1"></i> Export CSV / Excel
+            <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold shadow-sm" onclick="exportToCSV()">
+                <i class="fa-solid fa-file-excel me-1"></i> Ekspor CSV
             </button>
-            <a href="stok_barang.php" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
-                <i class="fa-solid fa-box-archive me-1"></i> Master Barang
+            <a href="stok_barang.php" class="btn-pengajuan-header">
+                <i class="fa-solid fa-box-archive"></i> Master Barang
             </a>
         </div>
     </div>
 </header>
 
-<!-- SECTION 1: EXECUTIVE KPI SUMMARY METRIC CARDS -->
-<div class="row g-3 mb-4">
+<!-- SECTION 1: SUMMARY KPI METRIC CARDS -->
+<div class="row g-2.5 stats-row mb-3">
     <!-- Card 1: Total Varian Produk -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="stat-card" style="border-left: 4px solid var(--primary-wine);">
-            <div class="stat-header">
-                <div class="stat-title">TOTAL PRODUK & VARIAN</div>
-                <div class="stat-icon" style="background: rgba(122, 30, 51, 0.1); color: var(--primary-wine);">
-                    <i class="fa-solid fa-boxes-stacked"></i>
+    <div class="col-6 col-md-3">
+        <div class="stats-card">
+            <div class="card-body">
+                <div class="stat-icon icon-wine"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div>
+                    <div class="stat-value"><?= number_format($kpi_total_varian); ?></div>
+                    <div class="stat-label">Total Produk Terjual</div>
                 </div>
-            </div>
-            <div class="stat-value text-wine"><?= number_format($kpi_total_varian); ?></div>
-            <div class="stat-desc">
-                <span class="text-muted">Macam produk & varian aktif terjual</span>
             </div>
         </div>
     </div>
 
     <!-- Card 2: Total Frekuensi Pesanan -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="stat-card" style="border-left: 4px solid #0284c7;">
-            <div class="stat-header">
-                <div class="stat-title">TOTAL FREKUENSI TERJUAL</div>
-                <div class="stat-icon" style="background: rgba(2, 132, 199, 0.1); color: #0284c7;">
-                    <i class="fa-solid fa-cart-shopping"></i>
+    <div class="col-6 col-md-3">
+        <div class="stats-card">
+            <div class="card-body">
+                <div class="stat-icon icon-wine"><i class="fa-solid fa-cart-shopping"></i></div>
+                <div>
+                    <div class="stat-value"><?= number_format($kpi_total_frekuensi); ?> <small style="font-size:0.75rem; font-weight:600;">Kali</small></div>
+                    <div class="stat-label">Frekuensi Masuk Nota</div>
                 </div>
-            </div>
-            <div class="stat-value text-info" style="color: #0284c7 !important;"><?= number_format($kpi_total_frekuensi); ?> <small style="font-size: 1rem;">Kali</small></div>
-            <div class="stat-desc">
-                <span class="text-muted">Total kali barang dipesan dalam nota</span>
             </div>
         </div>
     </div>
 
     <!-- Card 3: Total Kuantitas Terjual -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="stat-card" style="border-left: 4px solid var(--primary-gold);">
-            <div class="stat-header">
-                <div class="stat-title">TOTAL VOLUME STOK KELUAR</div>
-                <div class="stat-icon" style="background: rgba(201, 151, 62, 0.1); color: var(--primary-gold);">
-                    <i class="fa-solid fa-scale-balanced"></i>
+    <div class="col-6 col-md-3">
+        <div class="stats-card">
+            <div class="card-body">
+                <div class="stat-icon icon-gold"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div>
+                    <div class="stat-value"><?= format_stok($kpi_total_qty); ?></div>
+                    <div class="stat-label">Volume Stok Keluar</div>
                 </div>
-            </div>
-            <div class="stat-value text-gold" style="color: #b47d28 !important;"><?= format_stok($kpi_total_qty); ?></div>
-            <div class="stat-desc">
-                <span class="text-muted">Akumulasi seluruh kuantitas item</span>
             </div>
         </div>
     </div>
 
     <!-- Card 4: Total Omzet Penjualan (Rp) -->
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="stat-card" style="border-left: 4px solid #16a34a;">
-            <div class="stat-header">
-                <div class="stat-title">TOTAL OMZET PENJUALAN</div>
-                <div class="stat-icon" style="background: rgba(22, 163, 74, 0.1); color: #16a34a;">
-                    <i class="fa-solid fa-money-bill-trend-up"></i>
+    <div class="col-6 col-md-3">
+        <div class="stats-card">
+            <div class="card-body">
+                <div class="stat-icon icon-success"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                <div>
+                    <div class="stat-value text-success"><?= formatRupiah($kpi_total_omzet); ?></div>
+                    <div class="stat-label">Total Omzet Penjualan</div>
                 </div>
-            </div>
-            <div class="stat-value text-success"><?= formatRupiah($kpi_total_omzet); ?></div>
-            <div class="stat-desc">
-                <span class="text-muted">Total nilai perolehan transaksi barang</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- SECTION 2: FILTER & PENCARIAN ADVANCED -->
-<div class="filter-card mb-4 no-print">
+<!-- SECTION 2: FILTER & PENCARIAN BAR -->
+<div class="filter-card no-print">
     <form method="GET" action="laporan_barang.php" id="filterForm">
-        <div class="row g-3 align-items-end">
-            <!-- Search Keyword -->
-            <div class="col-12 col-md-4 col-xl-3">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fa-solid fa-magnifying-glass me-1"></i> Cari Nama Barang / Varian</label>
-                <input type="text" name="search" class="form-control form-control-sm rounded-3" 
-                       placeholder="Contoh: Plastik, Tampir, Kain..." value="<?= e($search); ?>">
-            </div>
-
+        <div class="filter-row">
             <!-- Filter Periode Preset -->
-            <div class="col-6 col-md-3 col-xl-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fa-regular fa-calendar-check me-1"></i> Periode</label>
-                <select name="periode" id="periodeSelect" class="form-select form-select-sm rounded-3" onchange="toggleDateInputs(this.value)">
+            <div class="filter-group">
+                <label>PERIODE</label>
+                <select name="periode" id="periodeSelect" class="form-select" onchange="toggleDateInputs(this.value)">
                     <option value="all" <?= ($periode === 'all') ? 'selected' : ''; ?>>Semua Waktu</option>
                     <option value="today" <?= ($periode === 'today') ? 'selected' : ''; ?>>Hari Ini</option>
                     <option value="this_month" <?= ($periode === 'this_month') ? 'selected' : ''; ?>>Bulan Ini</option>
@@ -216,44 +197,52 @@ while ($row = mysqli_fetch_assoc($res)) {
             </div>
 
             <!-- Tanggal Mulai -->
-            <div class="col-6 col-md-2 col-xl-2" id="startDateGroup">
-                <label class="form-label small fw-bold text-muted mb-1">Dari Tanggal</label>
-                <input type="date" name="start_date" id="startDateInput" class="form-control form-control-sm rounded-3" value="<?= e($start_date); ?>">
+            <div class="filter-group" id="startDateGroup">
+                <label>DARI TANGGAL</label>
+                <input type="date" name="start_date" id="startDateInput" class="form-control" value="<?= e($start_date); ?>">
             </div>
 
             <!-- Tanggal Selesai -->
-            <div class="col-6 col-md-2 col-xl-2" id="endDateGroup">
-                <label class="form-label small fw-bold text-muted mb-1">Sampai Tanggal</label>
-                <input type="date" name="end_date" id="endDateInput" class="form-control form-control-sm rounded-3" value="<?= e($end_date); ?>">
+            <div class="filter-group" id="endDateGroup">
+                <label>SAMPAI TANGGAL</label>
+                <input type="date" name="end_date" id="endDateInput" class="form-control" value="<?= e($end_date); ?>">
             </div>
 
             <!-- Pengurutan (Sort) -->
-            <div class="col-6 col-md-3 col-xl-2">
-                <label class="form-label small fw-bold text-muted mb-1"><i class="fa-solid fa-arrow-down-wide-short me-1"></i> Urutkan Berdasarkan</label>
-                <select name="sort" class="form-select form-select-sm rounded-3">
-                    <option value="omzet_desc" <?= ($sort === 'omzet_desc') ? 'selected' : ''; ?>>Omzet Terbesar (Rp)</option>
-                    <option value="qty_desc" <?= ($sort === 'qty_desc') ? 'selected' : ''; ?>>Kuantitas Terbanyak</option>
-                    <option value="frekuensi_desc" <?= ($sort === 'frekuensi_desc') ? 'selected' : ''; ?>>Frekuensi Terbanyak (Paling Sering)</option>
-                    <option value="nama_asc" <?= ($sort === 'nama_asc') ? 'selected' : ''; ?>>Nama Barang (A - Z)</option>
+            <div class="filter-group">
+                <label>URUTKAN</label>
+                <select name="sort" class="form-select">
+                    <option value="omzet_desc" <?= ($sort === 'omzet_desc') ? 'selected' : ''; ?>>💰 Omzet Terbesar (Rp)</option>
+                    <option value="qty_desc" <?= ($sort === 'qty_desc') ? 'selected' : ''; ?>>⚖️ Kuantitas Terbanyak</option>
+                    <option value="frekuensi_desc" <?= ($sort === 'frekuensi_desc') ? 'selected' : ''; ?>>🛒 Paling Sering Dibeli</option>
+                    <option value="nama_asc" <?= ($sort === 'nama_asc') ? 'selected' : ''; ?>>🔤 Nama Barang (A - Z)</option>
                 </select>
             </div>
 
             <!-- Action Buttons -->
-            <div class="col-12 col-md-auto col-xl-1 d-flex gap-2">
-                <button type="submit" class="btn btn-wine btn-sm rounded-pill px-3 fw-bold flex-fill shadow-sm">
-                    <i class="fa-solid fa-filter me-1"></i> Filter
-                </button>
-                <?php if (!empty($search) || $periode !== 'all' || !empty($start_date) || !empty($end_date) || $sort !== 'omzet_desc'): ?>
-                    <a href="laporan_barang.php" class="btn btn-outline-secondary btn-sm rounded-pill px-2.5" title="Reset Filter">
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </a>
-                <?php endif; ?>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-filter-primary"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+                <a href="laporan_barang.php" class="btn btn-filter-reset"><i class="fa-solid fa-rotate-left me-1"></i> Reset</a>
+            </div>
+        </div>
+
+        <!-- Search Row -->
+        <div class="filter-search-row">
+            <div class="filter-search-group">
+                <label><i class="fa-solid fa-magnifying-glass me-1"></i> Cari Nama Barang atau Varian</label>
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" name="search" class="search-input-field" placeholder="Ketik nama produk (contoh: Plastik, Kain, Tampir, Katel...)" value="<?= e($search); ?>">
+                    <?php if (!empty($search)): ?>
+                        <a href="laporan_barang.php" class="search-clear-btn">&times;</a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </form>
 </div>
 
-<!-- SECTION 3: TABEL LAPORAN PENJUALAN BARANG -->
+<!-- SECTION 3: TABEL REKAPITULASI PENJUALAN BARANG -->
 <div class="table-container mb-4">
     <div class="table-container-header">
         <div>
@@ -270,13 +259,13 @@ while ($row = mysqli_fetch_assoc($res)) {
         <table class="table align-middle table-hover" id="reportTable">
             <thead>
                 <tr>
-                    <th style="width: 75px;" class="text-center">Peringkat</th>
+                    <th style="width: 80px;" class="text-center">Peringkat</th>
                     <th>Nama Barang & Varian</th>
                     <th class="text-center">Frekuensi Terjual</th>
                     <th class="text-center">Total Kuantitas</th>
                     <th class="text-end">Rata-rata Harga</th>
                     <th class="text-end">Total Omzet Penjualan</th>
-                    <th class="text-center" style="width: 140px;">Aksi</th>
+                    <th class="text-center" style="width: 130px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -327,14 +316,14 @@ while ($row = mysqli_fetch_assoc($res)) {
 
                             <!-- Total Omzet Penjualan -->
                             <td data-label="Total Omzet Penjualan" class="text-end">
-                                <strong class="text-success amount-cell fs-6"><?= formatRupiah($item['total_omzet']); ?></strong>
+                                <strong class="text-success amount-cell fs-6 fw-bold"><?= formatRupiah($item['total_omzet']); ?></strong>
                             </td>
 
                             <!-- Aksi: Riwayat Transaksi -->
                             <td data-label="Aksi" class="text-center">
-                                <button type="button" class="btn btn-outline-wine btn-sm rounded-pill px-2.5 py-1 fw-semibold shadow-xs" 
+                                <button type="button" class="btn btn-sm btn-outline-wine rounded-pill px-3 py-1 fw-semibold shadow-xs" 
                                         onclick="showRiwayatBarang('<?= addslashes(e($item['nama_barang'])); ?>', '<?= addslashes(e($item['nama_jenis'] ?: '')); ?>', '<?= addslashes(e($item['satuan'] ?: '')); ?>')">
-                                    <i class="fa-solid fa-list-check me-1"></i> Riwayat
+                                    <i class="fa-solid fa-clock-rotate-left me-1"></i> Riwayat
                                 </button>
                             </td>
                         </tr>
@@ -405,6 +394,19 @@ while ($row = mysqli_fetch_assoc($res)) {
 </div>
 
 <style>
+.btn-outline-wine {
+    color: var(--wine, #7A1E33);
+    border-color: var(--wine, #7A1E33);
+    background: transparent;
+    transition: all 0.2s ease;
+}
+.btn-outline-wine:hover {
+    color: #ffffff;
+    background-color: var(--wine, #7A1E33);
+    border-color: var(--wine, #7A1E33);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(122, 30, 51, 0.25);
+}
 .amount-cell {
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
@@ -429,7 +431,7 @@ while ($row = mysqli_fetch_assoc($res)) {
     .page-header * {
         color: black !important;
     }
-    .stat-card {
+    .stats-card {
         border: 1px solid #ddd !important;
         break-inside: avoid;
     }
@@ -442,8 +444,6 @@ while ($row = mysqli_fetch_assoc($res)) {
 
 <script>
 function toggleDateInputs(val) {
-    const startGroup = document.getElementById('startDateGroup');
-    const endGroup = document.getElementById('endDateGroup');
     const startInput = document.getElementById('startDateInput');
     const endInput = document.getElementById('endDateInput');
 
