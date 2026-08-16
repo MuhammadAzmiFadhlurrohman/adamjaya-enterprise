@@ -112,12 +112,9 @@ while ($row = mysqli_fetch_assoc($res)) {
             <p class="page-subtitle mb-0">Rincian performa penjualan setiap produk, frekuensi pembelian, volume kuantitas, dan akumulasi omzet.</p>
         </div>
         <div class="header-action">
-            <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold shadow-sm" onclick="window.print()">
-                <i class="fa-solid fa-print me-1"></i> Cetak Laporan
-            </button>
-            <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold shadow-sm" onclick="exportToCSV()">
-                <i class="fa-solid fa-file-excel me-1"></i> Ekspor CSV
-            </button>
+            <a href="export_laporan_barang_excel.php?<?= http_build_query(['search' => $search, 'periode' => $periode, 'start_date' => $start_date, 'end_date' => $end_date, 'sort' => $sort]); ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold shadow-sm">
+                <i class="fa-solid fa-file-excel me-1 text-success"></i> Ekspor Excel
+            </a>
             <a href="stok_barang.php" class="btn-pengajuan-header">
                 <i class="fa-solid fa-box-archive"></i> Master Barang
             </a>
@@ -414,32 +411,6 @@ while ($row = mysqli_fetch_assoc($res)) {
 .shadow-xs {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-@media print {
-    .no-print, #sidebar-wrapper, .page-header .header-action, .btn-sidebar-toggle {
-        display: none !important;
-    }
-    #content-wrapper {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .page-header {
-        background: none !important;
-        color: black !important;
-        padding: 0 !important;
-        margin-bottom: 20px !important;
-    }
-    .page-header * {
-        color: black !important;
-    }
-    .stats-card {
-        border: 1px solid #ddd !important;
-        break-inside: avoid;
-    }
-    .table-container {
-        border: none !important;
-        box-shadow: none !important;
-    }
-}
 </style>
 
 <script>
@@ -537,34 +508,6 @@ function openDetailFaktur(pengajuanId) {
                 </div>
             `;
         });
-}
-
-function exportToCSV() {
-    const table = document.getElementById("reportTable");
-    let csv = [];
-    const rows = table.querySelectorAll("tr");
-
-    for (let i = 0; i < rows.length; i++) {
-        let row = [], cols = rows[i].querySelectorAll("td, th");
-        // Skip last column (Aksi)
-        for (let j = 0; j < cols.length - 1; j++) {
-            let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").replace(/\s+/g, " ").trim();
-            text = text.replace(/"/g, '""');
-            row.push('"' + text + '"');
-        }
-        if (row.length > 0) csv.push(row.join(","));
-    }
-
-    const csvFile = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-    const downloadLink = document.createElement("a");
-    const filename = "Laporan_Penjualan_Barang_AdamJaya_" + new Date().toISOString().split('T')[0] + ".csv";
-
-    downloadLink.download = filename;
-    downloadLink.href = window.URL.createObjectURL(csvFile);
-    downloadLink.style.display = "none";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
 }
 </script>
 
