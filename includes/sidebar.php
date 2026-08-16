@@ -46,6 +46,12 @@ $active_user = current_user();
                 </a>
             </li>
             <li class="nav-item">
+                <a href="laporan_barang.php" class="nav-link <?= ($current_page == 'laporan_barang.php') ? 'active' : ''; ?>">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                    <span>Penjualan Barang</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="riwayat_stok.php" class="nav-link <?= ($current_page == 'riwayat_stok.php') ? 'active' : ''; ?>">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     <span>Riwayat Stok</span>
@@ -95,6 +101,12 @@ $active_user = current_user();
                 <a href="pengeluaran.php" class="nav-link <?= in_array($current_page, ['pengeluaran.php', 'tambah_pengeluaran.php', 'edit_pengeluaran.php']) ? 'active' : ''; ?>">
                     <i class="fa-solid fa-wallet"></i>
                     <span>Laporan Pengeluaran</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="laporan_barang.php" class="nav-link <?= ($current_page == 'laporan_barang.php') ? 'active' : ''; ?>">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                    <span>Laporan Penjualan Barang</span>
                 </a>
             </li>
             <li class="nav-item">
