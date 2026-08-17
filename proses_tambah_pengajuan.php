@@ -274,9 +274,9 @@ try {
     }
     $pengajuan_id = mysqli_insert_id($conn);
 
-    // Record initial payment in riwayat_cicilan if paid > 0
-    if ($jumlah_dibayar > 0) {
-        $catatan_awal = ($status_pembayaran === 'dibayar') ? 'Pembayaran Lunas Awal' : 'Pembayaran DP / Uang Muka Awal';
+    // Record initial payment in riwayat_cicilan only if it is a DP / partial payment (not direct full payment)
+    if ($jumlah_dibayar > 0 && $status_pembayaran !== 'dibayar' && $sisa_pembayaran > 0) {
+        $catatan_awal = 'Pembayaran DP / Uang Muka Awal';
         $metode_val = ($metode_pembayaran === 'transfer') ? 'Transfer' : 'Cash';
         $stmt_cicilan_awal = mysqli_prepare($conn, "INSERT INTO riwayat_cicilan (pengajuan_id, user_id, nominal_bayar, metode_pembayaran, sisa_sebelum, sisa_sesudah, catatan) VALUES (?, ?, ?, ?, ?, ?, ?)");
         mysqli_stmt_bind_param($stmt_cicilan_awal, "iidsdds", $pengajuan_id, $user_id, $jumlah_dibayar, $metode_val, $grand_total, $sisa_pembayaran, $catatan_awal);

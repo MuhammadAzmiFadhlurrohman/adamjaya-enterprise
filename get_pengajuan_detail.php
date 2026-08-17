@@ -46,6 +46,15 @@ $riwayat_cicilan = [];
 while ($rc = mysqli_fetch_assoc($res_cicilan)) {
     $riwayat_cicilan[] = $rc;
 }
+
+// Hitung status pelunasan
+$sisa_piutang = (float)($p['sisa_pembayaran'] ?? 0);
+$total_dibayar = (float)($p['jumlah_dibayar'] ?? 0);
+$estimasi_dana = (float)($p['estimasi_dana'] ?? 0);
+$is_lunas = ($sisa_piutang <= 0 || $p['status_pembayaran'] === 'dibayar' || ($estimasi_dana > 0 && $total_dibayar >= $estimasi_dana));
+
+// Cek apakah transaksi lunas di awal / hanya berisi 1 data lunas (bukan cicilan bertahap)
+$is_langsung_lunas = ($is_lunas && count($riwayat_cicilan) <= 1);
 ?>
 
 <!-- 1. ROW TOP CARDS (Informasi Pengajuan & Informasi Pembeli/Keuangan) -->
@@ -178,6 +187,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
 
 <!-- 2. ACTION CARDS (Catat Cicilan & Update Status Kirim) -->
 <?php if ($is_admin_user): ?>
+<?php if (!$is_langsung_lunas): ?>
 <div class="modal-subcard mb-3 p-3 bg-light rounded-3 border">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
@@ -248,6 +258,7 @@ while ($rc = mysqli_fetch_assoc($res_cicilan)) {
         </div>
     <?php endif; ?>
 </div>
+<?php endif; ?>
 
 <div class="modal-subcard mb-3 p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
     <div class="d-flex align-items-center gap-2">
