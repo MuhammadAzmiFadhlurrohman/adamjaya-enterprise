@@ -240,7 +240,7 @@ while ($f = mysqli_fetch_assoc($res_fav)) {
                 <div class="row g-3 mt-1">
                     <div class="col-6 col-md-3">
                         <label class="form-label text-muted small fw-semibold">Jumlah (QTY) *</label>
-                        <input type="number" step="0.01" inputmode="decimal" name="jumlah_0" id="jumlah_0" class="form-control fw-bold" value="1" oninput="calculateRow(0)" placeholder="Jumlah" required>
+                        <input type="text" inputmode="decimal" name="jumlah_0" id="jumlah_0" class="form-control fw-bold" value="1" oninput="calculateRow(0)" onchange="calculateRow(0)" placeholder="Jumlah" required>
                         <div class="mt-1 small text-muted" id="stok_info_wrapper_0">
                             <div id="stok_label_0"><i class="fa-solid fa-boxes-stacked me-1"></i> Stok tersedia: -</div>
                         </div>
@@ -971,7 +971,7 @@ function toggleCustomItem(idx) {
 function calculateRow(idx) {
     const qtyElem = document.getElementById(`jumlah_${idx}`);
     const rawQty = qtyElem ? qtyElem.value : '';
-    const qty = parseFloat(String(rawQty).replace(',', '.')) || 0;
+    const qty = typeof parseJumlahJS === 'function' ? parseJumlahJS(rawQty) : (parseFloat(String(rawQty).replace(/\./g, '').replace(',', '.')) || 0);
     const hargaStr = document.getElementById(`harga_${idx}`).value;
     const harga = unformatRupiahJS(hargaStr);
     const subtotal = Math.round(qty * harga * 100) / 100;
@@ -986,7 +986,7 @@ function calculateGrandTotal() {
         const idx = row.getAttribute('data-index');
         const qtyElem = document.getElementById(`jumlah_${idx}`);
         const rawQty = qtyElem ? qtyElem.value : '';
-        const qty = parseFloat(String(rawQty).replace(',', '.')) || 0;
+        const qty = typeof parseJumlahJS === 'function' ? parseJumlahJS(rawQty) : (parseFloat(String(rawQty).replace(/\./g, '').replace(',', '.')) || 0);
         const harga = unformatRupiahJS(document.getElementById(`harga_${idx}`).value);
         grandTotal += (qty * harga);
     });
@@ -1049,7 +1049,7 @@ function addItemRow() {
         <div class="row g-3 mt-1">
             <div class="col-6 col-md-3">
                 <label class="form-label text-muted small fw-semibold">Jumlah (QTY) *</label>
-                <input type="number" step="0.01" inputmode="decimal" name="jumlah_${idx}" id="jumlah_${idx}" class="form-control fw-bold" value="1" oninput="calculateRow(${idx})" placeholder="Jumlah" required>
+                <input type="text" inputmode="decimal" name="jumlah_${idx}" id="jumlah_${idx}" class="form-control fw-bold" value="1" oninput="calculateRow(${idx})" onchange="calculateRow(${idx})" placeholder="Jumlah" required>
                 <div class="mt-1 small text-muted" id="stok_info_wrapper_${idx}">
                     <div id="stok_label_${idx}"><i class="fa-solid fa-boxes-stacked me-1"></i> Stok tersedia: -</div>
                 </div>

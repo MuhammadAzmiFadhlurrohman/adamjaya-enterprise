@@ -239,11 +239,42 @@ function format_stok($val) {
 
 /**
  * Parse input jumlah/kuantitas desimal murni
+ * Mendukung format: 2.149,8 | 2149,8 | 2149.8 | 2,149.8 | 2.149 | 2
  */
 function parseJumlah($val) {
-    if (empty($val)) return 0.0;
-    $cleaned = str_replace(',', '.', (string)$val);
-    return (float)$cleaned;
+    if ($val === null || $val === '') return 0.0;
+    if (is_int($val) || is_float($val)) return (float)$val;
+    $s = trim((string)$val);
+    if ($s === '') return 0.0;
+
+    $s = preg_replace('/[^\d,.-]/', '', $s);
+    if ($s === '') return 0.0;
+
+    $hasDot = (strpos($s, '.') !== false);
+    $hasComma = (strpos($s, ',') !== false);
+
+    if ($hasDot && $hasComma) {
+        $lastDot = strrpos($s, '.');
+        $lastComma = strrpos($s, ',');
+        if ($lastComma > $lastDot) {
+            // Format Indonesia: 2.149,8 -> titik ribuan dihapus, koma jadi titik desimal
+            $s = str_replace('.', '', $s);
+            $s = str_replace(',', '.', $s);
+        } else {
+            // Format US/Internasional: 2,149.8 -> koma ribuan dihapus
+            $s = str_replace(',', '', $s);
+        }
+    } elseif ($hasComma) {
+        // Hanya ada koma: misal 2149,8 atau 2,5 -> jadikan titik
+        $s = str_replace(',', '.', $s);
+    } elseif ($hasDot) {
+        // Hanya ada titik: jika lebih dari satu titik misal 1.000.000
+        if (substr_count($s, '.') > 1) {
+            $s = str_replace('.', '', $s);
+        }
+    }
+
+    return (float)$s;
 }
 
 /**

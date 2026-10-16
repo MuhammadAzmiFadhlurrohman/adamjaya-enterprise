@@ -73,7 +73,7 @@ require_admin();
                     </div>
                     <div class="col-6 col-md-2">
                         <label class="form-label text-muted small fw-semibold">JUMLAH (QTY)</label>
-                        <input type="number" step="0.01" name="jumlah_0" id="exp_jumlah_0" class="form-control" value="1.00" oninput="calculateExpRow(0)" required>
+                        <input type="text" inputmode="decimal" name="jumlah_0" id="exp_jumlah_0" class="form-control" value="1" oninput="calculateExpRow(0)" onchange="calculateExpRow(0)" placeholder="Contoh: 1 atau 2.149,8" required>
                     </div>
                     <div class="col-6 col-md-2">
                         <label class="form-label text-muted small fw-semibold">SATUAN</label>
@@ -84,7 +84,7 @@ require_admin();
                 <div class="row g-3 mt-1">
                     <div class="col-12 col-md-6">
                         <label class="form-label text-muted small fw-semibold">HARGA SATUAN (RP)</label>
-                        <input type="text" name="harga_satuan_0" id="exp_harga_0" class="form-control rupiah-input" placeholder="Rp 0" oninput="calculateExpRow(0)" required>
+                        <input type="text" name="harga_satuan_0" id="exp_harga_0" class="form-control rupiah-input" placeholder="Rp 0" oninput="calculateExpRow(0)" onchange="calculateExpRow(0)" required>
                     </div>
                     <div class="col-12 col-md-6">
                         <label class="form-label text-muted small fw-semibold">TOTAL HARGA ITEM</label>
@@ -120,7 +120,7 @@ let expRowIndex = 1;
 function calculateExpRow(idx) {
     const qtyElem = document.getElementById(`exp_jumlah_${idx}`);
     const rawQty = qtyElem ? qtyElem.value : '';
-    const qty = parseFloat(String(rawQty).replace(',', '.')) || 0;
+    const qty = typeof parseJumlahJS === 'function' ? parseJumlahJS(rawQty) : (parseFloat(String(rawQty).replace(/\./g, '').replace(',', '.')) || 0);
     const hargaStr = document.getElementById(`exp_harga_${idx}`).value;
     const harga = unformatRupiahJS(hargaStr);
     const total = Math.round(qty * harga * 100) / 100;
@@ -135,7 +135,7 @@ function calculateExpGrandTotal() {
         const idx = row.getAttribute('data-index');
         const qtyElem = document.getElementById(`exp_jumlah_${idx}`);
         const rawQty = qtyElem ? qtyElem.value : '';
-        const qty = parseFloat(String(rawQty).replace(',', '.')) || 0;
+        const qty = typeof parseJumlahJS === 'function' ? parseJumlahJS(rawQty) : (parseFloat(String(rawQty).replace(/\./g, '').replace(',', '.')) || 0);
         const harga = unformatRupiahJS(document.getElementById(`exp_harga_${idx}`).value);
         grandTotal += (qty * harga);
     });
@@ -155,7 +155,6 @@ function addExpenseRow() {
                 <input type="text" name="nama_item_${idx}" class="form-control" placeholder="Nama item..." required>
             </div>
             <div class="col-12 col-md-3">
-                <label class="form-label text-muted small fw-semibold">KATEGORI</label>
                 <select name="kategori_${idx}" class="form-select">
                     <option value="Operasional">Operasional</option>
                     <option value="Utility">Utility (Listrik/Air/Internet)</option>
@@ -168,7 +167,7 @@ function addExpenseRow() {
             </div>
             <div class="col-6 col-md-2">
                 <label class="form-label text-muted small fw-semibold">JUMLAH (QTY)</label>
-                <input type="number" step="0.01" name="jumlah_${idx}" id="exp_jumlah_${idx}" class="form-control" value="1.00" oninput="calculateExpRow(${idx})" required>
+                <input type="text" inputmode="decimal" name="jumlah_${idx}" id="exp_jumlah_${idx}" class="form-control" value="1" oninput="calculateExpRow(${idx})" onchange="calculateExpRow(${idx})" placeholder="Contoh: 1 atau 2.149,8" required>
             </div>
             <div class="col-6 col-md-2">
                 <label class="form-label text-muted small fw-semibold">SATUAN</label>
@@ -179,7 +178,7 @@ function addExpenseRow() {
         <div class="row g-3 mt-1">
             <div class="col-12 col-md-6">
                 <label class="form-label text-muted small fw-semibold">HARGA SATUAN (RP)</label>
-                <input type="text" name="harga_satuan_${idx}" id="exp_harga_${idx}" class="form-control rupiah-input" placeholder="Rp 0" oninput="calculateExpRow(${idx})" required>
+                <input type="text" name="harga_satuan_${idx}" id="exp_harga_${idx}" class="form-control rupiah-input" placeholder="Rp 0" oninput="calculateExpRow(${idx})" onchange="calculateExpRow(${idx})" required>
             </div>
             <div class="col-12 col-md-6">
                 <label class="form-label text-muted small fw-semibold">TOTAL HARGA ITEM</label>
@@ -205,6 +204,10 @@ function removeExpRow(idx) {
         calculateExpGrandTotal();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    calculateExpGrandTotal();
+});
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

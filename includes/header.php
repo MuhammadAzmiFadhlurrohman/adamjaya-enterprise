@@ -96,11 +96,48 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
             input.value = 'Rp ' + clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
 
+        function parseJumlahJS(val) {
+            if (val === null || val === undefined || val === '') return 0;
+            if (typeof val === 'number') return isNaN(val) ? 0 : val;
+            let s = String(val).trim();
+            if (s === '') return 0;
+
+            s = s.replace(/[^0-9,.-]/g, '');
+            if (s === '') return 0;
+
+            const hasDot = s.includes('.');
+            const hasComma = s.includes(',');
+
+            if (hasDot && hasComma) {
+                const lastDot = s.lastIndexOf('.');
+                const lastComma = s.lastIndexOf(',');
+                if (lastComma > lastDot) {
+                    // Format Indonesia: 2.149,8 -> titik ribuan dihapus, koma jadi titik desimal
+                    s = s.replace(/\./g, '').replace(',', '.');
+                } else {
+                    // Format Internasional: 2,149.8 -> koma ribuan dihapus
+                    s = s.replace(/,/g, '');
+                }
+            } else if (hasComma) {
+                s = s.replace(',', '.');
+            } else if (hasDot) {
+                const dotCount = (s.match(/\./g) || []).length;
+                if (dotCount > 1) {
+                    s = s.replace(/\./g, '');
+                }
+            }
+
+            const num = parseFloat(s);
+            return isNaN(num) ? 0 : num;
+        }
+
         window.unformatRupiah = unformatRupiah;
         window.unformatRupiahJS = unformatRupiah;
         window.formatRupiah = formatRupiah;
         window.formatRupiahJS = formatRupiahJS;
         window.formatRupiahInput = formatRupiahInput;
+        window.parseJumlahJS = parseJumlahJS;
+        window.parseJumlah = parseJumlahJS;
     </script>
 </head>
 <body>

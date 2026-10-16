@@ -97,7 +97,7 @@ while ($row = mysqli_fetch_assoc($res_d)) {
                         </div>
                         <div class="col-md-2">
                             <label class="form-label text-muted small fw-semibold">JUMLAH (QTY)</label>
-                            <input type="number" step="0.01" name="jumlah_<?= $idx; ?>" id="exp_jumlah_<?= $idx; ?>" class="form-control" value="<?= (float)$d['jumlah']; ?>" oninput="calculateExpRow(<?= $idx; ?>)" required>
+                            <input type="text" inputmode="decimal" name="jumlah_<?= $idx; ?>" id="exp_jumlah_<?= $idx; ?>" class="form-control" value="<?= (float)$d['jumlah']; ?>" oninput="calculateExpRow(<?= $idx; ?>)" onchange="calculateExpRow(<?= $idx; ?>)" placeholder="Jumlah QTY" required>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label text-muted small fw-semibold">SATUAN</label>
@@ -108,7 +108,7 @@ while ($row = mysqli_fetch_assoc($res_d)) {
                     <div class="row g-3 mt-1">
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-semibold">HARGA SATUAN (RP)</label>
-                            <input type="text" name="harga_satuan_<?= $idx; ?>" id="exp_harga_<?= $idx; ?>" class="form-control rupiah-input" value="<?= formatRupiah($d['harga_satuan']); ?>" oninput="calculateExpRow(<?= $idx; ?>)" required>
+                            <input type="text" name="harga_satuan_<?= $idx; ?>" id="exp_harga_<?= $idx; ?>" class="form-control rupiah-input" value="<?= formatRupiah($d['harga_satuan']); ?>" oninput="calculateExpRow(<?= $idx; ?>)" onchange="calculateExpRow(<?= $idx; ?>)" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-semibold">TOTAL HARGA ITEM</label>
@@ -153,7 +153,7 @@ let expRowIndex = <?= count($details); ?>;
 function calculateExpRow(idx) {
     const qtyElem = document.getElementById(`exp_jumlah_${idx}`);
     const rawQty = qtyElem ? qtyElem.value : '';
-    const qty = parseFloat(String(rawQty).replace(',', '.')) || 0;
+    const qty = typeof parseJumlahJS === 'function' ? parseJumlahJS(rawQty) : (parseFloat(String(rawQty).replace(/\./g, '').replace(',', '.')) || 0);
     const hargaStr = document.getElementById(`exp_harga_${idx}`).value;
     const harga = unformatRupiahJS(hargaStr);
     const total = Math.round(qty * harga * 100) / 100;
@@ -168,7 +168,7 @@ function calculateExpGrandTotal() {
         const idx = row.getAttribute('data-index');
         const qtyElem = document.getElementById(`exp_jumlah_${idx}`);
         const rawQty = qtyElem ? qtyElem.value : '';
-        const qty = parseFloat(String(rawQty).replace(',', '.')) || 0;
+        const qty = typeof parseJumlahJS === 'function' ? parseJumlahJS(rawQty) : (parseFloat(String(rawQty).replace(/\./g, '').replace(',', '.')) || 0);
         const harga = unformatRupiahJS(document.getElementById(`exp_harga_${idx}`).value);
         grandTotal += (qty * harga);
     });
@@ -201,7 +201,7 @@ function addExpenseRow() {
             </div>
             <div class="col-md-2">
                 <label class="form-label text-muted small fw-semibold">JUMLAH (QTY)</label>
-                <input type="number" step="0.01" name="jumlah_${idx}" id="exp_jumlah_${idx}" class="form-control" value="1.00" oninput="calculateExpRow(${idx})" required>
+                <input type="text" inputmode="decimal" name="jumlah_${idx}" id="exp_jumlah_${idx}" class="form-control" value="1" oninput="calculateExpRow(${idx})" onchange="calculateExpRow(${idx})" placeholder="Jumlah QTY" required>
             </div>
             <div class="col-md-2">
                 <label class="form-label text-muted small fw-semibold">SATUAN</label>
@@ -212,7 +212,7 @@ function addExpenseRow() {
         <div class="row g-3 mt-1">
             <div class="col-md-6">
                 <label class="form-label text-muted small fw-semibold">HARGA SATUAN (RP)</label>
-                <input type="text" name="harga_satuan_${idx}" id="exp_harga_${idx}" class="form-control rupiah-input" placeholder="Rp 0" oninput="calculateExpRow(${idx})" required>
+                <input type="text" name="harga_satuan_${idx}" id="exp_harga_${idx}" class="form-control rupiah-input" placeholder="Rp 0" oninput="calculateExpRow(${idx})" onchange="calculateExpRow(${idx})" required>
             </div>
             <div class="col-md-6">
                 <label class="form-label text-muted small fw-semibold">TOTAL HARGA ITEM</label>
@@ -238,6 +238,10 @@ function removeExpRow(idx) {
         calculateExpGrandTotal();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    calculateExpGrandTotal();
+});
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
