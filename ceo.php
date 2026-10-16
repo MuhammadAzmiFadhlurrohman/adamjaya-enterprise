@@ -2,29 +2,123 @@
 require_once __DIR__ . '/includes/header.php';
 require_login(); // Admin and CEO can view
 
-// Query Executive Stats
-$res_pengajuan = mysqli_query($conn, "SELECT COUNT(id) as total_trx, IFNULL(SUM(CAST(estimasi_dana AS DECIMAL(15,2))), 0) as total_val FROM pengajuan");
-$row_pengajuan = mysqli_fetch_assoc($res_pengajuan);
+// ========================================================
+// FILTER DASHBOARD EXECUTIVE (STATUS & PERIODE)
+// ========================================================
+$filter_status = sanitize($_GET['status'] ?? ''); // '', 'lunas', 'piutang'
+$filter_bulan = sanitize($_GET['bulan'] ?? '');   // '', '01'..'12'
+$filter_tahun = sanitize($_GET['tahun'] ?? '');   // '', '2026', dst
 
-$res_pengeluaran = mysqli_query($conn, "SELECT IFNULL(SUM(total_pengeluaran), 0) as total_exp FROM pengeluaran_header");
-$row_pengeluaran = mysqli_fetch_assoc($res_pengeluaran);
+$where_p = ["1=1"];
+$params_p = [];
+$types_p = "";
 
+if ($filter_status === 'lunas') {
+    $where_p[] = "p.status_pembayaran = 'dibayar'";
+} elseif ($filter_status === 'piutang') {
+    $where_p[] = "p.status_pembayaran != 'dibayar'";
+}
+
+if (!empty($filter_bulan)) {
+    $where_p[] = "MONTH(p.created_at) = ?";
+    $params_p[] = (int)$filter_bulan;
+    $types_p .= "i";
+}
+if (!empty($filter_tahun)) {
+    $where_p[] = "YEAR(p.created_at) = ?";
+    $params_p[] = (int)$filter_tahun;
+    $types_p .= "i";
+}
+$where_p_sql = implode(" AND ", $where_p);
+
+// Query Executive Stats Terintegrasi
+$query_kpi = "SELECT 
+    COUNT(p.id) as total_trx,
+    IFNULL(SUM(CAST(p.estimasi_dana AS DECIMAL(15,2))), 0) as total_omzet,
+    IFNULL(SUM(CASE 
+        WHEN p.status_pembayaran = 'dibayar' THEN CAST(p.estimasi_dana AS DECIMAL(15,2))
+        WHEN p.status_pembayaran = 'cicilan' THEN CAST(p.jumlah_dibayar AS DECIMAL(15,2))
+        ELSE 0 
+    END), 0) as total_kas_masuk,
+    IFNULL(SUM(CASE 
+        WHEN p.status_pembayaran = 'dibayar' THEN 0
+        WHEN p.status_pembayaran = 'cicilan' THEN CAST(p.sisa_pembayaran AS DECIMAL(15,2))
+        ELSE CAST(p.estimasi_dana AS DECIMAL(15,2))
+    END), 0) as total_piutang,
+    COUNT(CASE WHEN p.status_pembayaran = 'dibayar' THEN 1 END) as trx_lunas,
+    COUNT(CASE WHEN p.status_pembayaran != 'dibayar' THEN 1 END) as trx_piutang,
+    COUNT(DISTINCT p.nama_pembeli) as total_pembeli
+FROM pengajuan p
+WHERE $where_p_sql";
+
+$stmt_kpi = mysqli_prepare($conn, $query_kpi);
+if (!empty($types_p)) {
+    mysqli_stmt_bind_param($stmt_kpi, $types_p, ...$params_p);
+}
+mysqli_stmt_execute($stmt_kpi);
+$row_kpi = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_kpi));
+
+// Filter Pengeluaran Kas Operasional Sesuai Periode
+$where_exp = ["1=1"];
+$params_exp = [];
+$types_exp = "";
+if (!empty($filter_bulan)) {
+    $where_exp[] = "MONTH(tanggal) = ?";
+    $params_exp[] = (int)$filter_bulan;
+    $types_exp .= "i";
+}
+if (!empty($filter_tahun)) {
+    $where_exp[] = "YEAR(tanggal) = ?";
+    $params_exp[] = (int)$filter_tahun;
+    $types_exp .= "i";
+}
+$where_exp_sql = implode(" AND ", $where_exp);
+
+$stmt_exp = mysqli_prepare($conn, "SELECT IFNULL(SUM(total_pengeluaran), 0) as total_exp, COUNT(id) as total_exp_trx FROM pengeluaran_header WHERE $where_exp_sql");
+if (!empty($types_exp)) {
+    mysqli_stmt_bind_param($stmt_exp, $types_exp, ...$params_exp);
+}
+mysqli_stmt_execute($stmt_exp);
+$row_pengeluaran = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_exp));
+
+$total_kas_masuk = (float)($row_kpi['total_kas_masuk'] ?? 0);
+$total_piutang = (float)($row_kpi['total_piutang'] ?? 0);
+$total_omzet = (float)($row_kpi['total_omzet'] ?? 0);
+$total_pengeluaran = (float)($row_pengeluaran['total_exp'] ?? 0);
+$laba_bersih_kas = $total_kas_masuk - $total_pengeluaran;
+$potensi_laba_total = ($total_kas_masuk + $total_piutang) - $total_pengeluaran;
+
+// Query Stok
 $res_stok = mysqli_query($conn, "SELECT COUNT(id) as total_varian, IFNULL(SUM(stok), 0) as total_unit FROM jenis_barang");
 $row_stok = mysqli_fetch_assoc($res_stok);
 
-$res_pembeli = mysqli_query($conn, "SELECT COUNT(DISTINCT nama_pembeli) as total_pembeli FROM pengajuan");
-$row_pembeli = mysqli_fetch_assoc($res_pembeli);
+// Dapatkan daftar tahun unik untuk dropdown filter
+$res_years = mysqli_query($conn, "SELECT DISTINCT YEAR(created_at) as yr FROM pengajuan WHERE created_at IS NOT NULL ORDER BY yr DESC");
+$available_years = [];
+while ($y = mysqli_fetch_assoc($res_years)) {
+    if (!empty($y['yr'])) $available_years[] = $y['yr'];
+}
+if (empty($available_years)) {
+    $available_years = [date('Y')];
+}
 
 // Data Grafik Barang Paling Banyak Terjual / Dikeluarkan
 $query_top_sold = "SELECT 
-    nama_barang,
-    nama_jenis,
-    SUM(jumlah) as total_qty 
-FROM pengajuan_detail 
-GROUP BY nama_barang, nama_jenis 
+    pd.nama_barang,
+    pd.nama_jenis,
+    SUM(pd.jumlah) as total_qty 
+FROM pengajuan_detail pd
+JOIN pengajuan p ON pd.pengajuan_id = p.id
+WHERE $where_p_sql
+GROUP BY pd.nama_barang, pd.nama_jenis 
 ORDER BY total_qty DESC LIMIT 6";
 
-$res_top_sold = mysqli_query($conn, $query_top_sold);
+$stmt_sold = mysqli_prepare($conn, $query_top_sold);
+if (!empty($types_p)) {
+    mysqli_stmt_bind_param($stmt_sold, $types_p, ...$params_p);
+}
+mysqli_stmt_execute($stmt_sold);
+$res_top_sold = mysqli_stmt_get_result($stmt_sold);
 $sold_labels = [];
 $sold_values = [];
 if ($res_top_sold && mysqli_num_rows($res_top_sold) > 0) {
@@ -45,11 +139,17 @@ if (empty($sold_labels)) {
 }
 
 // Data Grafik Pengadaan Bulanan
-$query_monthly = "SELECT DATE_FORMAT(created_at, '%b %Y') as m_label, SUM(CAST(estimasi_dana AS DECIMAL(15,2))) as total 
-                  FROM pengajuan 
-                  GROUP BY YEAR(created_at), MONTH(created_at) 
-                  ORDER BY created_at ASC LIMIT 12";
-$res_monthly = mysqli_query($conn, $query_monthly);
+$query_monthly = "SELECT DATE_FORMAT(p.created_at, '%b %Y') as m_label, SUM(CAST(p.estimasi_dana AS DECIMAL(15,2))) as total 
+                  FROM pengajuan p
+                  WHERE $where_p_sql
+                  GROUP BY YEAR(p.created_at), MONTH(p.created_at) 
+                  ORDER BY p.created_at ASC LIMIT 12";
+$stmt_monthly = mysqli_prepare($conn, $query_monthly);
+if (!empty($types_p)) {
+    mysqli_stmt_bind_param($stmt_monthly, $types_p, ...$params_p);
+}
+mysqli_stmt_execute($stmt_monthly);
+$res_monthly = mysqli_stmt_get_result($stmt_monthly);
 $month_labels = [];
 $month_values = [];
 while ($m = mysqli_fetch_assoc($res_monthly)) {
@@ -78,7 +178,7 @@ if ($res_audit) {
         <div>
             <span class="page-eyebrow"><i class="fa-solid fa-crown"></i> Executive Suite &middot; Adam Jaya Enterprise</span>
             <h1 class="page-title">Executive Management Dashboard</h1>
-            <p class="page-subtitle">Ringkasan performa bisnis, audit persediaan, dan analisis tren pengadaan perusahaan.</p>
+            <p class="page-subtitle">Ringkasan performa finansial, pelunasan kas, piutang pelanggan, dan audit persediaan.</p>
         </div>
         <div class="header-action">
             <?php if (is_ceo()): ?>
@@ -94,48 +194,182 @@ if ($res_audit) {
     </div>
 </header>
 
-<!-- KPI Overview Cards -->
+<!-- EXECUTIVE FILTER BAR -->
+<div class="filter-card mb-4">
+    <form method="GET" action="ceo.php">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label><i class="fa-solid fa-filter me-1 text-wine"></i> STATUS PEMBAYARAN</label>
+                <select name="status" class="form-select">
+                    <option value="">Semua Transaksi (Lunas & Piutang)</option>
+                    <option value="lunas" <?= ($filter_status === 'lunas') ? 'selected' : ''; ?>>Hanya Sudah Lunas (Kas Masuk Penuh)</option>
+                    <option value="piutang" <?= ($filter_status === 'piutang') ? 'selected' : ''; ?>>Hanya Piutang (Belum Lunas & Cicilan)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fa-solid fa-calendar-days me-1 text-wine"></i> BULAN</label>
+                <select name="bulan" class="form-select">
+                    <option value="">Semua Bulan</option>
+                    <?php 
+                    $months = [
+                        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+                        '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+                        '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                    ];
+                    foreach ($months as $m_num => $m_name): 
+                    ?>
+                        <option value="<?= $m_num; ?>" <?= ($filter_bulan === $m_num) ? 'selected' : ''; ?>><?= $m_name; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fa-solid fa-calendar me-1 text-wine"></i> TAHUN</label>
+                <select name="tahun" class="form-select">
+                    <option value="">Semua Tahun</option>
+                    <?php foreach ($available_years as $yr): ?>
+                        <option value="<?= $yr; ?>" <?= ($filter_tahun == $yr) ? 'selected' : ''; ?>><?= $yr; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="filter-actions align-self-end">
+                <button type="submit" class="btn btn-wine btn-sm rounded-pill px-3 py-2 fw-bold">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i> Terapkan Filter
+                </button>
+                <?php if (!empty($filter_status) || !empty($filter_bulan) || !empty($filter_tahun)): ?>
+                    <a href="ceo.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-2 fw-semibold">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Reset
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- EXECUTIVE NET PROFIT & FINANCIAL HIGHLIGHT BANNER -->
+<div class="p-3 p-md-4 rounded-3 text-white shadow-sm mb-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #1A2A4A 0%, #0A1628 100%); border: 1.5px solid #C9A84C;">
+    <div class="row align-items-center g-3">
+        <div class="col-12 col-lg-7">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge rounded-pill px-3 py-1.5 fw-bold" style="background: rgba(201, 168, 76, 0.2); color: #ffd700; border: 1px solid rgba(201, 168, 76, 0.4);">
+                    <i class="fa-solid fa-scale-balanced me-1"></i> Ringkasan Laba Bersih Perusahaan
+                </span>
+                <?php if ($laba_bersih_kas >= 0): ?>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold small">
+                        <i class="fa-solid fa-arrow-trend-up me-1"></i> Surplus Kas
+                    </span>
+                <?php else: ?>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold small">
+                        <i class="fa-solid fa-arrow-trend-down me-1"></i> Defisit Kas
+                    </span>
+                <?php endif; ?>
+            </div>
+            <h2 class="fw-bolder mb-1" style="color: #ffd700 !important; font-size: 2rem; letter-spacing: 0.5px;">
+                <?= formatRupiah($laba_bersih_kas); ?>
+            </h2>
+            <p class="mb-0 text-white-50 small" style="line-height: 1.5;">
+                <strong>Laba Bersih Kas Riil</strong> dihitung dari: 
+                <span class="text-white fw-semibold">Pemasukan Diterima (<?= formatRupiah($total_kas_masuk); ?>)</span> 
+                dikurangi 
+                <span class="text-white fw-semibold">Kas Pengeluaran Beban (<?= formatRupiah($total_pengeluaran); ?>)</span>.
+            </p>
+        </div>
+        <div class="col-12 col-lg-5 text-lg-end border-top border-lg-0 pt-2 pt-lg-0" style="border-color: rgba(255,255,255,0.1) !important;">
+            <div class="p-2.5 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px dashed rgba(201, 168, 76, 0.3);">
+                <div class="small text-warning fw-semibold mb-1"><i class="fa-solid fa-clock-rotate-left me-1"></i> Potensi Laba Tambahan (Piutang)</div>
+                <div class="text-white fw-bold mb-1" style="font-size: 1.15rem;"><?= formatRupiah($total_piutang); ?></div>
+                <small class="text-white-50 d-block" style="font-size: 0.72rem;">Jika seluruh piutang berhasil ditagih, estimasi total keuntungan menjadi <strong class="text-white"><?= formatRupiah($potensi_laba_total); ?></strong></small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Overview Cards: Transparan Pemisahan Lunas vs Piutang -->
 <div class="row g-3 stats-row mb-4">
-    <div class="col-6 col-md-3 dash-reveal" style="--reveal-delay: 0.05s">
-        <div class="stats-card">
+    <!-- Card 1: Total Nilai Transaksi (Bruto) -->
+    <div class="col-6 col-lg-3 dash-reveal" style="--reveal-delay: 0.05s">
+        <div class="stats-card h-100">
             <div class="card-body">
                 <div class="stat-icon icon-wine"><i class="fa-solid fa-chart-line"></i></div>
                 <div>
-                    <div class="stat-value"><?= formatRupiah($row_pengajuan['total_val']); ?></div>
-                    <div class="stat-label">Total Pengadaan (<?= $row_pengajuan['total_trx']; ?> Trx)</div>
+                    <div class="stat-value"><?= formatRupiah($total_omzet); ?></div>
+                    <div class="stat-label">Total Omzet / Transaksi</div>
+                    <small class="text-muted d-block mt-1" style="font-size: 0.73rem;">
+                        <i class="fa-solid fa-receipt me-1 text-wine"></i> <?= number_format($row_kpi['total_trx'] ?? 0); ?> Total Transaksi
+                    </small>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3 dash-reveal" style="--reveal-delay: 0.15s">
-        <div class="stats-card">
+
+    <!-- Card 2: Pemasukan Kas Diterima (Lunas & DP) -->
+    <div class="col-6 col-lg-3 dash-reveal" style="--reveal-delay: 0.15s">
+        <div class="stats-card h-100 border-start border-4 border-success">
+            <div class="card-body">
+                <div class="stat-icon icon-success"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div>
+                    <div class="stat-value text-success"><?= formatRupiah($total_kas_masuk); ?></div>
+                    <div class="stat-label">Pemasukan Kas Riil (Lunas)</div>
+                    <small class="text-success fw-semibold d-block mt-1" style="font-size: 0.73rem;">
+                        <i class="fa-solid fa-circle-check me-1"></i> <?= number_format($row_kpi['trx_lunas'] ?? 0); ?> Transaksi Lunas
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Piutang Berjalan (Belum Lunas & Cicilan) -->
+    <div class="col-6 col-lg-3 dash-reveal" style="--reveal-delay: 0.25s">
+        <div class="stats-card h-100 border-start border-4 border-danger">
+            <div class="card-body">
+                <div class="stat-icon icon-danger"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div>
+                    <div class="stat-value text-danger"><?= formatRupiah($total_piutang); ?></div>
+                    <div class="stat-label">Total Piutang Berjalan</div>
+                    <small class="text-danger fw-semibold d-block mt-1" style="font-size: 0.73rem;">
+                        <i class="fa-solid fa-circle-exclamation me-1"></i> <?= number_format($row_kpi['trx_piutang'] ?? 0); ?> Belum Lunas / Cicilan
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: Pengeluaran Kas Operasional -->
+    <div class="col-6 col-lg-3 dash-reveal" style="--reveal-delay: 0.35s">
+        <div class="stats-card h-100">
             <div class="card-body">
                 <div class="stat-icon icon-gold"><i class="fa-solid fa-wallet"></i></div>
                 <div>
-                    <div class="stat-value"><?= formatRupiah($row_pengeluaran['total_exp']); ?></div>
-                    <div class="stat-label">Kas Pengeluaran</div>
+                    <div class="stat-value"><?= formatRupiah($total_pengeluaran); ?></div>
+                    <div class="stat-label">Beban Kas Pengeluaran</div>
+                    <small class="text-muted d-block mt-1" style="font-size: 0.73rem;">
+                        <i class="fa-solid fa-file-invoice-dollar me-1 text-gold"></i> <?= number_format($row_pengeluaran['total_exp_trx'] ?? 0); ?> Catatan Beban Kas
+                    </small>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3 dash-reveal" style="--reveal-delay: 0.25s">
+</div>
+
+<!-- Secondary Info Row: Stok & Pelanggan -->
+<div class="row g-3 stats-row mb-4">
+    <div class="col-6 col-md-6 dash-reveal" style="--reveal-delay: 0.40s">
         <div class="stats-card">
-            <div class="card-body">
-                <div class="stat-icon icon-success"><i class="fa-solid fa-boxes-stacked"></i></div>
+            <div class="card-body py-2.5">
+                <div class="stat-icon icon-gold" style="width: 40px; height: 40px; font-size: 1rem;"><i class="fa-solid fa-boxes-stacked"></i></div>
                 <div>
-                    <div class="stat-value"><?= format_stok($row_stok['total_unit']); ?> Total Stok</div>
-                    <div class="stat-label">Stok (<?= $row_stok['total_varian']; ?> Varian)</div>
+                    <div class="stat-value" style="font-size: 1.15rem;"><?= format_stok($row_stok['total_unit']); ?> Unit</div>
+                    <div class="stat-label">Total Persediaan Gudang (<?= $row_stok['total_varian']; ?> Varian)</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3 dash-reveal" style="--reveal-delay: 0.35s">
+    <div class="col-6 col-md-6 dash-reveal" style="--reveal-delay: 0.45s">
         <div class="stats-card">
-            <div class="card-body">
-                <div class="stat-icon icon-danger"><i class="fa-solid fa-users"></i></div>
+            <div class="card-body py-2.5">
+                <div class="stat-icon icon-wine" style="width: 40px; height: 40px; font-size: 1rem;"><i class="fa-solid fa-users"></i></div>
                 <div>
-                    <div class="stat-value"><?= $row_pembeli['total_pembeli']; ?> Pembeli</div>
-                    <div class="stat-label">Klien Pelanggan Aktif</div>
+                    <div class="stat-value" style="font-size: 1.15rem;"><?= number_format($row_kpi['total_pembeli'] ?? 0); ?> Pembeli</div>
+                    <div class="stat-label">Pelanggan Aktif Terdata</div>
                 </div>
             </div>
         </div>

@@ -48,6 +48,46 @@ while ($row = mysqli_fetch_assoc($result)) {
     $headers_data[] = $row;
     $total_pengeluaran_sum += (float)$row['total_pengeluaran'];
 }
+
+// Query Pemasukan Kas Transaksi & Piutang Sesuai Periode Filter
+$in_where = ["1=1"];
+$in_params = [];
+$in_types = "";
+if (!empty($bulan)) {
+    $in_where[] = "MONTH(created_at) = ?";
+    $in_params[] = (int)$bulan;
+    $in_types .= "i";
+}
+if (!empty($tahun)) {
+    $in_where[] = "YEAR(created_at) = ?";
+    $in_params[] = (int)$tahun;
+    $in_types .= "i";
+}
+$in_where_sql = implode(" AND ", $in_where);
+$stmt_in = mysqli_prepare($conn, "
+    SELECT 
+        IFNULL(SUM(CASE 
+            WHEN status_pembayaran = 'dibayar' THEN CAST(estimasi_dana AS DECIMAL(15,2))
+            WHEN status_pembayaran = 'cicilan' THEN CAST(jumlah_dibayar AS DECIMAL(15,2))
+            ELSE 0 
+        END), 0) as total_in,
+        IFNULL(SUM(CASE 
+            WHEN status_pembayaran = 'dibayar' THEN 0
+            WHEN status_pembayaran = 'cicilan' THEN CAST(sisa_pembayaran AS DECIMAL(15,2))
+            ELSE CAST(estimasi_dana AS DECIMAL(15,2))
+        END), 0) as total_piutang
+    FROM pengajuan 
+    WHERE $in_where_sql
+");
+if (!empty($in_types)) {
+    mysqli_stmt_bind_param($stmt_in, $in_types, ...$in_params);
+}
+mysqli_stmt_execute($stmt_in);
+$res_in = mysqli_stmt_get_result($stmt_in);
+$row_in = mysqli_fetch_assoc($res_in);
+$total_in_periode = (float)($row_in['total_in'] ?? 0);
+$total_piutang_periode = (float)($row_in['total_piutang'] ?? 0);
+$saldo_bersih_periode = $total_in_periode - $total_pengeluaran_sum;
 ?>
 
 <!-- HEADER CURVED EXECUTIVE BANNER -->
@@ -56,7 +96,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         <div>
             <span class="page-eyebrow"><i class="fa-solid fa-wallet"></i> Operasional &middot; Kas Beban Pengeluaran</span>
             <h1 class="page-title">Pengeluaran Operasional Perusahaan</h1>
-            <p class="page-subtitle">Pencatatan beban kas keluar rutin & non-stok (Utility, Gaji, Sewa, Maintenance).</p>
+            <p class="page-subtitle">Pencatatan kas keluar, perbandingan arus kas pemasukan, dan saldo laba bersih.</p>
         </div>
         <div class="header-action">
             <?php if ($is_admin): ?>
@@ -70,24 +110,50 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <!-- Header Summary KPI Cards -->
 <div class="row g-3 stats-row mb-4">
-    <div class="col-6 col-md-6">
-        <div class="stats-card">
+    <div class="col-6 col-lg-3">
+        <div class="stats-card h-100 border-start border-3 border-danger">
             <div class="card-body">
                 <div class="stat-icon icon-wine"><i class="fa-solid fa-wallet"></i></div>
                 <div>
-                    <div class="stat-value"><?= formatRupiah($total_pengeluaran_sum); ?></div>
-                    <div class="stat-label">Total Kas Pengeluaran (Filter Terpilih)</div>
+                    <div class="stat-value text-danger"><?= formatRupiah($total_pengeluaran_sum); ?></div>
+                    <div class="stat-label">Kas Pengeluaran</div>
+                    <small class="text-muted d-block mt-0.5" style="font-size: 0.72rem;"><?= count($headers_data); ?> Catatan Beban Kas</small>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-6">
-        <div class="stats-card">
+    <div class="col-6 col-lg-3">
+        <div class="stats-card h-100 border-start border-3 border-success">
             <div class="card-body">
-                <div class="stat-icon icon-gold"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <div class="stat-icon icon-success"><i class="fa-solid fa-money-bill-wave"></i></div>
                 <div>
-                    <div class="stat-value"><?= count($headers_data); ?> Catatan</div>
-                    <div class="stat-label">Jumlah Catatan Transaksi Kas Pengeluaran</div>
+                    <div class="stat-value text-success"><?= formatRupiah($total_in_periode); ?></div>
+                    <div class="stat-label">Pemasukan Kas Diterima</div>
+                    <small class="text-success d-block mt-0.5" style="font-size: 0.72rem;">Uang riil masuk periode ini</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stats-card h-100 border-start border-3 border-warning">
+            <div class="card-body">
+                <div class="stat-icon icon-gold"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div>
+                    <div class="stat-value text-dark"><?= formatRupiah($total_piutang_periode); ?></div>
+                    <div class="stat-label">Piutang Belum Cair</div>
+                    <small class="text-muted d-block mt-0.5" style="font-size: 0.72rem;">Sisa tagihan pelanggan</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stats-card h-100 border-start border-3 <?= $saldo_bersih_periode >= 0 ? 'border-primary' : 'border-danger'; ?>">
+            <div class="card-body">
+                <div class="stat-icon icon-indigo"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div>
+                    <div class="stat-value <?= $saldo_bersih_periode >= 0 ? 'text-primary' : 'text-danger'; ?>"><?= formatRupiah($saldo_bersih_periode); ?></div>
+                    <div class="stat-label">Saldo / Laba Bersih Kas</div>
+                    <small class="text-muted d-block mt-0.5" style="font-size: 0.72rem;">Kas Masuk − Beban Kas</small>
                 </div>
             </div>
         </div>

@@ -26,9 +26,13 @@ if (!empty($tahun)) {
 }
 
 if (!empty($status_pembayaran)) {
-    $where_clauses[] = "p.status_pembayaran = ?";
-    $params[] = $status_pembayaran;
-    $types .= "s";
+    if ($status_pembayaran === 'piutang') {
+        $where_clauses[] = "(p.status_pembayaran = 'belum_dibayar' OR p.status_pembayaran = 'cicilan')";
+    } else {
+        $where_clauses[] = "p.status_pembayaran = ?";
+        $params[] = $status_pembayaran;
+        $types .= "s";
+    }
 }
 
 if (!empty($status_pengiriman)) {
@@ -138,13 +142,13 @@ header("Cache-Control: max-age=0");
 <body>
     <table style="width: 100%;">
         <tr>
-            <td colspan="9" style="vertical-align: middle; padding-bottom: 4px;">
+            <td colspan="11" style="vertical-align: middle; padding-bottom: 4px;">
                 <div class="company-title">ADAM JAYA ENTERPRISE</div>
-                <div class="report-subtitle">LAPORAN PEMBELIAN BARANG &middot; Periode: <?= e($bulan_teks); ?> <?= e($tahun_teks); ?></div>
+                <div class="report-subtitle">LAPORAN PEMBELIAN & KEUANGAN &middot; Periode: <?= e($bulan_teks); ?> <?= e($tahun_teks); ?></div>
                 <div class="filter-info">Diunduh pada: <?= date('d F Y, H:i:s'); ?> WIB &middot; Oleh: <?= e(ucwords((string)(current_user()['username'] ?? 'Admin'))); ?></div>
             </td>
         </tr>
-        <tr><td colspan="9"></td></tr>
+        <tr><td colspan="11"></td></tr>
     </table>
 
     <table class="excel-table">
@@ -158,30 +162,50 @@ header("Cache-Control: max-age=0");
                 <th width="130">NO TELEPON</th>
                 <th width="130">STATUS BAYAR</th>
                 <th width="130">STATUS KIRIM</th>
-                <th width="160">TOTAL ESTIMASI (RP)</th>
+                <th width="160">TOTAL TRANSAKSI (RP)</th>
+                <th width="160">KAS MASUK DITERIMA (RP)</th>
+                <th width="160">SISA PIUTANG (RP)</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $no = 1;
             $grand_total_semua = 0;
+            $grand_total_dibayar = 0;
+            $grand_total_piutang = 0;
+
             if (mysqli_num_rows($result) > 0):
                 while ($row = mysqli_fetch_assoc($result)):
                     $total_row = (float)$row['estimasi_dana'];
                     $grand_total_semua += $total_row;
                     $row_class = ($no % 2 === 0) ? 'even' : 'odd';
 
-                    // Format Status Bayar Label & Style (Mendukung 'dibayar' dan 'lunas')
+                    // Format Status Bayar & Hitung Kas Masuk vs Piutang
                     $st_bayar = strtolower($row['status_pembayaran'] ?? '');
                     $bayar_class = 'status-belum';
                     $bayar_label = 'Belum Dibayar';
+                    $dibayar_row = 0;
+                    $piutang_row = 0;
+
                     if ($st_bayar === 'dibayar' || $st_bayar === 'lunas') {
                         $bayar_class = 'status-lunas';
-                        $bayar_label = 'Dibayar';
-                    } else if ($st_bayar === 'dp') {
+                        $bayar_label = 'Lunas Penuh';
+                        $dibayar_row = $total_row;
+                        $piutang_row = 0;
+                    } else if ($st_bayar === 'cicilan' || $st_bayar === 'dp') {
                         $bayar_class = 'status-dp';
-                        $bayar_label = 'DP';
+                        $bayar_label = 'Cicilan / DP';
+                        $dibayar_row = (float)($row['jumlah_dibayar'] ?? 0);
+                        $piutang_row = (float)($row['sisa_pembayaran'] ?? max(0, $total_row - $dibayar_row));
+                    } else {
+                        $bayar_class = 'status-belum';
+                        $bayar_label = 'Belum Dibayar';
+                        $dibayar_row = 0;
+                        $piutang_row = $total_row;
                     }
+
+                    $grand_total_dibayar += $dibayar_row;
+                    $grand_total_piutang += $piutang_row;
 
                     // Format Status Kirim Label & Style (Mendukung 'sudah_dikirim', 'dikirim', 'terkirim')
                     $st_kirim = strtolower($row['status_pengiriman'] ?? '');
@@ -205,20 +229,24 @@ header("Cache-Control: max-age=0");
                     <td class="<?= $bayar_class; ?>"><?= e($bayar_label); ?></td>
                     <td class="<?= $kirim_class; ?>"><?= e($kirim_label); ?></td>
                     <td class="text-right text-bold" style="mso-number-format:'\#\,\#\#0';"><?= number_format($total_row, 0, ',', '.'); ?></td>
+                    <td class="text-right text-bold text-success" style="mso-number-format:'\#\,\#\#0'; color: #065F46;"><?= number_format($dibayar_row, 0, ',', '.'); ?></td>
+                    <td class="text-right text-bold text-danger" style="mso-number-format:'\#\,\#\#0'; color: #991B1B;"><?= number_format($piutang_row, 0, ',', '.'); ?></td>
                 </tr>
             <?php
                 endwhile;
             else:
             ?>
                 <tr>
-                    <td colspan="9" class="text-center" style="padding: 20px; color: #888;">Tidak ada data transaksi yang sesuai dengan filter.</td>
+                    <td colspan="11" class="text-center" style="padding: 20px; color: #888;">Tidak ada data transaksi yang sesuai dengan filter.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
         <tfoot>
             <tr class="total-row">
-                <td colspan="8" class="text-right">GRAND TOTAL ESTIMASI KESELURUHAN:</td>
+                <td colspan="8" class="text-right">TOTAL TRANSAKSI KESELURUHAN:</td>
                 <td class="text-right" style="mso-number-format:'\#\,\#\#0';">Rp <?= number_format($grand_total_semua, 0, ',', '.'); ?></td>
+                <td class="text-right" style="mso-number-format:'\#\,\#\#0';">Rp <?= number_format($grand_total_dibayar, 0, ',', '.'); ?></td>
+                <td class="text-right" style="mso-number-format:'\#\,\#\#0';">Rp <?= number_format($grand_total_piutang, 0, ',', '.'); ?></td>
             </tr>
         </tfoot>
     </table>

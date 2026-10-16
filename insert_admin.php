@@ -38,9 +38,13 @@ if (!empty($tahun)) {
 }
 
 if (!empty($status_pembayaran)) {
-    $where_clauses[] = "p.status_pembayaran = ?";
-    $params[] = $status_pembayaran;
-    $types .= "s";
+    if ($status_pembayaran === 'piutang') {
+        $where_clauses[] = "p.status_pembayaran != 'dibayar'";
+    } else {
+        $where_clauses[] = "p.status_pembayaran = ?";
+        $params[] = $status_pembayaran;
+        $types .= "s";
+    }
 }
 
 if (!empty($status_pengiriman)) {
@@ -87,11 +91,13 @@ if (!empty($types)) {
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-// KPI Stats
+// KPI Stats Terintegrasi
 $total_count = 0;
 $total_nominal = 0.0;
 $total_dibayar = 0.0;
 $total_belum_dibayar = 0.0;
+$count_lunas = 0;
+$count_piutang = 0;
 
 $rows_data = [];
 while ($row = mysqli_fetch_assoc($result)) {
@@ -101,10 +107,43 @@ while ($row = mysqli_fetch_assoc($result)) {
     $total_nominal += $nom;
     if ($row['status_pembayaran'] === 'dibayar') {
         $total_dibayar += $nom;
+        $count_lunas++;
+    } elseif ($row['status_pembayaran'] === 'cicilan') {
+        $dibayar_val = (float)($row['jumlah_dibayar'] ?? 0);
+        $sisa_val = (float)($row['sisa_pembayaran'] ?? max(0, $nom - $dibayar_val));
+        $total_dibayar += $dibayar_val;
+        $total_belum_dibayar += $sisa_val;
+        $count_piutang++;
     } else {
         $total_belum_dibayar += $nom;
+        $count_piutang++;
     }
 }
+
+// Query Pengeluaran Kas Periode Filter Sesuai Transaksi
+$exp_where = ["1=1"];
+$exp_params = [];
+$exp_types = "";
+if (!empty($bulan)) {
+    $exp_where[] = "MONTH(tanggal) = ?";
+    $exp_params[] = (int)$bulan;
+    $exp_types .= "i";
+}
+if (!empty($tahun)) {
+    $exp_where[] = "YEAR(tanggal) = ?";
+    $exp_params[] = (int)$tahun;
+    $exp_types .= "i";
+}
+$exp_where_sql = implode(" AND ", $exp_where);
+$stmt_exp_dash = mysqli_prepare($conn, "SELECT IFNULL(SUM(total_pengeluaran), 0) as total_exp FROM pengeluaran_header WHERE $exp_where_sql");
+if (!empty($exp_types)) {
+    mysqli_stmt_bind_param($stmt_exp_dash, $exp_types, ...$exp_params);
+}
+mysqli_stmt_execute($stmt_exp_dash);
+$res_exp_dash = mysqli_stmt_get_result($stmt_exp_dash);
+$row_exp_dash = mysqli_fetch_assoc($res_exp_dash);
+$total_pengeluaran_periode = (float)($row_exp_dash['total_exp'] ?? 0);
+$laba_bersih_periode = $total_dibayar - $total_pengeluaran_periode;
 ?>
 
 <!-- HEADER CURVED EXECUTIVE BANNER -->
@@ -113,7 +152,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         <div>
             <span class="page-eyebrow d-none d-md-block"><i class="fa-solid fa-store"></i> Panel Operational &middot; Pengadaan Barang</span>
             <h1 class="page-title">Daftar Pembelian & Transaksi</h1>
-            <p class="page-subtitle mb-0">Pantau, verifikasi, dan kelola seluruh pengajuan pembelian dari satu tempat.</p>
+            <p class="page-subtitle mb-0">Pantau pelunasan kas, piutang pelanggan, dan estimasi laba transaksi.</p>
         </div>
         <div class="header-action">
             <a href="export_excel.php?<?= http_build_query(['bulan' => $bulan, 'tahun' => $tahun, 'status_pembayaran' => $status_pembayaran, 'status_pengiriman' => $status_pengiriman, 'search' => $search, 'sort' => $sort]); ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
@@ -131,45 +170,49 @@ while ($row = mysqli_fetch_assoc($result)) {
 <!-- Summary KPI Cards -->
 <div class="row g-2.5 stats-row mb-3">
     <div class="col-6 col-md-3">
-        <div class="stats-card">
+        <div class="stats-card h-100">
             <div class="card-body">
                 <div class="stat-icon icon-wine"><i class="fa-solid fa-file-lines"></i></div>
                 <div>
-                    <div class="stat-value"><?= number_format($total_count); ?></div>
-                    <div class="stat-label">Total Pengajuan</div>
+                    <div class="stat-value"><?= number_format($total_count); ?> Trx</div>
+                    <div class="stat-label">Total Pengajuan Transaksi</div>
+                    <small class="text-muted d-block mt-0.5" style="font-size: 0.72rem;"><?= formatRupiah($total_nominal); ?></small>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stats-card">
-            <div class="card-body">
-                <div class="stat-icon icon-gold"><i class="fa-solid fa-sack-dollar"></i></div>
-                <div>
-                    <div class="stat-value"><?= formatRupiah($total_nominal); ?></div>
-                    <div class="stat-label">Total Nilai Transaksi</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stats-card">
+        <div class="stats-card h-100 border-start border-3 border-success">
             <div class="card-body">
                 <div class="stat-icon icon-success"><i class="fa-solid fa-circle-check"></i></div>
                 <div>
-                    <div class="stat-value"><?= formatRupiah($total_dibayar); ?></div>
-                    <div class="stat-label">Sudah Lunas Dibayar</div>
+                    <div class="stat-value text-success"><?= formatRupiah($total_dibayar); ?></div>
+                    <div class="stat-label">Kas Masuk Riil (<?= $count_lunas; ?> Lunas)</div>
+                    <small class="text-success d-block mt-0.5" style="font-size: 0.72rem;">Uang tunai / transfer diterima</small>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="stats-card">
+        <div class="stats-card h-100 border-start border-3 border-danger">
             <div class="card-body">
                 <div class="stat-icon icon-danger"><i class="fa-solid fa-hourglass-half"></i></div>
                 <div>
-                    <div class="stat-value"><?= formatRupiah($total_belum_dibayar); ?></div>
-                    <div class="stat-label">Belum Dibayar</div>
+                    <div class="stat-value text-danger"><?= formatRupiah($total_belum_dibayar); ?></div>
+                    <div class="stat-label">Total Piutang (<?= $count_piutang; ?> Trx)</div>
+                    <small class="text-danger d-block mt-0.5" style="font-size: 0.72rem;">Belum lunas / sisa tagihan</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stats-card h-100 border-start border-3 border-warning">
+            <div class="card-body">
+                <div class="stat-icon icon-gold"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div>
+                    <div class="stat-value <?= $laba_bersih_periode >= 0 ? 'text-dark' : 'text-danger'; ?>"><?= formatRupiah($laba_bersih_periode); ?></div>
+                    <div class="stat-label">Estimasi Untung Bersih</div>
+                    <small class="text-muted d-block mt-0.5" style="font-size: 0.72rem;">Kas Masuk − Beban Kas (<?= formatRupiah($total_pengeluaran_periode); ?>)</small>
                 </div>
             </div>
         </div>
@@ -209,9 +252,11 @@ while ($row = mysqli_fetch_assoc($result)) {
             <div class="filter-group">
                 <label>STATUS BAYAR</label>
                 <select name="status_pembayaran" class="form-select">
-                    <option value="">Semua Status</option>
-                    <option value="belum_dibayar" <?= ($status_pembayaran === 'belum_dibayar') ? 'selected' : ''; ?>>Belum Dibayar</option>
-                    <option value="dibayar" <?= ($status_pembayaran === 'dibayar') ? 'selected' : ''; ?>>Dibayar (Lunas)</option>
+                    <option value="">Semua Status (Lunas & Piutang)</option>
+                    <option value="dibayar" <?= ($status_pembayaran === 'dibayar') ? 'selected' : ''; ?>>Sudah Lunas Penuh</option>
+                    <option value="piutang" <?= ($status_pembayaran === 'piutang') ? 'selected' : ''; ?>>Semua Piutang (Belum Lunas & Cicilan)</option>
+                    <option value="cicilan" <?= ($status_pembayaran === 'cicilan') ? 'selected' : ''; ?>>Cicilan / DP Sebagian</option>
+                    <option value="belum_dibayar" <?= ($status_pembayaran === 'belum_dibayar') ? 'selected' : ''; ?>>Belum Dibayar Sama Sekali</option>
                 </select>
             </div>
 

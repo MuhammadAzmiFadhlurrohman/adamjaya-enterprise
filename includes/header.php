@@ -88,12 +88,50 @@ $initial_letter = strtoupper(substr($user['username'], 0, 1));
         function formatRupiahInput(input) {
             if (!input) return;
             let val = input.value;
-            let clean = String(val).replace(/\D/g, '');
-            if (!clean) {
+            if (val === null || val === undefined) return;
+            let str = String(val).trim();
+            if (str === '') {
                 input.value = '';
                 return;
             }
-            input.value = 'Rp ' + clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+            // Jika user mengetik titik di ujung setelah angka (misal "Rp 54.999." atau "54000."), jadikan koma desimal
+            if (str.endsWith('.') && !str.includes(',')) {
+                str = str.slice(0, -1) + ',';
+            } else if (!str.includes(',')) {
+                // Jika paste angka desimal titik tunggal, misal "54999.98" atau "54000.5"
+                let dotParts = str.split('.');
+                if (dotParts.length === 2 && /^\d{1,4}$/.test(dotParts[1])) {
+                    str = dotParts[0] + ',' + dotParts[1];
+                }
+            }
+
+            // Hapus karakter selain angka, koma, minus
+            let clean = str.replace(/[^\d,-]/g, '');
+            if (!clean || clean === '-') {
+                input.value = '';
+                return;
+            }
+
+            let isNegative = clean.startsWith('-');
+            if (isNegative) clean = clean.substring(1);
+
+            let prefix = isNegative ? '-Rp ' : 'Rp ';
+
+            if (clean.includes(',')) {
+                let parts = clean.split(',');
+                let intPart = parts[0].replace(/\D/g, '');
+                let decPart = parts.slice(1).join('').replace(/\D/g, '').substring(0, 4);
+                let formattedInt = intPart ? intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '0';
+                input.value = prefix + formattedInt + ',' + decPart;
+            } else {
+                let intPart = clean.replace(/\D/g, '');
+                if (!intPart) {
+                    input.value = '';
+                    return;
+                }
+                input.value = prefix + intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
         }
 
         function parseJumlahJS(val) {
